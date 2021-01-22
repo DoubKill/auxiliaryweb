@@ -197,14 +197,15 @@
               <el-radio v-model="temp_use_flag" :label="false">三区水温停用</el-radio>
             </el-form-item>
             <el-form-item label="收皮" prop="SelectEquip">
-              <el-select v-model="sp_num" size="mini" style="width: 85px" placeholder="请选择">
-                <el-option
-                  v-for="item in sp_num_options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
+              <el-input-number
+                v-model="sp_num"
+                :max="999"
+                controls-position="right"
+                size="mini"
+                style="width: 70px"
+                :precision="1"
+                :step="0.1"
+              />
             </el-form-item>
             <el-form-item label="车/托" />
             <el-form-item v-show="false" label="配方停用">
