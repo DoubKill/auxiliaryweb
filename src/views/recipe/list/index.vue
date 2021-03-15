@@ -1,5 +1,8 @@
 <template>
-  <div v-loading="loading" element-loading-text="加载中...">
+  <div
+    v-loading="loading"
+    element-loading-text="加载中..."
+  >
     <br>
     <el-form :inline="true">
       <el-form-item label="机台">
@@ -88,17 +91,25 @@
         />
       </el-form-item>
       <el-form-item style="float: right">
-        <el-button v-if="permissionObj.recipe.productbatching && permissionObj.recipe.productbatching.indexOf('add')>-1" :disabled="!currentRow.id" @click="CopyRecipeButton">复制新增</el-button>
+        <el-button
+          v-if="permissionObj.recipe.productbatching && permissionObj.recipe.productbatching.indexOf('add')>-1"
+          :disabled="!currentRow.id"
+          @click="CopyRecipeButton"
+        >复制新增</el-button>
       </el-form-item>
       <!-- <el-form-item style="float: right">
 <el-button>删除</el-button>
 </el-form-item> -->
       <el-form-item style="float: right">
         <!-- <el-button @click="AddRecipeButton">新增</el-button> -->
-        <el-button v-if="permissionObj.recipe.productbatching && permissionObj.recipe.productbatching.indexOf('add')>-1" @click="AddRecipeButton">新增</el-button>
+        <el-button
+          v-if="permissionObj.recipe.productbatching && permissionObj.recipe.productbatching.indexOf('add')>-1"
+          @click="AddRecipeButton"
+        >新增</el-button>
       </el-form-item>
     </el-form>
     <el-table
+      ref="singleTable"
       highlight-current-row
       :data="tableData"
       border
@@ -106,62 +117,196 @@
       @row-click="handleCurrentChange"
     >
 
-      <el-table-column align="center" type="index" width="50" label="No" />
+      <el-table-column
+        align="center"
+        type="index"
+        width="50"
+        label="No"
+      />
 
-      <el-table-column align="center" width="160%" prop="stage_product_batch_no" label="胶料配方编码">
+      <el-table-column
+        align="center"
+        width="160%"
+        prop="stage_product_batch_no"
+        label="胶料配方编码"
+      >
         <template slot-scope="scope">
-          <el-link type="primary" @click="recipe_display_change(scope.row)">
+          <el-link
+            type="primary"
+            @click="recipe_display_change(scope.row)"
+          >
             {{ scope.row.stage_product_batch_no }}
           </el-link>
         </template>
 
       </el-table-column>
       <!-- <el-table-column align="center" prop="stage_product_batch_no" label="胶料编码" /> -->
-      <el-table-column align="center" prop="product_name" label="胶料名称" />
-      <el-table-column align="center" width="200%" prop="equip_name" label="机台名称" />
-      <el-table-column align="center" width="100%" prop="equip_no" label="机台编号" />
-      <el-table-column v-if="false" align="center" width="100%" prop="equip" label="机台id" />
-      <el-table-column align="center" width="100%" prop="dev_type_name" label="炼胶机类型" />
-      <el-table-column align="center" prop="used_type" label="状态" :formatter="usedTypeFormatter" />
-      <el-table-column fixed="right" align="center" label="审核">
+      <el-table-column
+        align="center"
+        prop="product_name"
+        label="胶料名称"
+      />
+      <el-table-column
+        align="center"
+        width="200%"
+        prop="equip_name"
+        label="机台名称"
+      />
+      <el-table-column
+        align="center"
+        width="100%"
+        prop="equip_no"
+        label="机台编号"
+      />
+      <el-table-column
+        v-if="false"
+        align="center"
+        width="100%"
+        prop="equip"
+        label="机台id"
+      />
+      <el-table-column
+        align="center"
+        width="100%"
+        prop="dev_type_name"
+        label="炼胶机类型"
+      />
+      <el-table-column
+        align="center"
+        prop="used_type"
+        label="状态"
+        :formatter="usedTypeFormatter"
+      />
+      <el-table-column
+        fixed="right"
+        align="center"
+        label="审核"
+      >
         <template slot-scope="scope">
           <el-button-group>
-            <el-button v-if="scope.row.used_type === 1 && (permissionObj.recipe.prod && permissionObj.recipe.prod.indexOf('submit')>-1)" size="mini" @click="status_true(scope.row)">
+            <el-button
+              v-if="scope.row.used_type === 1 && (permissionObj.recipe.prod && permissionObj.recipe.prod.indexOf('submit')>-1)"
+              size="mini"
+              @click="status_true(scope.row)"
+            >
               提交
             </el-button>
-            <el-button v-if="scope.row.used_type === 2 && (permissionObj.recipe.prod && permissionObj.recipe.prod.indexOf('using')>-1)" size="mini" @click="status_true(scope.row)">
+            <el-button
+              v-if="scope.row.used_type === 2 && (permissionObj.recipe.prod && permissionObj.recipe.prod.indexOf('using')>-1)"
+              size="mini"
+              @click="status_true(scope.row)"
+            >
               启用
             </el-button>
-            <el-button v-if="scope.row.used_type === 2 && (permissionObj.recipe.prod && permissionObj.recipe.prod.indexOf('using')>-1)" size="mini" @click="status_false(scope.row)">
+            <el-button
+              v-if="scope.row.used_type === 2 && (permissionObj.recipe.prod && permissionObj.recipe.prod.indexOf('using')>-1)"
+              size="mini"
+              @click="status_false(scope.row)"
+            >
               驳回
             </el-button>
-            <el-button v-if="scope.row.used_type === 5 && (permissionObj.recipe.prod && permissionObj.recipe.prod.indexOf('abandon')>-1)" size="mini" @click="status_true(scope.row)">
+            <el-button
+              v-if="scope.row.used_type === 5 && (permissionObj.recipe.prod && permissionObj.recipe.prod.indexOf('abandon')>-1)"
+              size="mini"
+              @click="status_true(scope.row)"
+            >
               编辑
             </el-button>
-            <el-button v-if="(scope.row.used_type === 4 || scope.row.used_type === 5)&& (permissionObj.recipe.prod && permissionObj.recipe.prod.indexOf('abandon')>-1)" size="mini" @click="status_false(scope.row)">
+            <el-button
+              v-if="(scope.row.used_type === 4 || scope.row.used_type === 5)&& (permissionObj.recipe.prod && permissionObj.recipe.prod.indexOf('abandon')>-1)"
+              size="mini"
+              @click="status_false(scope.row)"
+            >
               废弃
             </el-button>
           </el-button-group>
         </template>
       </el-table-column>
-      <el-table-column align="center" prop="batching_weight" label="配料重量" />
-      <el-table-column align="center" prop="production_time_interval" label="炼胶时间" />
-      <el-table-column align="center" prop="site_name" label="site" />
-      <el-table-column align="center" prop="stage_name" label="段次" />
-      <el-table-column align="center" width="100%" prop="sp_num" label="收皮(车/托)" />
-      <el-table-column align="center" width="120%" prop="created_username" label="创建者" />
-      <el-table-column align="center" prop="submit_username" label="提交人" />
-      <el-table-column align="center" prop="used_username" label="启用人" />
-      <el-table-column align="center" prop="reject_username" label="驳回人" />
+      <el-table-column
+        align="center"
+        prop="batching_weight"
+        label="配料重量"
+      />
+      <el-table-column
+        align="center"
+        prop="production_time_interval"
+        label="炼胶时间"
+      />
+      <el-table-column
+        align="center"
+        prop="site_name"
+        label="site"
+      />
+      <el-table-column
+        align="center"
+        prop="stage_name"
+        label="段次"
+      />
+      <el-table-column
+        align="center"
+        width="100%"
+        prop="sp_num"
+        label="收皮(车/托)"
+      />
+      <el-table-column
+        align="center"
+        width="120%"
+        prop="created_username"
+        label="创建者"
+      />
+      <el-table-column
+        align="center"
+        prop="submit_username"
+        label="提交人"
+      />
+      <el-table-column
+        align="center"
+        prop="used_username"
+        label="启用人"
+      />
+      <el-table-column
+        align="center"
+        prop="reject_username"
+        label="驳回人"
+      />
       <!-- <el-table-column align="center" prop="obsolete_username" label="废弃人" /> -->
-      <el-table-column align="center" width="180%" prop="created_date" label="创建时间" />
-      <el-table-column align="center" width="180%" prop="last_updated_date" label="修改时间" />
-      <el-table-column align="center" prop="batching_type" label="配方来源" :formatter="RecipeSourceFormatter" />
-      <el-table-column fixed="right" align="center" label="操作" width="140px">
+      <el-table-column
+        align="center"
+        width="180%"
+        prop="created_date"
+        label="创建时间"
+      />
+      <el-table-column
+        align="center"
+        width="180%"
+        prop="last_updated_date"
+        label="修改时间"
+      />
+      <el-table-column
+        align="center"
+        prop="batching_type"
+        label="配方来源"
+        :formatter="RecipeSourceFormatter"
+      />
+      <el-table-column
+        fixed="right"
+        align="center"
+        label="操作"
+        width="140px"
+      >
         <template slot-scope="scope">
           <el-button-group>
-            <el-button v-if="permissionObj.recipe.productbatching && permissionObj.recipe.productbatching.indexOf('change')>-1 && scope.row.batching_type !== 2" size="mini" :disabled="scope.row.used_type !== 1 && scope.row.used_type !== 4" @click="ModifyRecipeButton(scope.row)">修改</el-button>
-            <el-button size="mini" type="danger" @click.stop="handleRecipeDelete(scope.row)">
+            <el-button
+              v-if="permissionObj.recipe.productbatching && permissionObj.recipe.productbatching.indexOf('change')>-1 && scope.row.batching_type !== 2"
+              size="mini"
+              :disabled="scope.row.used_type !== 1 && scope.row.used_type !== 4"
+              @click="ModifyRecipeButton(scope.row)"
+            >修改</el-button>
+            <el-button
+              size="mini"
+              type="danger"
+              @click.stop="handleRecipeDelete(scope.row)"
+            >
               {{ scope.row.used_type===4?'停用':'启用' }}
             </el-button>
           </el-button-group>
@@ -183,8 +328,16 @@
       :visible.sync="dialogCopyRecipeSync"
     >
 
-      <el-form ref="copyForm" :model="copyForm" :inline="true" :rules="rules">
-        <el-form-item label="选择机台" prop="CopySelectEquip">
+      <el-form
+        ref="copyForm"
+        :model="copyForm"
+        :inline="true"
+        :rules="rules"
+      >
+        <el-form-item
+          label="选择机台"
+          prop="CopySelectEquip"
+        >
           <el-select
             v-model="copyForm.CopySelectEquip"
             size="mini"
@@ -202,7 +355,11 @@
           </el-select>
         </el-form-item>
         <br>
-        <el-form-item v-show="isNormalRecipe" label="产地" prop="site">
+        <el-form-item
+          v-show="isNormalRecipe"
+          label="产地"
+          prop="site"
+        >
           <el-select
             v-model="copyForm.site"
             size="mini"
@@ -220,7 +377,11 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item v-show="isNormalRecipe" label="SITE" prop="SITE">
+        <el-form-item
+          v-show="isNormalRecipe"
+          label="SITE"
+          prop="SITE"
+        >
           <el-select
             v-model="copyForm.SITE"
             size="mini"
@@ -238,7 +399,11 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item v-show="isNormalRecipe" label="段次" prop="selectStage">
+        <el-form-item
+          v-show="isNormalRecipe"
+          label="段次"
+          prop="selectStage"
+        >
           <el-select
             v-model="copyForm.selectStage"
             size="mini"
@@ -256,7 +421,11 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item v-show="isNormalRecipe" label="胶料编号" prop="selectRecipeNo">
+        <el-form-item
+          v-show="isNormalRecipe"
+          label="胶料编号"
+          prop="selectRecipeNo"
+        >
           <el-select
             v-model="copyForm.selectRecipeNo"
             filterable
@@ -275,19 +444,57 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item v-show="isNormalRecipe" label="版本" prop="version">
-          <el-input v-model="copyForm.version" :disabled="!isNormalRecipe" style="width: 90px" size="mini" placeholder="版本" />
+        <el-form-item
+          v-show="isNormalRecipe"
+          label="版本"
+          prop="version"
+        >
+          <el-input
+            v-model="copyForm.version"
+            :disabled="!isNormalRecipe"
+            style="width: 90px"
+            size="mini"
+            placeholder="版本"
+          />
         </el-form-item>
-        <el-form-item v-show="isNormalRecipe" label="方案">
-          <el-input v-model="copyForm.scheme" :disabled="!isNormalRecipe" style="width: 90px" size="mini" placeholder="方案" />
+        <el-form-item
+          v-show="isNormalRecipe"
+          label="方案"
+        >
+          <el-input
+            v-model="copyForm.scheme"
+            :disabled="!isNormalRecipe"
+            style="width: 90px"
+            size="mini"
+            placeholder="方案"
+          />
         </el-form-item>
-        <el-form-item v-show="!isNormalRecipe" label="胶料配方编码">
-          <el-input v-model="copyForm.stage_product_batch_no" :disabled="isNormalRecipe" style="width: 300px" size="mini" placeholder="胶料配方编码" />
+        <el-form-item
+          v-show="!isNormalRecipe"
+          label="胶料配方编码"
+        >
+          <el-input
+            v-model="copyForm.stage_product_batch_no"
+            :disabled="isNormalRecipe"
+            style="width: 300px"
+            size="mini"
+            placeholder="胶料配方编码"
+          />
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="dialogCopyRecipeSync = false">取 消</el-button>
-        <el-button size="mini" type="primary" @click="CopyRecipeConfirm('copyForm')">确 定</el-button>
+      <div
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button
+          size="mini"
+          @click="dialogCopyRecipeSync = false"
+        >取 消</el-button>
+        <el-button
+          size="mini"
+          type="primary"
+          @click="CopyRecipeConfirm('copyForm')"
+        >确 定</el-button>
       </div>
 
     </el-dialog>
@@ -362,7 +569,8 @@ export default {
         selectStage: [{ required: true, message: '请选择段次', trigger: 'change' }],
         selectRecipeNo: [{ required: true, message: '请选择胶料编号', trigger: 'change' }],
         version: [{ required: true, message: '请填写版本', trigger: 'change' }]
-      }
+      },
+      batch_no: ''
     }
   },
   computed: {
@@ -372,14 +580,17 @@ export default {
     }
   },
   created() {
+    this.batch_no = this.$route.query.batch_no || ''
+
     this.permissionObj = this.permission
     this.site_list()
     this.global_SITE_list()
     this.stage_list()
     this.recipe_no_list()
     this.equip_list()
-    var recipeGetParams = JSON.parse(localStorage.getItem('recipeGetParams'))
-    if (recipeGetParams) {
+
+    if (localStorage.getItem('recipeGetParams')) {
+      var recipeGetParams = JSON.parse(localStorage.getItem('recipeGetParams'))
       this.SelectEquip = recipeGetParams.equip_id
       this.SelectRecipeStatus = recipeGetParams.used_type
       this.SelectSite = recipeGetParams.factory_id
@@ -395,7 +606,7 @@ export default {
     async recipe_no_list() {
       try {
         const recipe_no_list = await recipe_no_url('get', {
-          params: { }
+          params: {}
         })
         if (recipe_no_list.results.length !== 0) {
           this.SelectRecipeNoOptions = recipe_no_list.results
@@ -410,7 +621,7 @@ export default {
     async global_SITE_list() {
       try {
         const global_SITE_list = await global_SITE_url('get', {
-          params: { }
+          params: {}
         })
         if (global_SITE_list.results.length !== 0) {
           this.SelectSITEOptions = global_SITE_list.results
@@ -450,6 +661,14 @@ export default {
           product_name: null,
           stage_name: null
         }
+
+        // 跳转过来的，默认选择某一个，一般为第一个
+        const obj = this.tableData.filter(D => D.stage_product_batch_no === this.batch_no &&
+        D.used_type === 4 && D.batching_type === 2)
+        if (this.$refs.singleTable && obj[0]) {
+          this.$refs.singleTable.setCurrentRow(obj[0])
+          this.handleCurrentChange(obj[0])
+        }
       } catch (e) {
         this.loading = false
         throw new Error(e)
@@ -465,7 +684,7 @@ export default {
     async delete_recipe_fun(id) {
       try {
         await recipe_list('delete', id, {
-          params: { }
+          params: {}
         })
       } catch (e) { throw new Error(e) }
     },
@@ -503,8 +722,9 @@ export default {
     async site_list() {
       try {
         const site_list = await site_url('get', {
-          params: { }
+          params: { all: 1, class_name: '产地' }
         })
+
         if (site_list.results.length !== 0) {
           this.SelectSiteOptions = site_list.results
         }
@@ -513,7 +733,7 @@ export default {
     async stage_list() {
       try {
         const stage_list = await stage_url('get', {
-          params: { }
+          params: { all: 1, class_name: '胶料段次' }
         })
         if (stage_list.results.length !== 0) {
           this.SelectStageOptions = stage_list.results
@@ -684,9 +904,9 @@ export default {
               stage_product_batch_no: this.copyForm.stage_product_batch_no
             }).then(response => {
               this.routerToCopy()
-            // eslint-disable-next-line handle-callback-err
+              // eslint-disable-next-line handle-callback-err
             }).catch(error => {
-            // this.$message.error('配方已存在, 不可复制')
+              // this.$message.error('配方已存在, 不可复制')
             })
           }
         })
@@ -702,7 +922,7 @@ export default {
             stage: this.copyForm.selectStage
           }).then(response => {
             this.routerToCopy()
-          // eslint-disable-next-line handle-callback-err
+            // eslint-disable-next-line handle-callback-err
           }).catch(error => {
             // this.$message.error('配方已存在, 不可复制')
           })

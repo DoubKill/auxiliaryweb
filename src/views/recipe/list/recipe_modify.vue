@@ -943,7 +943,7 @@ export default {
     async material_type_list() {
       try {
         const material_type_list = await material_type_url('get', {
-          params: { }
+          params: { all: 1, class_name: '原材料类别' }
         })
         this.materialTypeOptions = material_type_list.results
       } catch (e) { throw new Error(e) }

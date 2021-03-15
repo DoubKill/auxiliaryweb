@@ -239,7 +239,6 @@ export default {
         const recipe_listData = await recipe_list('get', id, {
           params: { }
         })
-        // console.log(recipe_listData)
         // 机台、配方编号、配方名称
         this.equip_name = this.$route.params['equip_name']
         this.category__category_name = recipe_listData.category__category_name
@@ -337,7 +336,9 @@ export default {
     batching_error_conversion: function(param) {
       if (typeof (param) === 'object') {
         return undefined
-      } else { return param.toFixed(3) }
+      } else {
+        return Number(param).toFixed(3)
+      }
     },
     async recipe_process_step_list(id, equip) {
       try {

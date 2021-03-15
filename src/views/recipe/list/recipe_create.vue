@@ -941,7 +941,7 @@ export default {
     async site_list() {
       try {
         const site_list = await site_url('get', {
-          params: { }
+          params: { all: 1, class_name: '产地' }
         })
         if (site_list.results.length !== 0) {
           this.SelectSiteOptions = site_list.results
@@ -961,7 +961,7 @@ export default {
     async stage_list() {
       try {
         const stage_list = await stage_url('get', {
-          params: { }
+          params: { all: 1, class_name: '胶料段次' }
         })
         if (stage_list.results.length !== 0) {
           this.SelectStageOptions = stage_list.results
@@ -969,9 +969,10 @@ export default {
       } catch (e) { throw new Error(e) }
     },
     async dev_type_list() {
+      // 暂无使用
       try {
         const dev_type_list = await dev_type_url('get', {
-          params: { }
+          params: { all: 1, class_name: '炼胶机类型' }
         })
         this.RubberStageOptions = dev_type_list.results
       } catch (e) { throw new Error(e) }
@@ -1025,7 +1026,7 @@ export default {
     async material_type_list() {
       try {
         const material_type_list = await material_type_url('get', {
-          params: { }
+          params: { all: 1, class_name: '原材料类别' }
         })
         if (material_type_list.results.length !== 0) {
           this.materialTypeOptions = material_type_list.results

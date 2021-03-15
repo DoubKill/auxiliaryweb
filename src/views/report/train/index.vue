@@ -296,7 +296,7 @@
                     </td>
                     <td>{{ item.state_balance }}</td>
                     <td>{{ item.material_type }}</td>
-                    <td>{{ Math.round((Number(item.plan_weight) - Number(item.actual_weight))/100*100)/100 }}</td>
+                    <td>{{ Math.round((Number(item.actual_weight) - Number(item.plan_weight))/100*100)/100 }}</td>
                   </template>
                   <template v-if="editionNo === 'v1'">
                     <td>{{ item.物料名称 }}</td>
@@ -308,7 +308,7 @@
                     </td>6
                     <td>{{ item.秤状态 }}</td>
                     <td>{{ item.物料类型 }}</td>
-                    <td>{{ Math.round((Number(item.设定重量) - Number(item.实际重量))/100*100)/100 }}</td>
+                    <td>{{ Math.round((Number(item.实际重量) - Number(item.设定重量))/100*100)/100 }}</td>
                   </template>
                 </tr>
               </table>
@@ -385,11 +385,11 @@
               v-if="mixerInformationList.length===0"
               class="noneData"
             >暂无数据</div>
-            <page
+            <!-- <page
               style="text-align: right;"
               :total="totalMixer"
               @currentChange="ChangePageMixer"
-            />
+            /> -->
 
             <div class="train-title train-title-border">报警记录</div>
             <table
@@ -714,7 +714,7 @@ export default {
       try {
         // eslint-disable-next-line object-curly-spacing
         const data = await mixerInformation('get', { params: { feed_back_id: id,
-          page: page, equip_no: this.getParams.equip_no }})
+          all: 1, equip_no: this.getParams.equip_no }})
         // const test = [
         //   {
         //     sn: 1,

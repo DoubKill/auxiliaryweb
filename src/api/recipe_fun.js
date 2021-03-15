@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 import API from '@/api/url'
-import url from '@/api/url'
+// import url from '@/api/url'
 
 export function validate_versions(params) {
   return request({
@@ -21,11 +21,12 @@ export function tank_materials(equip_no, tank_type) {
   })
 }
 
-export function recipe_list(method, id = null, data = {}) {
+export function recipe_list(method, id = null, data = {}) {
+  var v_url
   if (id) {
-    var v_url = API.RubberMaterialUrl + id + '/'
+    v_url = API.RubberMaterialUrl + id + '/'
   } else {
-    var v_url = API.RubberMaterialUrl
+    v_url = API.RubberMaterialUrl
   }
   const obj = {
     url: v_url,
@@ -35,11 +36,12 @@ export function recipe_list(method, id = null, data = {}) {
   return request(obj)
 }
 
-export function recipe_copy_list(method, id = null, data = {}) {
+export function recipe_copy_list(method, id = null, data = {}) {
+  var v_url
   if (id) {
-    var v_url = API.RubberMaterialCopyUrl + id + '/'
+    v_url = API.RubberMaterialCopyUrl + id + '/'
   } else {
-    var v_url = API.RubberMaterialCopyUrl
+    v_url = API.RubberMaterialCopyUrl
   }
   const obj = {
     url: v_url,
@@ -49,11 +51,12 @@ export function recipe_copy_list(method, id = null, data = {}) {
   return request(obj)
 }
 
-export function rubber_process_url(method, id = null, data = {}) {
+export function rubber_process_url(method, id = null, data = {}) {
+  var v_url
   if (id) {
-    var v_url = API.RubberProcessStepUrl + id + '/'
+    v_url = API.RubberProcessStepUrl + id + '/'
   } else {
-    var v_url = API.RubberProcessStepUrl
+    v_url = API.RubberProcessStepUrl
   }
   const obj = {
     url: v_url,
@@ -63,7 +66,7 @@ export function rubber_process_url(method, id = null, data = {}) {
   return request(obj)
 }
 
-export function equip_url(method, data = {}) {
+export function equip_url(method, data = {}) {
   const obj = {
     url: API.EquipAllUrl,
     method: method
@@ -72,7 +75,7 @@ export function equip_url(method, data = {}) {
   return request(obj)
 }
 
-export function equip_copy_url(method, data = {}) {
+export function equip_copy_url(method, data = {}) {
   const obj = {
     url: API.EquipCopyAllUrl,
     method: method
@@ -81,7 +84,7 @@ export function equip_copy_url(method, data = {}) {
   return request(obj)
 }
 
-export function site_url(method, data = {}) {
+export function site_url(method, data = {}) {
   const obj = {
     url: API.SiteUrl,
     method: method
@@ -90,7 +93,7 @@ export function site_url(method, data = {}) {
   return request(obj)
 }
 
-export function recipe_no_url(method, data = {}) {
+export function recipe_no_url(method, data = {}) {
   const obj = {
     url: API.RecipeNoUrl,
     method: method
@@ -99,7 +102,7 @@ export function recipe_no_url(method, data = {}) {
   return request(obj)
 }
 
-export function stage_url(method, data = {}) {
+export function stage_url(method, data = {}) {
   const obj = {
     url: API.StageUrl,
     method: method
@@ -108,7 +111,7 @@ export function stage_url(method, data = {}) {
   return request(obj)
 }
 
-export function dev_type_url(method, data = {}) {
+export function dev_type_url(method, data = {}) {
   const obj = {
     url: API.DevTypeUrl,
     method: method
@@ -117,7 +120,7 @@ export function dev_type_url(method, data = {}) {
   return request(obj)
 }
 
-export function global_SITE_url(method, data = {}) {
+export function global_SITE_url(method, data = {}) {
   const obj = {
     url: API.GlobalSITEUrl,
     method: method
@@ -127,11 +130,12 @@ export function global_SITE_url(method, data = {}) {
 }
 
 // 原材料接口
-export function raw_material_url(method, id = null, data = {}) {
+export function raw_material_url(method, id = null, data = {}) {
+  var v_url
   if (id) {
-    var v_url = API.MaterialsUrl + id + '/'
+    v_url = API.MaterialsUrl + id + '/'
   } else {
-    var v_url = API.MaterialsUrl
+    v_url = API.MaterialsUrl
   }
 
   const obj = {
@@ -142,7 +146,7 @@ export function raw_material_url(method, id = null, data = {}) {
   return request(obj)
 }
 // 原材料类别接口
-export function material_type_url(method, data = {}) {
+export function material_type_url(method, data = {}) {
   const obj = {
     url: API.MaterialTypelUrl,
     method: method
@@ -151,7 +155,7 @@ export function material_type_url(method, data = {}) {
   return request(obj)
 }
 // 状态接口函数
-export function condition_url(method, data = {}) {
+export function condition_url(method, data = {}) {
   const obj = {
     url: API.ConditionUrl,
     method: method
@@ -160,7 +164,7 @@ export function condition_url(method, data = {}) {
   return request(obj)
 }
 // 动作接口函数
-export function action_url(method, data = {}) {
+export function action_url(method, data = {}) {
   const obj = {
     url: API.ActionUrl,
     method: method
