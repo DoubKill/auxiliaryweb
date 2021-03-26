@@ -802,6 +802,8 @@ export default {
                 id: recipe_listData['batching_details'][j].material,
                 material_name: recipe_listData['batching_details'][j].material_name,
                 label: recipe_listData['batching_details'][j].material_name,
+                tank_no: recipe_listData['batching_details'][j].tank_no,
+                provenance: recipe_listData['batching_details'][j].provenance,
                 _index: this.tankCarbons.length
               }
               this.tankCarbons.push(carbonItem)
@@ -821,6 +823,8 @@ export default {
                 id: recipe_listData['batching_details'][j].material,
                 material_name: recipe_listData['batching_details'][j].material_name,
                 label: recipe_listData['batching_details'][j].material_name,
+                tank_no: recipe_listData['batching_details'][j].tank_no || '',
+                provenance: recipe_listData['batching_details'][j].provenance || '',
                 _index: this.tankOils.length
               }
               this.tankOils.push(oilItem)
@@ -1452,7 +1456,6 @@ export default {
     },
     materialChange(id, index, materialList, arrList) {
       const Obj = materialList[id]
-      console.log(Obj, 'Obj')
       this.$set(arrList[index], 'tank_no', Obj.tank_no)
       this.$set(arrList[index], 'provenance', Obj.provenance)
       this.$set(arrList[index], 'material', Obj.id)
