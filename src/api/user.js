@@ -9,6 +9,14 @@ export function login(data) {
     data
   })
 }
+
+export function ownerPermission(data) {
+  return request({
+    url: API.OwnerPermissionurl,
+    method: 'get',
+    data
+  })
+}
 // export function getInfo(token) {
 //   return request({
 //     url: API.UserInfoUrl,

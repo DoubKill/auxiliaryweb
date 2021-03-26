@@ -1,5 +1,5 @@
 import {
-  login
+  login, ownerPermission
 } from '@/api/user'
 import {
   getToken,
@@ -23,9 +23,9 @@ import Cookies from 'js-cookie'
 const state = () => {
   return {
     token: getToken(),
-    name: Cookies.get('name'),
+    name: Cookies.get('auxiliaryName'),
     avatar: '',
-    permission: localStorage.getItem('permission'),
+    permission: localStorage.getItem('auxiliaryPermission'),
     editionNo: Cookies.get('editionNo') || 'v1'
   }
 }
@@ -39,7 +39,7 @@ const mutations = {
   },
   SET_NAME: (state, name) => {
     state.name = name
-    Cookies.set('name', name)
+    Cookies.set('auxiliaryName', name)
   },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
@@ -47,9 +47,9 @@ const mutations = {
   SET_PERMISSION: (state, permission) => {
     state.permission = permission
     if (!permission) {
-      localStorage.removeItem('permission')
+      localStorage.removeItem('auxiliaryPermission')
     }
-    localStorage.setItem('permission', permission)
+    localStorage.setItem('auxiliaryPermission', permission)
   },
   SET_EDITION: (state, name) => {
     state.editionNo = name
@@ -77,6 +77,21 @@ const actions = {
         // console.log(response.results)
         // 登录获取token,存到全局中
         setToken(response.token)
+        resolve()
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+  async getPermission({
+    commit
+  }) {
+    return new Promise((resolve, reject) => {
+      ownerPermission().then(response => {
+        console.log(response, 333)
+        commit('SET_PERMISSION', JSON.stringify(response.results))
+        commit('SET_TOKEN', getToken())
+        commit('SET_NAME', response.username)
         resolve()
       }).catch(error => {
         reject(error)

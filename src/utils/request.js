@@ -20,7 +20,7 @@ const service = axios.create({
 service.interceptors.request.use(
   config => {
     // do something before request is sent
-    if (store.getters.token) {
+    if (getToken()) {
       config.headers['Authorization'] = 'JWT ' + getToken()
     }
     config.headers['Accept'] = 'application/json; version=' + store.getters.editionNo

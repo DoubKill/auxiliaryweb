@@ -1,6 +1,15 @@
 <template>
-  <div v-loading="loading" element-loading-text="加载中..." class="recipe_modify">
-    <el-form ref="generateRecipeForm" :inline="true" :model="generateRecipeForm" :rules="rules">
+  <div
+    v-loading="loading"
+    element-loading-text="加载中..."
+    class="recipe_modify"
+  >
+    <el-form
+      ref="generateRecipeForm"
+      :inline="true"
+      :model="generateRecipeForm"
+      :rules="rules"
+    >
       <el-row>
         <el-col :span="6">
           <el-form-item label="机台">
@@ -20,15 +29,31 @@
             </el-select>
           </el-form-item>
           <el-form-item label="机型名称">
-            <el-input v-model="category__category_name" size="mini" :disabled="true" style="width: 100px" />
+            <el-input
+              v-model="category__category_name"
+              size="mini"
+              :disabled="true"
+              style="width: 100px"
+            />
           </el-form-item>
           <el-form-item label="预计炼胶时间">
-            <el-input-number v-model="production_time_interval" :step="1" step-strictly :min="0" controls-position="right" size="mini" style="width: 90px" />
+            <el-input-number
+              v-model="production_time_interval"
+              :step="1"
+              step-strictly
+              :min="0"
+              controls-position="right"
+              size="mini"
+              style="width: 90px"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="18">
           <el-row>
-            <el-form-item label="产地" prop="SelectSite">
+            <el-form-item
+              label="产地"
+              prop="SelectSite"
+            >
               <el-select
                 v-model="generateRecipeForm.SelectSite"
                 size="mini"
@@ -46,7 +71,10 @@
                 />
               </el-select>
             </el-form-item>
-            <el-form-item label="SITE" prop="SelectSITE">
+            <el-form-item
+              label="SITE"
+              prop="SelectSITE"
+            >
               <el-select
                 v-model="generateRecipeForm.SelectSITE"
                 size="mini"
@@ -65,7 +93,10 @@
                 />
               </el-select>
             </el-form-item>
-            <el-form-item label="段次" prop="SelectStage">
+            <el-form-item
+              label="段次"
+              prop="SelectStage"
+            >
               <el-select
                 v-model="generateRecipeForm.SelectStage"
                 size="mini"
@@ -84,7 +115,10 @@
                 />
               </el-select>
             </el-form-item>
-            <el-form-item label="胶料编码" prop="SelectRecipeNo">
+            <el-form-item
+              label="胶料编码"
+              prop="SelectRecipeNo"
+            >
               <el-select
                 v-model="generateRecipeForm.SelectRecipeNo"
                 filterable
@@ -104,16 +138,42 @@
                 />
               </el-select>
             </el-form-item>
-            <el-form-item label="版本" prop="version">
-              <el-input v-model="generateRecipeForm.version" :disabled="!isNormalRecipe" style="width: 90px" size="mini" placeholder="版本" @change="generateRecipeName" />
+            <el-form-item
+              label="版本"
+              prop="version"
+            >
+              <el-input
+                v-model="generateRecipeForm.version"
+                :disabled="!isNormalRecipe"
+                style="width: 90px"
+                size="mini"
+                placeholder="版本"
+                @change="generateRecipeName"
+              />
             </el-form-item>
             <el-form-item label="方案">
-              <el-input v-model="generateRecipeForm.scheme" :disabled="!isNormalRecipe" style="width: 90px" size="mini" placeholder="方案" />
+              <el-input
+                v-model="generateRecipeForm.scheme"
+                :disabled="!isNormalRecipe"
+                style="width: 90px"
+                size="mini"
+                placeholder="方案"
+              />
             </el-form-item>
           </el-row>
           <el-row>
-            <el-form-item label="配方编号" :disabled="isNormalRecipe" prop="stage_product_batch_no">
-              <el-input v-model="generateRecipeForm.stage_product_batch_no" maxlength="19" size="mini" :disabled="isNormalRecipe" @input="recipeNameChange" />
+            <el-form-item
+              label="配方编号"
+              :disabled="isNormalRecipe"
+              prop="stage_product_batch_no"
+            >
+              <el-input
+                v-model="generateRecipeForm.stage_product_batch_no"
+                maxlength="19"
+                size="mini"
+                :disabled="isNormalRecipe"
+                @input="recipeNameChange"
+              />
             </el-form-item>
           </el-row>
         </el-col>
@@ -121,7 +181,12 @@
     </el-form>
     <el-form :inline="true">
       <el-form-item label="配方编号">
-        <el-input v-model="stage_product_batch_no" size="mini" :disabled="true" style="width: 100%" />
+        <el-input
+          v-model="stage_product_batch_no"
+          size="mini"
+          :disabled="true"
+          style="width: 100%"
+        />
       </el-form-item>
       <!-- <el-form-item label="配方编号">
         <el-input v-model="stage_product_batch_no" size="mini" :disabled="true" style="width: 100%" />
@@ -148,25 +213,81 @@
         <el-col :span="24">
           <div class="grid-content bg-purple">
             <el-form-item label="超温最短时间">
-              <el-input-number v-model="mini_time" :step="1" step-strictly :min="0" controls-position="right" size="mini" style="width: 70px" />
+              <el-input-number
+                v-model="mini_time"
+                :step="1"
+                step-strictly
+                :min="0"
+                controls-position="right"
+                size="mini"
+                style="width: 70px"
+              />
             </el-form-item>
             <el-form-item label="进胶最低温度">
-              <el-input-number v-model="mini_temp" :step="1" step-strictly :min="0" controls-position="right" size="mini" style="width: 70px" />
+              <el-input-number
+                v-model="mini_temp"
+                :step="1"
+                step-strictly
+                :min="0"
+                controls-position="right"
+                size="mini"
+                style="width: 70px"
+              />
             </el-form-item>
             <el-form-item label="超温温度">
-              <el-input-number v-model="over_temp" :step="1" step-strictly :min="0" controls-position="right" size="mini" style="width: 70px" />
+              <el-input-number
+                v-model="over_temp"
+                :step="1"
+                step-strictly
+                :min="0"
+                controls-position="right"
+                size="mini"
+                style="width: 70px"
+              />
             </el-form-item>
             <el-form-item label="胶料总误差">
-              <el-input-number v-model="batching_error" :precision="3" :step="0.1" :min="0" controls-position="right" size="mini" style="width: 70px" />
+              <el-input-number
+                v-model="batching_error"
+                :precision="3"
+                :step="0.1"
+                :min="0"
+                controls-position="right"
+                size="mini"
+                style="width: 70px"
+              />
             </el-form-item>
             <el-form-item label="转子水温">
-              <el-input-number v-model="zz_temp" :step="1" step-strictly :min="0" controls-position="right" size="mini" style="width: 70px" />
+              <el-input-number
+                v-model="zz_temp"
+                :step="1"
+                step-strictly
+                :min="0"
+                controls-position="right"
+                size="mini"
+                style="width: 70px"
+              />
             </el-form-item>
             <el-form-item label="卸料门水温">
-              <el-input-number v-model="xlm_temp" :step="1" step-strictly :min="0" controls-position="right" size="mini" style="width: 70px" />
+              <el-input-number
+                v-model="xlm_temp"
+                :step="1"
+                step-strictly
+                :min="0"
+                controls-position="right"
+                size="mini"
+                style="width: 70px"
+              />
             </el-form-item>
             <el-form-item label="侧壁水温">
-              <el-input-number v-model="cb_temp" :step="1" step-strictly :min="0" controls-position="right" size="mini" style="width: 70px" />
+              <el-input-number
+                v-model="cb_temp"
+                :step="1"
+                step-strictly
+                :min="0"
+                controls-position="right"
+                size="mini"
+                style="width: 70px"
+              />
             </el-form-item>
           </div>
         </el-col>
@@ -178,25 +299,67 @@
         <el-col :span="24">
           <div class="grid-content bg-purple">
             <el-form-item label="炼胶超时时间">
-              <el-input-number v-model="over_time" :step="1" step-strictly :min="0" controls-position="right" size="mini" style="width: 70px" />
+              <el-input-number
+                v-model="over_time"
+                :step="1"
+                step-strictly
+                :min="0"
+                controls-position="right"
+                size="mini"
+                style="width: 70px"
+              />
             </el-form-item>
             <el-form-item label="进胶最高温度">
-              <el-input-number v-model="max_temp" :step="1" step-strictly :min="0" controls-position="right" size="mini" style="width: 70px" />
+              <el-input-number
+                v-model="max_temp"
+                :step="1"
+                step-strictly
+                :min="0"
+                controls-position="right"
+                size="mini"
+                style="width: 70px"
+              />
             </el-form-item>
-            <el-form-item v-show="reuse_flag" label="回收时间">
-              <el-input-number v-model="reuse_time" :step="1" step-strictly :min="0" controls-position="right" size="mini" style="width: 70px" />
+            <el-form-item
+              v-show="reuse_flag"
+              label="回收时间"
+            >
+              <el-input-number
+                v-model="reuse_time"
+                :step="1"
+                step-strictly
+                :min="0"
+                controls-position="right"
+                size="mini"
+                style="width: 70px"
+              />
             </el-form-item>
             <el-form-item label="是否回收">
               <template>
-                <el-radio v-model="reuse_flag" :label="true">是</el-radio>
-                <el-radio v-model="reuse_flag" :label="false">否</el-radio>
+                <el-radio
+                  v-model="reuse_flag"
+                  :label="true"
+                >是</el-radio>
+                <el-radio
+                  v-model="reuse_flag"
+                  :label="false"
+                >否</el-radio>
               </template>
             </el-form-item>
             <el-form-item label=" ">
-              <el-radio v-model="temp_use_flag" :label="true">三区水温启动</el-radio>
-              <el-radio v-model="temp_use_flag" :label="false">三区水温停用</el-radio>
+              <el-radio
+                v-model="temp_use_flag"
+                :label="true"
+              >三区水温启动</el-radio>
+              <el-radio
+                v-model="temp_use_flag"
+                :label="false"
+              >三区水温停用</el-radio>
             </el-form-item>
-            <el-form-item label="收皮" prop="SelectEquip">
+            <el-form-item
+              label="收皮"
+              prop="SelectEquip"
+            >
               <el-input-number
                 v-model="sp_num"
                 :max="999"
@@ -208,7 +371,10 @@
               />
             </el-form-item>
             <el-form-item label="车/托" />
-            <el-form-item v-show="false" label="配方停用">
+            <el-form-item
+              v-show="false"
+              label="配方停用"
+            >
               <el-checkbox v-model="use_flag" />
             </el-form-item>
           </div>
@@ -231,37 +397,99 @@
             border
             style="width: 100%"
           >
-            <el-table-column align="center" width="50%" prop="sn" label="序号" />
+            <el-table-column
+              align="center"
+              width="50%"
+              prop="sn"
+              label="序号"
+            />
             <!-- <el-table-column prop="auto_flag" label="自动与否" /> -->
-            <el-table-column align="center" width="230" prop="material_name" label="胶料名称">
+            <el-table-column
+              align="center"
+              width="230"
+              prop="material_name"
+              label="胶料名称"
+            >
               <template slot-scope="scope">
-                <el-input v-model="scope.row.material_name" size="mini" class="input-with-select" :disabled="true">
-                  <el-button slot="append" icon="el-icon-search" @click="selectMaterial(scope.row)" />
+                <el-input
+                  v-model="scope.row.material_name"
+                  size="mini"
+                  class="input-with-select"
+                  :disabled="true"
+                >
+                  <el-button
+                    slot="append"
+                    icon="el-icon-search"
+                    @click="selectMaterial(scope.row)"
+                  />
                 </el-input>
               </template>
             </el-table-column>
-            <el-table-column align="center" label="设定值(kg)">
+            <el-table-column
+              align="center"
+              label="设定值(kg)"
+            >
               <template slot-scope="scope">
-                <el-input-number v-model="scope.row.actual_weight" :precision="2" :step="0.1" :min="0.00" style="width: 70px" size="mini" :controls="false" />
+                <el-input-number
+                  v-model="scope.row.actual_weight"
+                  :precision="2"
+                  :step="0.1"
+                  :min="0.00"
+                  style="width: 70px"
+                  size="mini"
+                  :controls="false"
+                />
               </template>
             </el-table-column>
-            <el-table-column align="center" label="误差值(kg)">
+            <el-table-column
+              align="center"
+              label="误差值(kg)"
+            >
               <template slot-scope="scope">
-                <el-input-number v-model="scope.row.standard_error" :precision="2" :step="0.1" :min="0" style="width: 70px" size="mini" :controls="false" />
+                <el-input-number
+                  v-model="scope.row.standard_error"
+                  :precision="2"
+                  :step="0.1"
+                  :min="0"
+                  style="width: 70px"
+                  size="mini"
+                  :controls="false"
+                />
               </template>
             </el-table-column>
-            <el-table-column align="center" label="操作">
+            <el-table-column
+              align="center"
+              label="操作"
+            >
               <template slot-scope="scope">
-                <el-button size="mini" type="danger" @click="removeRubberRow(scope.row)">删除</el-button>
+                <el-button
+                  size="mini"
+                  type="danger"
+                  @click="removeRubberRow(scope.row)"
+                >删除</el-button>
               </template>
             </el-table-column>
           </el-table>
           <el-form>
             <el-form-item style="text-align: center">
-              <div>序号<el-input-number v-model="rubberSnForInsert" :min="1" style="margin-right: 6px;margin-left: 6px;" size="mini" :controls="false" />
-                <el-button size="mini" :disabled="!insertRubberEnbale()" @click="insertBeforeSnOneRubber">前插入一行</el-button>
+              <div>序号
+                <el-input-number
+                  v-model="rubberSnForInsert"
+                  :min="1"
+                  style="margin-right: 6px;margin-left: 6px;"
+                  size="mini"
+                  :controls="false"
+                />
+                <el-button
+                  size="mini"
+                  :disabled="!insertRubberEnbale()"
+                  @click="insertBeforeSnOneRubber"
+                >前插入一行</el-button>
               </div>
-              <el-button size="mini" @click="insertOneRubber">插入一行</el-button>
+              <el-button
+                size="mini"
+                @click="insertOneRubber"
+              >插入一行</el-button>
             </el-form-item>
           </el-form>
           <span class="font_custom">炭黑称量</span>
@@ -271,10 +499,23 @@
             border
             style="width: 100%"
           >
-            <el-table-column align="center" width="40" prop="sn" label="序号" />
-            <el-table-column align="center" prop="action_name" label="动作">投料</el-table-column>
+            <el-table-column
+              align="center"
+              width="40"
+              prop="sn"
+              label="序号"
+            />
+            <el-table-column
+              align="center"
+              prop="action_name"
+              label="动作"
+            >投料</el-table-column>
             <!-- <el-table-column prop="auto_flag" label="自动与否" /> -->
-            <el-table-column width="250" align="center" label="炭黑名称">
+            <el-table-column
+              width="250"
+              align="center"
+              label="炭黑名称"
+            >
               <template slot-scope="scope">
                 <el-select
                   v-model="scope.row._index"
@@ -293,33 +534,82 @@
                 </el-select>
               </template>
             </el-table-column>
-            <el-table-column align="center" width="95" label="产地">
+            <el-table-column
+              align="center"
+              width="95"
+              label="产地"
+            >
               <template slot-scope="scope">
                 {{ scope.row.provenance?scope.row.provenance:'--' }}
               </template>
             </el-table-column>
-            <el-table-column align="center" width="95" label="设定值(kg)">
+            <el-table-column
+              align="center"
+              width="95"
+              label="设定值(kg)"
+            >
               <template slot-scope="scope">
-                <el-input-number v-model="scope.row.actual_weight" :precision="2" :step="0.1" :min="0.00" style="width: 70px" size="mini" :controls="false" />
+                <el-input-number
+                  v-model="scope.row.actual_weight"
+                  :precision="2"
+                  :step="0.1"
+                  :min="0.00"
+                  style="width: 70px"
+                  size="mini"
+                  :controls="false"
+                />
               </template>
             </el-table-column>
-            <el-table-column align="center" width="95" label="误差值(kg)">
+            <el-table-column
+              align="center"
+              width="95"
+              label="误差值(kg)"
+            >
               <template slot-scope="scope">
-                <el-input-number v-model="scope.row.standard_error" :precision="2" :step="0.1" :min="0" style="width: 70px" size="mini" :controls="false" />
+                <el-input-number
+                  v-model="scope.row.standard_error"
+                  :precision="2"
+                  :step="0.1"
+                  :min="0"
+                  style="width: 70px"
+                  size="mini"
+                  :controls="false"
+                />
               </template>
             </el-table-column>
-            <el-table-column align="center" label="操作">
+            <el-table-column
+              align="center"
+              label="操作"
+            >
               <template slot-scope="scope">
-                <el-button size="mini" type="danger" @click="removeCarbonRow(scope.row)">删除</el-button>
+                <el-button
+                  size="mini"
+                  type="danger"
+                  @click="removeCarbonRow(scope.row)"
+                >删除</el-button>
               </template>
             </el-table-column>
           </el-table>
           <el-form>
             <el-form-item style="text-align: center">
-              <div>序号<el-input-number v-model="carbonSnForInsert" :min="1" style="margin-right: 6px;margin-left: 6px;" size="mini" :controls="false" />
-                <el-button size="mini" :disabled="!insertCarbonEnbale()" @click="insertBeforeSnOneCarbon">前插入一行</el-button>
+              <div>序号
+                <el-input-number
+                  v-model="carbonSnForInsert"
+                  :min="1"
+                  style="margin-right: 6px;margin-left: 6px;"
+                  size="mini"
+                  :controls="false"
+                />
+                <el-button
+                  size="mini"
+                  :disabled="!insertCarbonEnbale()"
+                  @click="insertBeforeSnOneCarbon"
+                >前插入一行</el-button>
               </div>
-              <el-button size="mini" @click="insertOnecarbon">插入一行</el-button>
+              <el-button
+                size="mini"
+                @click="insertOnecarbon"
+              >插入一行</el-button>
             </el-form-item>
           </el-form>
           <span class="font_custom">油料称量</span>
@@ -329,10 +619,23 @@
             border
             style="width: 100%"
           >
-            <el-table-column align="center" width="40" prop="sn" label="序号" />
-            <el-table-column align="center" prop="action_name" label="动作">投料</el-table-column>
+            <el-table-column
+              align="center"
+              width="40"
+              prop="sn"
+              label="序号"
+            />
+            <el-table-column
+              align="center"
+              prop="action_name"
+              label="动作"
+            >投料</el-table-column>
             <!-- <el-table-column prop="auto_flag" label="自动与否" /> -->
-            <el-table-column width="250" align="center" label="油脂名称">
+            <el-table-column
+              width="250"
+              align="center"
+              label="油脂名称"
+            >
               <template slot-scope="scope">
                 <el-select
                   v-model="scope.row._index"
@@ -352,33 +655,82 @@
                 </el-select>
               </template>
             </el-table-column>
-            <el-table-column align="center" width="95" label="产地">
+            <el-table-column
+              align="center"
+              width="95"
+              label="产地"
+            >
               <template slot-scope="scope">
                 {{ scope.row.provenance?scope.row.provenance:'--' }}
               </template>
             </el-table-column>
-            <el-table-column align="center" width="95" label="设定值(kg)">
+            <el-table-column
+              align="center"
+              width="95"
+              label="设定值(kg)"
+            >
               <template slot-scope="scope">
-                <el-input-number v-model="scope.row.actual_weight" :precision="2" :step="0.1" :min="0.00" style="width: 70px" size="mini" :controls="false" />
+                <el-input-number
+                  v-model="scope.row.actual_weight"
+                  :precision="2"
+                  :step="0.1"
+                  :min="0.00"
+                  style="width: 70px"
+                  size="mini"
+                  :controls="false"
+                />
               </template>
             </el-table-column>
-            <el-table-column align="center" width="95" label="误差值(kg)">
+            <el-table-column
+              align="center"
+              width="95"
+              label="误差值(kg)"
+            >
               <template slot-scope="scope">
-                <el-input-number v-model="scope.row.standard_error" :precision="2" :step="0.1" :min="0" style="width: 70px" size="mini" :controls="false" />
+                <el-input-number
+                  v-model="scope.row.standard_error"
+                  :precision="2"
+                  :step="0.1"
+                  :min="0"
+                  style="width: 70px"
+                  size="mini"
+                  :controls="false"
+                />
               </template>
             </el-table-column>
-            <el-table-column align="center" label="操作">
+            <el-table-column
+              align="center"
+              label="操作"
+            >
               <template slot-scope="scope">
-                <el-button size="mini" type="danger" @click="removeOilRow(scope.row)">删除</el-button>
+                <el-button
+                  size="mini"
+                  type="danger"
+                  @click="removeOilRow(scope.row)"
+                >删除</el-button>
               </template>
             </el-table-column>
           </el-table>
           <el-form>
             <el-form-item style="text-align: center">
-              <div>序号<el-input-number v-model="oilSnForInsert" :min="1" style="margin-right: 6px;margin-left: 6px;" size="mini" :controls="false" />
-                <el-button size="mini" :disabled="!insertOilEnbale()" @click="insertBeforeSnOneOil">前插入一行</el-button>
+              <div>序号
+                <el-input-number
+                  v-model="oilSnForInsert"
+                  :min="1"
+                  style="margin-right: 6px;margin-left: 6px;"
+                  size="mini"
+                  :controls="false"
+                />
+                <el-button
+                  size="mini"
+                  :disabled="!insertOilEnbale()"
+                  @click="insertBeforeSnOneOil"
+                >前插入一行</el-button>
               </div>
-              <el-button size="mini" @click="insertOneOil">插入一行</el-button>
+              <el-button
+                size="mini"
+                @click="insertOneOil"
+              >插入一行</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -410,10 +762,19 @@
               </tr>
             </thead>
             <tbody style="color: #606266;">
-              <tr v-for="(step_ele, index) in RecipeMaterialList" :key="index">
+              <tr
+                v-for="(step_ele, index) in RecipeMaterialList"
+                :key="index"
+              >
                 <td style="text-align: center; height: 48px">{{ step_ele.sn }}</td>
                 <td style="text-align: center; height: 48px">
-                  <el-select v-model="step_ele.condition" size="mini" style="width: 100px" clearable placeholder="请选择">
+                  <el-select
+                    v-model="step_ele.condition"
+                    size="mini"
+                    style="width: 100px"
+                    clearable
+                    placeholder="请选择"
+                  >
                     <el-option
                       v-for="item in SelectConditionOptions"
                       :key="item.id"
@@ -424,20 +785,58 @@
 
                 </td>
                 <td style="text-align: center; height: 48px">
-                  <el-input-number v-model="step_ele.time" :step="1" step-strictly :min="0" style="width: 60px" size="mini" :controls="false" />
+                  <el-input-number
+                    v-model="step_ele.time"
+                    :step="1"
+                    step-strictly
+                    :min="0"
+                    style="width: 60px"
+                    size="mini"
+                    :controls="false"
+                  />
                 </td>
                 <td style="text-align: center; height: 48px">
-                  <el-input-number v-model="step_ele.temperature" :step="1" step-strictly :min="0" style="width: 60px" size="mini" :controls="false" />
+                  <el-input-number
+                    v-model="step_ele.temperature"
+                    :step="1"
+                    step-strictly
+                    :min="0"
+                    style="width: 60px"
+                    size="mini"
+                    :controls="false"
+                  />
                 </td>
                 <td style="text-align: center; height: 48px">
-                  <el-input-number v-model="step_ele.energy" :precision="1" :step="0.1" :min="0.0" style="width: 60px" size="mini" :controls="false" />
+                  <el-input-number
+                    v-model="step_ele.energy"
+                    :precision="1"
+                    :step="0.1"
+                    :min="0.0"
+                    style="width: 60px"
+                    size="mini"
+                    :controls="false"
+                  />
                 </td>
                 <td style="text-align: center; height: 48px">
-                  <el-input-number v-model="step_ele.power" :precision="1" :step="0.1" :min="0.0" style="width: 60px" size="mini" :controls="false" />
+                  <el-input-number
+                    v-model="step_ele.power"
+                    :precision="1"
+                    :step="0.1"
+                    :min="0.0"
+                    style="width: 60px"
+                    size="mini"
+                    :controls="false"
+                  />
                 </td>
                 <td style="text-align: center; height: 48px">
 
-                  <el-select v-model="step_ele.action" size="mini" style="width: 100px" clearable placeholder="请选择">
+                  <el-select
+                    v-model="step_ele.action"
+                    size="mini"
+                    style="width: 100px"
+                    clearable
+                    placeholder="请选择"
+                  >
                     <el-option
                       v-for="item in SelectActionOptions"
                       :key="item.id"
@@ -448,13 +847,32 @@
 
                 </td>
                 <td style="text-align: center; height: 48px">
-                  <el-input-number v-model="step_ele.pressure" :precision="1" :step="0.1" :min="0.0" style="width: 60px" size="mini" :controls="false" />
+                  <el-input-number
+                    v-model="step_ele.pressure"
+                    :precision="1"
+                    :step="0.1"
+                    :min="0.0"
+                    style="width: 60px"
+                    size="mini"
+                    :controls="false"
+                  />
                 </td>
                 <td style="text-align: center; height: 48px">
-                  <el-input-number v-model="step_ele.rpm" :step="1" step-strictly :min="0" style="width: 60px" size="mini" :controls="false" />
+                  <el-input-number
+                    v-model="step_ele.rpm"
+                    :step="1"
+                    step-strictly
+                    :min="0"
+                    style="width: 60px"
+                    size="mini"
+                    :controls="false"
+                  />
                 </td>
                 <td style="text-align: center; height: 48px">
-                  <el-button size="mini" @click="del_recipe_step_row(step_ele, index)">删除</el-button>
+                  <el-button
+                    size="mini"
+                    @click="del_recipe_step_row(step_ele, index)"
+                  >删除</el-button>
                 </td>
               </tr>
 
@@ -462,10 +880,24 @@
           </table>
           <el-form>
             <el-form-item style="text-align: center">
-              <div>序号<el-input-number v-model="recipeStepSnForInsert" :min="1" style="margin-right: 6px;margin-left: 6px;" size="mini" :controls="false" />
-                <el-button size="mini" :disabled="!insertRecipeStepEnbale()" @click="insert_before_sn_recipe_step">前插入一行</el-button>
+              <div>序号
+                <el-input-number
+                  v-model="recipeStepSnForInsert"
+                  :min="1"
+                  style="margin-right: 6px;margin-left: 6px;"
+                  size="mini"
+                  :controls="false"
+                />
+                <el-button
+                  size="mini"
+                  :disabled="!insertRecipeStepEnbale()"
+                  @click="insert_before_sn_recipe_step"
+                >前插入一行</el-button>
               </div>
-              <el-button size="mini" @click="insert_recipe_step">插入一行</el-button>
+              <el-button
+                size="mini"
+                @click="insert_recipe_step"
+              >插入一行</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -482,7 +914,15 @@
 
       <el-form :inline="true">
         <el-form-item label="预计炼胶时间">
-          <el-input-number v-model="production_time_interval" :step="1" step-strictly :min="0" controls-position="right" size="mini" style="width: 100%" />
+          <el-input-number
+            v-model="production_time_interval"
+            :step="1"
+            step-strictly
+            :min="0"
+            controls-position="right"
+            size="mini"
+            style="width: 100%"
+          />
         </el-form-item>
         <el-form-item style="float: right">
           <el-button @click="saveMaterialClicked">确定</el-button>
@@ -508,7 +948,10 @@
           </tr>
         </thead>
         <tbody style="color: #606266;">
-          <tr v-for="(material_ele, index) in ProductRecipe" :key="index">
+          <tr
+            v-for="(material_ele, index) in ProductRecipe"
+            :key="index"
+          >
             <!--<td>{{ new_material_ele.sn }}</td>-->
             <td v-show="false">{{ material_ele.material }}</td>
             <td style="text-align: center; height: 48px">{{ index + 1 }}</td>
@@ -522,19 +965,46 @@
             </td> -->
             <td style="text-align: center; height: 48px">
               <!-- <div style="margin-top: 12px;"> -->
-              <el-input v-model="material_ele.material_name" size="mini" style="width: 70%" class="input-with-select" :disabled="true">
-                <el-button slot="append" icon="el-icon-search" @click="pop_up_raw_material(material_ele, index)" />
+              <el-input
+                v-model="material_ele.material_name"
+                size="mini"
+                style="width: 70%"
+                class="input-with-select"
+                :disabled="true"
+              >
+                <el-button
+                  slot="append"
+                  icon="el-icon-search"
+                  @click="pop_up_raw_material(material_ele, index)"
+                />
               </el-input>
               <!-- </div> -->
             </td>
             <td style="text-align: center; height: 48px">
-              <el-input-number v-model.number="material_ele.actual_weight" :precision="2" :step="0.1" :min="0.00" size="mini" controls-position="right" />
+              <el-input-number
+                v-model.number="material_ele.actual_weight"
+                :precision="2"
+                :step="0.1"
+                :min="0.00"
+                size="mini"
+                controls-position="right"
+              />
             </td>
             <td style="text-align: center; height: 48px">
-              <el-input-number v-model.number="material_ele.standard_error" :precision="2" :step="0.1" :min="0" size="mini" controls-position="right" />
+              <el-input-number
+                v-model.number="material_ele.standard_error"
+                :precision="2"
+                :step="0.1"
+                :min="0"
+                size="mini"
+                controls-position="right"
+              />
             </td>
             <td style="text-align: center; height: 48px">
-              <el-button size="mini" @click="del_material_row(material_ele, index)">删除</el-button>
+              <el-button
+                size="mini"
+                @click="del_material_row(material_ele, index)"
+              >删除</el-button>
             </td>
           </tr>
 
@@ -572,8 +1042,18 @@
             />
           </el-select>
         </el-form-item>
-        原材料编号:<el-input v-model="search_material_no" style="width: 20%" @input="search_material_no_Change" />
-        原材料名称:<el-input v-model="search_material_name" style="width: 20%" @input="search_material_name_Change" />
+        原材料编号:
+        <el-input
+          v-model="search_material_no"
+          style="width: 20%"
+          @input="search_material_no_Change"
+        />
+        原材料名称:
+        <el-input
+          v-model="search_material_name"
+          style="width: 20%"
+          @input="search_material_name_Change"
+        />
       </el-form>
 
       <el-table
@@ -602,7 +1082,10 @@
           prop="material_type_name"
           label="原材料类别"
         />
-        <el-table-column align="center" label="操作">
+        <el-table-column
+          align="center"
+          label="操作"
+        >
           <template slot-scope="scope">
             <el-button-group>
               <el-button
@@ -794,7 +1277,7 @@ export default {
     async recipe_no_list() {
       try {
         const recipe_no_list = await recipe_no_url('get', {
-          params: { }
+          params: {}
         })
         if (recipe_no_list.results.length !== 0) {
           this.SelectRecipeNoOptions = recipe_no_list.results
@@ -809,7 +1292,7 @@ export default {
     async stage_list() {
       try {
         const stage_list = await stage_url('get', {
-          params: { }
+          params: { all: 1, class_name: '胶料段次' }
         })
         if (stage_list.results.length !== 0) {
           this.SelectStageOptions = stage_list.results
@@ -824,7 +1307,7 @@ export default {
     async global_SITE_list() {
       try {
         const global_SITE_list = await global_SITE_url('get', {
-          params: { }
+          params: {}
         })
         if (global_SITE_list.results.length !== 0) {
           this.SelectSITEOptions = global_SITE_list.results
@@ -839,7 +1322,7 @@ export default {
     async site_list() {
       try {
         const site_list = await site_url('get', {
-          params: { }
+          params: { all: 1, class_name: '产地' }
         })
         if (site_list.results.length !== 0) {
           this.SelectSiteOptions = site_list.results
@@ -883,7 +1366,7 @@ export default {
     async equip_list() {
       try {
         const equip_list = await equip_url('get', {
-          params: { }
+          params: {}
         })
         this.SelectEquipOptions = equip_list.results
       } catch (e) { throw new Error(e) }
@@ -1006,7 +1489,7 @@ export default {
       var canAddCarbonOil = this.$route.params.CopySelectEquip === this.$route.params.equip_id
       try {
         const recipe_listData = await recipe_list('get', id, {
-          params: { }
+          params: {}
         })
         this.production_time_interval = recipe_listData['production_time_interval']
         this.generateRecipeForm.SelectEquip = this.$route.params['copy_equip_id']
@@ -1031,7 +1514,7 @@ export default {
             if (canAddCarbonOil) {
               let carbonItem = this.tankCarbons.find(item => {
                 return item.id === recipe_listData['batching_details'][j].material &&
-              (Number(item.tank_no) === Number(recipe_listData['batching_details'][j].tank_no))
+                  (Number(item.tank_no) === Number(recipe_listData['batching_details'][j].tank_no))
               })
               if (!carbonItem) { // 不在下拉选项中的数据
                 carbonItem = {
@@ -1051,7 +1534,7 @@ export default {
             if (canAddCarbonOil) {
               let oilItem = this.tankOils.find(item => {
                 return item.id === recipe_listData['batching_details'][j].material &&
-              (Number(item.tank_no) === Number(recipe_listData['batching_details'][j].tank_no))
+                  (Number(item.tank_no) === Number(recipe_listData['batching_details'][j].tank_no))
               })
               if (!oilItem) { // 不在下拉选项中的数据
                 oilItem = {
@@ -1100,7 +1583,7 @@ export default {
           this.use_flag = recipe_listData['processes']['use_flag']
           for (var i = 0; i < recipe_listData['process_details'].length; ++i) {
             this.RecipeMaterialList.push({
-            // sn: this.RecipeMaterialList.length + 1,
+              // sn: this.RecipeMaterialList.length + 1,
               sn: recipe_listData['process_details'][i]['sn'],
               condition: recipe_listData['process_details'][i]['condition'],
               time: this.step_type_conversion(recipe_listData['process_details'][i]['time']),
@@ -1167,7 +1650,7 @@ export default {
     async material_type_list() {
       try {
         const material_type_list = await material_type_url('get', {
-          params: { }
+          params: { all: 1, class_name: '原材料类别' }
         })
         this.materialTypeOptions = material_type_list.results
       } catch (e) { throw new Error(e) }
@@ -1175,7 +1658,7 @@ export default {
     async condition_list() {
       try {
         const condition_list = await condition_url('get', {
-          params: { }
+          params: {}
         })
         this.SelectConditionOptions = condition_list.results
       } catch (e) { throw new Error(e) }
@@ -1183,7 +1666,7 @@ export default {
     async action_list() {
       try {
         const action_list = await action_url('get', {
-          params: { }
+          params: {}
         })
         this.SelectActionOptions = action_list.results
       } catch (e) { throw new Error(e) }

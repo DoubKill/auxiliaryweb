@@ -637,7 +637,6 @@ export default {
     async getTankCarbons() {
       const response = await tank_materials(this.equip_no, 1)
       this.tankCarbons = response.results
-      // console.log(this.tankCarbons, 'this.tankCarbons')
       this.tankCarbons = this.tankCarbons.map((ret, index) => {
         return {
           ...ret,
@@ -645,16 +644,6 @@ export default {
           _index: index
         }
       })
-
-      // tank_materials(this.equip_no, 1).then(response => {
-      //   this.tankCarbons = response.results
-      //   this.tankCarbons = this.tankCarbons.map(ret => {
-      //     return {
-      //       ...ret,
-      //       label: `${ret.material_name} (${ret.tank_name})`
-      //     }
-      //   })
-      // })
     },
     async getTankOils() {
       const response = await tank_materials(this.equip_no, 2)
@@ -667,15 +656,6 @@ export default {
           _index: index
         }
       })
-      // tank_materials(this.equip_no, 2).then(response => {
-      //   this.tankOils = response.results
-      //   this.tankOils = this.tankOils.map(ret => {
-      //     return {
-      //       ...ret,
-      //       label: `${ret.material_name} (${ret.tank_name})`
-      //     }
-      //   })
-      // })
     },
     async equip_list() {
       try {
@@ -815,25 +795,23 @@ export default {
           if (recipe_listData['batching_details'][j]['type'] === 2) {
             let carbonItem = this.tankCarbons.find(item => {
               return (item.id === recipe_listData['batching_details'][j].material) &&
-              (Number(item.tank_no) === Number(recipe_listData['batching_details'][j].tank_no))
+              (item.tank_no === recipe_listData['batching_details'][j].tank_no)
             })
             if (!carbonItem) { // 不在下拉选项中的数据
               carbonItem = {
                 id: recipe_listData['batching_details'][j].material,
                 material_name: recipe_listData['batching_details'][j].material_name,
                 label: recipe_listData['batching_details'][j].material_name,
-                _index: this.tankCarbons.length - 1
+                tank_no: recipe_listData['batching_details'][j].tank_no,
+                provenance: recipe_listData['batching_details'][j].provenance,
+                _index: this.tankCarbons.length
               }
               this.tankCarbons.push(carbonItem)
             }
+
             this.carbon_tableData.push({
-              // sn: this.carbon_tableData.length + 1,
               ...recipe_listData['batching_details'][j],
               _index: carbonItem._index
-              // auto_flag: v_auto_falg,
-              // material_name: recipe_listData['batching_details'][j]['material_name'],
-              // actual_weight: recipe_listData['batching_details'][j]['actual_weight'],
-              // standard_error: recipe_listData['batching_details'][j]['standard_error']
             })
           } else if (recipe_listData['batching_details'][j]['type'] === 3) {
             let oilItem = this.tankOils.find(item => {
@@ -845,12 +823,13 @@ export default {
                 id: recipe_listData['batching_details'][j].material,
                 material_name: recipe_listData['batching_details'][j].material_name,
                 label: recipe_listData['batching_details'][j].material_name,
-                _index: this.tankOils.length - 1
+                tank_no: recipe_listData['batching_details'][j].tank_no || '',
+                provenance: recipe_listData['batching_details'][j].provenance || '',
+                _index: this.tankOils.length
               }
               this.tankOils.push(oilItem)
             }
             this.oil_tableData.push({
-              // sn: this.oil_tableData.length + 1,
               action_name: '投料',
               _index: oilItem._index,
               ...recipe_listData['batching_details'][j]
@@ -943,7 +922,7 @@ export default {
     async material_type_list() {
       try {
         const material_type_list = await material_type_url('get', {
-          params: { }
+          params: { all: 1, class_name: '原材料类别' }
         })
         this.materialTypeOptions = material_type_list.results
       } catch (e) { throw new Error(e) }
@@ -1477,7 +1456,6 @@ export default {
     },
     materialChange(id, index, materialList, arrList) {
       const Obj = materialList[id]
-      console.log(Obj, 'Obj')
       this.$set(arrList[index], 'tank_no', Obj.tank_no)
       this.$set(arrList[index], 'provenance', Obj.provenance)
       this.$set(arrList[index], 'material', Obj.id)

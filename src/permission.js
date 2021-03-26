@@ -3,7 +3,7 @@ import store from './store'
 // import { Message } from 'element-ui'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
-import { getToken } from '@/utils/auth' // get token from cookie
+import { getToken, setToken } from '@/utils/auth' // get token from cookie
 import getPageTitle from '@/utils/get-page-title'
 // import Cookies from 'js-cookie'
 
@@ -19,8 +19,18 @@ router.beforeEach(async(to, from, next) => {
   document.title = getPageTitle(to.meta.title)
 
   // determine whether the user has logged in
+  let hasPermission = store.getters.permission && JSON.stringify(store.getters.permission) !== '{}'
+
+  if (to.path === '/recipe/list' && !hasPermission) {
+    if (to.query.AAA) {
+      setToken(to.query.AAA)
+      await store.dispatch('user/getPermission',
+        store.getters.permission)
+      hasPermission = store.getters.permission
+    }
+  }
+
   const hasToken = getToken()
-  const hasPermission = store.getters.permission && JSON.stringify(store.getters.permission) !== '{}'
 
   if (hasToken) {
     // 有登录

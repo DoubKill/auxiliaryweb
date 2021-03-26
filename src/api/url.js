@@ -1,6 +1,7 @@
 export default {
   LoginUrl: '/api/v1/system/login/',
   ChangePasswordUrl: '/api/v1/system/update-password/',
+  OwnerPermissionurl: '/api/v1/system/owner-permission/',
 
   GlobalTypesUrl: '/api/v1/basics/global-types/', // 公共代码类别
   GlobalCodesUrl: '/api/v1/basics/global-codes/', // 公共代码
@@ -26,9 +27,9 @@ export default {
   // 胶料编号接口
   RecipeNoUrl: '/api/v1/recipe/product-infos/?all=1',
   // 段次接口
-  StageUrl: '/api/v1/basics/global-codes/?all=1&class_name=胶料段次',
+  StageUrl: '/api/v1/basics/global-codes/',
   // 密炼机类型接口
-  DevTypeUrl: '/api/v1/basics/global-codes/?all=1&class_name=炼胶机类型',
+  DevTypeUrl: '/api/v1/basics/global-codes/',
   // SITE接口
   GlobalSITEUrl: '/api/v1/basics/global-codes/?all=1&class_name=SITE',
   // 状态接口
@@ -36,7 +37,7 @@ export default {
   // 动作接口
   ActionUrl: '/api/v1/recipe/actions/?all=1',
   // 原材料类别接口
-  MaterialTypelUrl: '/api/v1/basics/global-codes/?all=1&class_name=原材料类别',
+  MaterialTypelUrl: '/api/v1/basics/global-codes/',
 
   // 用户列表?all=1
   PersonnelsUrl: '/api/v1/system/personnels/',
