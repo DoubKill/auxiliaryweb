@@ -303,6 +303,7 @@
               @click="ModifyRecipeButton(scope.row)"
             >修改</el-button>
             <el-button
+              v-if="permissionObj.recipe.productbatching && permissionObj.recipe.productbatching.indexOf('delete')>-1"
               size="mini"
               type="danger"
               @click.stop="handleRecipeDelete(scope.row)"
