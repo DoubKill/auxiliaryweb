@@ -201,7 +201,7 @@
             <el-button
               v-if="scope.row.used_type === 2 && (permissionObj.recipe.prod && permissionObj.recipe.prod.indexOf('using')>-1)"
               size="mini"
-              @click="status_false(scope.row)"
+              @click="status_false(scope.row,'驳回')"
             >
               驳回
             </el-button>
@@ -215,7 +215,7 @@
             <el-button
               v-if="(scope.row.used_type === 4 || scope.row.used_type === 5)&& (permissionObj.recipe.prod && permissionObj.recipe.prod.indexOf('abandon')>-1)"
               size="mini"
-              @click="status_false(scope.row)"
+              @click="status_false(scope.row,'废弃')"
             >
               废弃
             </el-button>
@@ -808,8 +808,14 @@ export default {
     status_true: async function(check_row) {
       await this.status_recipe_fun(check_row['id'], { data: { pass_flag: true }})
     },
-    status_false: async function(check_row) {
-      await this.status_recipe_fun(check_row['id'], { data: { pass_flag: false }})
+    status_false: function(check_row, val) {
+      this.$confirm('是否确定' + val + '?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async() => {
+        await this.status_recipe_fun(check_row['id'], { data: { pass_flag: false }})
+      })
     },
     SelectEquipChange: function() {
       this.get_recipe_list()
