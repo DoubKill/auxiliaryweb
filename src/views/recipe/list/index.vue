@@ -292,7 +292,7 @@
         fixed="right"
         align="center"
         label="操作"
-        width="140px"
+        width="230px"
       >
         <template slot-scope="scope">
           <el-button-group>
@@ -310,6 +310,12 @@
             >
               {{ scope.row.used_type===4?'停用':'启用' }}
             </el-button>
+            <el-button
+              v-if="!scope.row.is_synced"
+              size="mini"
+              :disabled="scope.row.used_type !== 4"
+              @click.stop="uploadMes(scope.row)"
+            >上传到mes</el-button>
           </el-button-group>
         </template>
       </el-table-column>
@@ -504,7 +510,7 @@
 </template>
 
 <script>
-import { validate_versions, recipe_no_url, global_SITE_url, recipe_list, recipe_copy_list, equip_url, site_url, stage_url } from '@/api/recipe_fun'
+import { validate_versions, recipe_no_url, global_SITE_url, recipe_list, recipe_copy_list, equip_url, site_url, stage_url, upload_mes_url } from '@/api/recipe_fun'
 // import { constantRoutes } from '@/router'
 // import { dataTool } from 'echarts/lib/echarts'
 import { mapGetters } from 'vuex'
@@ -665,7 +671,7 @@ export default {
 
         // 跳转过来的，默认选择某一个，一般为第一个
         const obj = this.tableData.filter(D => D.stage_product_batch_no === this.batch_no &&
-        D.used_type === 4 && D.batching_type === 2)
+          D.used_type === 4 && D.batching_type === 2)
         if (this.$refs.singleTable && obj[0]) {
           this.$refs.singleTable.setCurrentRow(obj[0])
           this.handleCurrentChange(obj[0])
@@ -937,6 +943,18 @@ export default {
           return false
         }
       })
+    },
+    async uploadMes(row) {
+      try {
+        await upload_mes_url('post', { data: { product_batching_id: row.id }})
+        this.$message({
+          type: 'success',
+          message: '操作成功!'
+        })
+        this.get_recipe_list(this.currentPage)
+      } catch (e) {
+        //
+      }
     }
   }
 }

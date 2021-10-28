@@ -172,4 +172,12 @@ export function action_url(method, data = {}) {
   Object.assign(obj, data)
   return request(obj)
 }
+export function upload_mes_url(method, data = {}) {
+  const obj = {
+    url: API.UploadMesUrl,
+    method: method
+  }
+  Object.assign(obj, data)
+  return request(obj)
+}
 
