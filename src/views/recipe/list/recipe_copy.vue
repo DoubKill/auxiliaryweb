@@ -248,9 +248,9 @@
             <el-form-item label="胶料总误差">
               <el-input-number
                 v-model="batching_error"
-                :precision="3"
-                :step="0.1"
+                :step="1"
                 :min="0"
+                step-strictly
                 controls-position="right"
                 size="mini"
                 style="width: 70px"
