@@ -362,7 +362,7 @@
             >
               <el-input-number
                 v-model="sp_num"
-                :max="999"
+                :max="99"
                 controls-position="right"
                 size="mini"
                 style="width: 70px"
