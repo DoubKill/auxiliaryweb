@@ -36,6 +36,7 @@ export default {
   ConditionUrl: '/api/v1/recipe/conditions/?all=1',
   // 动作接口
   ActionUrl: '/api/v1/recipe/actions/?all=1',
+  UploadMesUrl: '/api/v1/recipe/product-batching-issue/', // 上传到mes
   // 原材料类别接口
   MaterialTypelUrl: '/api/v1/basics/global-codes/',
 

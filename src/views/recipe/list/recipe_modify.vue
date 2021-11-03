@@ -60,7 +60,15 @@
               <el-input-number v-model="over_temp" :step="1" step-strictly :min="0" controls-position="right" size="mini" style="width: 70px" />
             </el-form-item>
             <el-form-item label="胶料总误差">
-              <el-input-number v-model="batching_error" :precision="3" :step="0.1" :min="0" controls-position="right" size="mini" style="width: 70px" />
+              <el-input-number
+                v-model="batching_error"
+                :step="1"
+                :min="0"
+                step-strictly
+                controls-position="right"
+                size="mini"
+                style="width: 70px"
+              />
             </el-form-item>
             <el-form-item label="转子水温">
               <el-input-number v-model="zz_temp" :step="1" step-strictly :min="0" controls-position="right" size="mini" style="width: 70px" />
@@ -102,7 +110,7 @@
             <el-form-item label="收皮" prop="SelectEquip">
               <el-input-number
                 v-model="sp_num"
-                :max="999"
+                :max="99"
                 controls-position="right"
                 size="mini"
                 style="width: 70px"

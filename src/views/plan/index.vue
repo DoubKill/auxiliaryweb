@@ -615,22 +615,54 @@ export default {
     },
 
     issuedPlan() {
-      this.$alert('机台： ' + this.equip + '<br>计划编号： ' + this.currentRow.plan_classes_uid + '<br>配方名称： ' + this.currentRow.stage_product_batch_no,
+      const currentTime = new Date().getTime()
+      const a = new Date(this.currentRow.classes_begin_time).getTime()
+      const b = new Date(this.currentRow.classes_end_time).getTime()
+      const bool = !!(currentTime < a || currentTime > b) // true不在时间里面
+      const str = bool ? '<h2 v-if="" style="color:red;">注意：当前时间不在' + this.currentRow.classes + '时间范围内,是否继续?</h2>'
+        : '机台： ' + this.equip + '<br>计划编号： ' + this.currentRow.plan_classes_uid + '<br>配方名称： ' + this.currentRow.stage_product_batch_no
+
+      this.$alert(str,
         '下达计划', {
           showCancelButton: true,
           dangerouslyUseHTMLString: true,
-          confirmButtonText: '确定',
+          confirmButtonText: '',
           cancelButtonText: '取消'
         }
       ).then(() => {
-        issuedPlan(this.currentRow).then((response) => {
-          this.$message({
-            type: 'success',
-            message: '下达成功!'
+        if (bool) {
+          this.$alert('机台： ' + this.equip + '<br>计划编号： ' + this.currentRow.plan_classes_uid + '<br>配方名称： ' + this.currentRow.stage_product_batch_no,
+            '下达计划', {
+              showCancelButton: true,
+              dangerouslyUseHTMLString: true,
+              confirmButtonText: '确定',
+              cancelButtonText: '取消'
+            }
+          ).then(() => {
+            issuedPlan(this.currentRow).then((response) => {
+              this.$message({
+                type: 'success',
+                message: '下达成功!'
+              })
+              this.getPlanStatusList()
+              this.getPlanList()
+            })
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消下达'
+            })
           })
-          this.getPlanStatusList()
-          this.getPlanList()
-        })
+        } else {
+          issuedPlan(this.currentRow).then((response) => {
+            this.$message({
+              type: 'success',
+              message: '下达成功!'
+            })
+            this.getPlanStatusList()
+            this.getPlanList()
+          })
+        }
       }).catch(() => {
         this.$message({
           type: 'info',
