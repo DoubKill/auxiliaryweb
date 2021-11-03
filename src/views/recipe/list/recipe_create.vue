@@ -227,7 +227,7 @@
             <el-form-item label="收皮" prop="SelectEquip">
               <el-input-number
                 v-model="sp_num"
-                :max="99"
+                :max="99.9"
                 controls-position="right"
                 size="mini"
                 style="width: 70px"
