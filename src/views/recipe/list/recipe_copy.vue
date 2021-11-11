@@ -1801,10 +1801,10 @@ export default {
     },
     handleMaterialSelect(row) {
       if (this.rubberRow) {
-        if (row.material_type_name === '炭黑' || row.material_type_name === '油料') {
-          this.$message('非法选择')
-          return
-        }
+        // if (row.material_type_name === '炭黑' || row.material_type_name === '油料') {
+        //   this.$message('非法选择')
+        //   return
+        // }
         this.$set(this.rubberRow, 'material_name', row.material_name)
         this.rubberRow.material = row.id
         this.dialogRawMaterialSync = false
