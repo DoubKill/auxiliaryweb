@@ -104,5 +104,7 @@ export default {
 
   ValidateVersionsUrl: '/api/v1/recipe/validate-versions/',
   // 其他库查的胶料配方编码
-  HfRecipeList: '/api/v1/plan/hf-recipe-list/'
+  HfRecipeList: '/api/v1/plan/hf-recipe-list/',
+  // 查mes的配方
+  DevTypeBatching: '/api/v1/recipe/dev-type-batching/'
 }

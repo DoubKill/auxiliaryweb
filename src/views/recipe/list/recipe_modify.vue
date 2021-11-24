@@ -119,7 +119,52 @@
               />
             </el-form-item>
             <el-form-item label="车/托" />
-            <el-form-item v-show="false" label="配方停用">
+            <el-form-item
+              label="成环时间"
+              prop="ch_time"
+            >
+              <el-input-number
+                v-model="ch_time"
+                :step="1"
+                step-strictly
+                :min="0"
+                :max="300"
+                controls-position="right"
+                size="mini"
+                style="width: 70px"
+              />
+            </el-form-item>
+            <el-form-item
+              label="捣胶时间"
+              prop="dj_time"
+            >
+              <el-input-number
+                v-model="dj_time"
+                :step="1"
+                step-strictly
+                :min="0"
+                :max="300"
+                controls-position="right"
+                size="mini"
+                style="width: 70px"
+              />
+            </el-form-item>
+            <el-form-item
+              label="拉断时间"
+              prop="ld_time"
+            >
+              <el-input-number
+                v-model="ld_time"
+                :step="1"
+                step-strictly
+                :min="0"
+                :max="300"
+                controls-position="right"
+                size="mini"
+                style="width: 70px"
+              />
+            </el-form-item>
+            <el-form-item label="是否启用">
               <el-checkbox v-model="use_flag" />
             </el-form-item>
           </div>
@@ -568,7 +613,10 @@ export default {
       reuse_flag: true,
       temp_use_flag: true,
       sp_num: undefined,
-      use_flag: true,
+      use_flag: false,
+      ch_time: undefined,
+      dj_time: undefined,
+      ld_time: undefined,
       production_time_interval: undefined,
       // 密炼步序字段
       time: undefined,
@@ -875,6 +923,9 @@ export default {
         this.temp_use_flag = recipe_listData['processes']['temp_use_flag']
         this.sp_num = recipe_listData['processes']['sp_num']
         this.use_flag = recipe_listData['processes']['use_flag']
+        this.ch_time = recipe_listData['processes']['ch_time']
+        this.dj_time = recipe_listData['processes']['dj_time']
+        this.ld_time = recipe_listData['processes']['ld_time']
         this.RecipeMaterialList = []
         for (var i = 0; i < recipe_listData['process_details'].length; ++i) {
           this.RecipeMaterialList.push({
@@ -1384,6 +1435,9 @@ export default {
                 'temp_use_flag': this.temp_use_flag,
                 'sp_num': this.sp_num,
                 'use_flag': this.use_flag,
+                ch_time: this.ch_time,
+                dj_time: this.dj_time,
+                ld_time: this.ld_time,
                 // 设备id与配方id
                 'equip': this.$route.params['equip'],
                 'product_batching': this.$route.params['id']
