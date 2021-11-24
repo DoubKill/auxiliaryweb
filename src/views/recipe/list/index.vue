@@ -2,6 +2,7 @@
   <div
     v-loading="loading"
     element-loading-text="加载中..."
+    class="recipe-style"
   >
     <br>
     <el-form :inline="true">
@@ -316,6 +317,12 @@
               :disabled="scope.row.used_type !== 4"
               @click.stop="uploadMes(scope.row)"
             >上传到mes</el-button>
+            <el-button
+              v-if="scope.row.is_synced&&scope.row.is_changed"
+              size="mini"
+              :disabled="scope.row.used_type !== 4"
+              @click.stop="synchroMesShow(scope.row)"
+            >同步到mes</el-button>
           </el-button-group>
         </template>
       </el-table-column>
@@ -505,12 +512,302 @@
       </div>
 
     </el-dialog>
-
+    <el-dialog
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      title="群控与MES配方同步处理"
+      :visible.sync="dialogSynchro"
+      width="90%"
+    >
+      <el-button @click.stop="giveUp">放弃同步</el-button>
+      <el-button
+        :loading="loadingBtn"
+        @click.stop="uploadMes(false)"
+      >群控同步到MES</el-button>
+      <el-button @click.stop="dialogSynchro = false">返回</el-button>
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <h4 class="toptitle">群控配方</h4>
+          <div class="grid-content bg-purple">
+            <span class="font_custom">胶料称量</span>
+            <el-table
+              highlight-current-row
+              :data="rubber_tableData"
+              border
+              style="width: 100%"
+              :cell-class-name="tableRowClassName"
+            >
+              <el-table-column
+                align="center"
+                width="50%"
+                prop="sn"
+                label="序号"
+              />
+              <el-table-column
+                align="center"
+                prop="material_name"
+                label="胶料名称"
+              />
+              <el-table-column
+                align="center"
+                width="90%"
+                prop="actual_weight"
+                label="设定值(kg)"
+              />
+              <el-table-column
+                align="center"
+                width="90%"
+                prop="standard_error"
+                label="误差值(kg)"
+              />
+            </el-table>
+            <span class="font_custom">炭黑称量</span>
+            <el-table
+              highlight-current-row
+              :data="carbon_tableData"
+              border
+              style="width: 100%"
+              :cell-class-name="tableRowClassName"
+            >
+              <el-table-column
+                align="center"
+                width="50%"
+                prop="sn"
+                label="序号"
+              />
+              <el-table-column
+                align="center"
+                width="60%"
+                prop="action_name"
+                label="动作"
+              >投料</el-table-column>
+              <el-table-column
+                align="center"
+                prop="material_name"
+                label="炭黑名称"
+              >
+                <template slot-scope="{row}">
+                  {{ row.material_name }} ({{ row.tank_no }}号罐)
+                </template>
+              </el-table-column>
+              <el-table-column
+                align="center"
+                width="90%"
+                label="产地"
+              >
+                <template slot-scope="{row}">
+                  {{ row.provenance?row.provenance:'' }}
+                </template>
+              </el-table-column>
+              <el-table-column
+                align="center"
+                width="90%"
+                prop="actual_weight"
+                label="设定值(kg)"
+              />
+              <el-table-column
+                align="center"
+                width="90%"
+                prop="standard_error"
+                label="误差值(kg)"
+              />
+            </el-table>
+            <span class="font_custom">油料称量</span>
+            <el-table
+              highlight-current-row
+              :data="oil_tableData"
+              border
+              style="width: 100%"
+              :cell-class-name="tableRowClassName"
+            >
+              <el-table-column
+                align="center"
+                width="50%"
+                prop="sn"
+                label="序号"
+              />
+              <el-table-column
+                align="center"
+                width="60%"
+                prop="action_name"
+                label="动作"
+              >投料</el-table-column>
+              <el-table-column
+                align="center"
+                prop="material_name"
+                label="油脂名称"
+              >
+                <template slot-scope="{row}">
+                  {{ row.material_name }} ({{ row.tank_no }}号罐)
+                </template>
+              </el-table-column>
+              <el-table-column
+                align="center"
+                width="90%"
+                label="产地"
+              >
+                <template slot-scope="{row}">
+                  {{ row.provenance?row.provenance:'' }}
+                </template>
+              </el-table-column>
+              <el-table-column
+                align="center"
+                width="90%"
+                prop="actual_weight"
+                label="设定值(kg)"
+              />
+              <el-table-column
+                align="center"
+                width="90%"
+                prop="standard_error"
+                label="误差值(kg)"
+              />
+            </el-table>
+          </div>
+        </el-col>
+        <el-col :span="12">
+          <h4 class="toptitle">MES配方</h4>
+          <div class="grid-content bg-purple">
+            <span class="font_custom">胶料称量</span>
+            <el-table
+              highlight-current-row
+              :data="rubber_tableData1"
+              border
+              style="width: 100%"
+            >
+              <el-table-column
+                align="center"
+                width="50%"
+                prop="sn"
+                label="序号"
+              />
+              <el-table-column
+                align="center"
+                prop="material_name"
+                label="胶料名称"
+              />
+              <el-table-column
+                align="center"
+                width="90%"
+                prop="actual_weight"
+                label="设定值(kg)"
+              />
+              <el-table-column
+                align="center"
+                width="90%"
+                prop="standard_error"
+                label="误差值(kg)"
+              />
+            </el-table>
+            <span class="font_custom">炭黑称量</span>
+            <el-table
+              highlight-current-row
+              :data="carbon_tableData1"
+              border
+              style="width: 100%"
+            >
+              <el-table-column
+                align="center"
+                width="50%"
+                prop="sn"
+                label="序号"
+              />
+              <el-table-column
+                align="center"
+                width="60%"
+                prop="action_name"
+                label="动作"
+              >投料</el-table-column>
+              <el-table-column
+                align="center"
+                prop="material_name"
+                label="炭黑名称"
+              >
+                <template slot-scope="{row}">
+                  {{ row.material_name }} ({{ row.tank_no }}号罐)
+                </template>
+              </el-table-column>
+              <el-table-column
+                align="center"
+                width="90%"
+                label="产地"
+              >
+                <template slot-scope="{row}">
+                  {{ row.provenance?row.provenance:'' }}
+                </template>
+              </el-table-column>
+              <el-table-column
+                align="center"
+                width="90%"
+                prop="actual_weight"
+                label="设定值(kg)"
+              />
+              <el-table-column
+                align="center"
+                width="90%"
+                prop="standard_error"
+                label="误差值(kg)"
+              />
+            </el-table>
+            <span class="font_custom">油料称量</span>
+            <el-table
+              highlight-current-row
+              :data="oil_tableData1"
+              border
+              style="width: 100%"
+            >
+              <el-table-column
+                align="center"
+                width="50%"
+                prop="sn"
+                label="序号"
+              />
+              <el-table-column
+                align="center"
+                width="60%"
+                prop="action_name"
+                label="动作"
+              >投料</el-table-column>
+              <el-table-column
+                align="center"
+                prop="material_name"
+                label="油脂名称"
+              >
+                <template slot-scope="{row}">
+                  {{ row.material_name }} ({{ row.tank_no }}号罐)
+                </template>
+              </el-table-column>
+              <el-table-column
+                align="center"
+                width="90%"
+                label="产地"
+              >
+                <template slot-scope="{row}">
+                  {{ row.provenance?row.provenance:'' }}
+                </template>
+              </el-table-column>
+              <el-table-column
+                align="center"
+                width="90%"
+                prop="actual_weight"
+                label="设定值(kg)"
+              />
+              <el-table-column
+                align="center"
+                width="90%"
+                prop="standard_error"
+                label="误差值(kg)"
+              />
+            </el-table>
+          </div>
+        </el-col>
+      </el-row>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { validate_versions, recipe_no_url, global_SITE_url, recipe_list, recipe_copy_list, equip_url, site_url, stage_url, upload_mes_url } from '@/api/recipe_fun'
+import { validate_versions, recipe_no_url, global_SITE_url, recipe_list, recipe_copy_list, equip_url, site_url, stage_url, upload_mes_url, devTypeBatching } from '@/api/recipe_fun'
 // import { constantRoutes } from '@/router'
 // import { dataTool } from 'echarts/lib/echarts'
 import { mapGetters } from 'vuex'
@@ -577,7 +874,16 @@ export default {
         selectRecipeNo: [{ required: true, message: '请选择胶料编号', trigger: 'change' }],
         version: [{ required: true, message: '请填写版本', trigger: 'change' }]
       },
-      batch_no: ''
+      batch_no: '',
+      dialogSynchro: false,
+      currentObj: {},
+      loadingBtn: false,
+      carbon_tableData: [],
+      rubber_tableData: [],
+      oil_tableData: [],
+      carbon_tableData1: [],
+      rubber_tableData1: [],
+      oil_tableData1: []
     }
   },
   computed: {
@@ -586,7 +892,7 @@ export default {
       return !!this.currentRow.product_name
     }
   },
-  created() {
+  async created() {
     this.batch_no = this.$route.query.batch_no || ''
 
     this.permissionObj = this.permission
@@ -945,21 +1251,100 @@ export default {
       })
     },
     async uploadMes(row) {
+      if (row) {
+        this.currentObj = row
+      }
       try {
-        await upload_mes_url('post', { data: { product_batching_id: row.id }})
+        this.loadingBtn = true
+        await upload_mes_url('post', { data: { product_batching_id: this.currentObj.id }})
         this.$message({
           type: 'success',
           message: '操作成功!'
         })
+        this.loadingBtn = false
+        this.dialogSynchro = false
         this.get_recipe_list(this.currentPage)
+      } catch (e) {
+        this.loadingBtn = false
+      }
+    },
+    giveUp() {
+      this.$confirm('放弃同步?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async() => {
+        await recipe_list('put', this.currentObj.id, { data: { is_changed: false }})
+        this.$message({
+          type: 'success',
+          message: '操作成功!'
+        })
+        this.dialogSynchro = false
+        await this.get_recipe_list(this.currentPage)
+      }).catch(() => {
+
+      })
+    },
+    tableRowClassName({ row, column, rowIndex, columnIndex }) {
+      if (row.markedRed) {
+        return 'danger-row'
+      } else {
+        return ''
+      }
+    },
+    async synchroMesShow(row) {
+      try {
+        const recipe_listData = await recipe_list('get', row.id, {
+          params: {}
+        })
+        const data = await devTypeBatching('get', { params: { dev_type: row.dev_type_name, product_no: row.stage_product_batch_no }})
+
+        recipe_listData.batching_details.forEach(d => {
+          const _arr = data.filter(D => D.material === d.material)
+          if (!_arr.length) {
+            d.markedRed = true
+          } else if (Number(_arr[0].actual_weight) !== Number(d.actual_weight) ||
+          Number(_arr[0].standard_error) !== Number(d.standard_error)) {
+            d.markedRed = true
+          } else {
+            d.markedRed = false
+          }
+        })
+
+        this.rubber_tableData = recipe_listData.batching_details.filter(d => d.type === 1)
+        this.carbon_tableData = recipe_listData.batching_details.filter(d => d.type === 2)
+        this.oil_tableData = recipe_listData.batching_details.filter(d => d.type === 3)
+        this.rubber_tableData1 = data.filter(d => d.type === 1)
+        this.carbon_tableData1 = data.filter(d => d.type === 2)
+        this.oil_tableData1 = data.filter(d => d.type === 3)
       } catch (e) {
         //
       }
+      this.currentObj = row
+      this.dialogSynchro = true
     }
   }
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+.recipe-style{
+  .font_custom{
+      font-size: 14px;
+      color: #606266;
+      line-height: 40px;
+      font-weight: 700;
+  }
+  .toptitle{
+        text-align: center;
+      background: #fff;
+      margin: 0;
+      line-height: 40px;
+      margin-top: 10px;
+  }
+  .danger-row{
+    color:red;
+  }
+}
 </style>
 

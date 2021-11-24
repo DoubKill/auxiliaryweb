@@ -83,7 +83,16 @@
               <el-input v-model="sp_num" size="mini" :disabled="true" style="width: 70px" />
             </el-form-item>
             <el-form-item label="车/托" />
-            <el-form-item v-show="false" label="配方停用">
+            <el-form-item label="成环时间">
+              <el-input v-model="ch_time" size="mini" :disabled="true" style="width: 70px" />
+            </el-form-item>
+            <el-form-item label="捣胶时间">
+              <el-input v-model="dj_time" size="mini" :disabled="true" style="width: 70px" />
+            </el-form-item>
+            <el-form-item label="拉断时间">
+              <el-input v-model="ld_time" size="mini" :disabled="true" style="width: 70px" />
+            </el-form-item>
+            <el-form-item label="是否启用">
               <el-checkbox v-model="use_flag" :disabled="true" />
             </el-form-item>
           </div>
@@ -216,7 +225,10 @@ export default {
       reuse_flag: true,
       temp_use_flag: true,
       sp_num: undefined,
-      use_flag: true,
+      ch_time: undefined,
+      dj_time: undefined,
+      ld_time: undefined,
+      use_flag: false,
       rubber_tableData: [],
       carbon_tableData: [],
       oil_tableData: [],
@@ -304,6 +316,9 @@ export default {
         this.reuse_flag = recipe_listData['processes']['reuse_flag']
         this.temp_use_flag = recipe_listData['processes']['temp_use_flag']
         this.sp_num = recipe_listData['processes']['sp_num']
+        this.ch_time = recipe_listData['processes']['ch_time']
+        this.dj_time = recipe_listData['processes']['dj_time']
+        this.ld_time = recipe_listData['processes']['ld_time']
         this.use_flag = recipe_listData['processes']['use_flag']
         for (var i = 0; i < recipe_listData['process_details'].length; ++i) {
           this.process_step_tableData.push({
