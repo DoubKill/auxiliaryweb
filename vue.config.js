@@ -39,7 +39,8 @@ module.exports = {
     proxy: {
       '/api': {
         // target: 'http://10.10.120.40:15009/',
-        target: 'http://10.20.181.104:9000', // 博文
+        // target: 'http://liubowen.vaiwan.com/', // 博文
+        target: 'http://10.4.14.179:9000', // 博文
         // target: 'http://10.4.10.55:80/', // 生产环境
         // target: 'http://10.10.120.40/',
         ws: true,
