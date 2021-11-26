@@ -672,7 +672,8 @@ export default {
       recipeStepSnForInsert: 1,
       rubberSnForInsert: 1,
       carbonSnForInsert: 1,
-      oilSnForInsert: 1
+      oilSnForInsert: 1,
+      old_batching_details: []
     }
   },
   async created() {
@@ -831,6 +832,7 @@ export default {
         const recipe_listData = await recipe_list('get', id, {
           params: { }
         })
+        this.old_batching_details = recipe_listData.batching_details
         // console.log(recipe_listData, 'recipe_listData')
         this.production_time_interval = recipe_listData['production_time_interval']
         // console.log(recipe_listData, 'recipe_listData')
@@ -943,6 +945,7 @@ export default {
         }
         this.RecipeMaterialList = this.RecipeMaterialList.sort(this.compareSn)
         this.loading = false
+
         return recipe_listData
       } catch (e) {
         this.loading = false
@@ -1412,11 +1415,31 @@ export default {
           text: '提交中',
           spinner: 'el-icon-loading'
         })
+
+        // 监听配方是否有更改
+        let _is_changed = false
+        try {
+          if (batching_details_list.length !== this.old_batching_details.length) {
+            throw new Error('')
+          }
+          batching_details_list.forEach(d => {
+            const _arr = this.old_batching_details.filter(D => D.material === d.material)
+            if (!_arr.length) {
+              throw new Error('')
+            } else if (Number(_arr[0].actual_weight) !== Number(d.actual_weight) ||
+          Number(_arr[0].standard_error) !== Number(d.standard_error)) {
+              throw new Error('')
+            }
+          })
+        } catch (e) {
+          _is_changed = true
+        }
         try {
           await this.put_recipe_list(
             this.$route.params['id'],
             { data: {
-            // 密炼步序list
+              is_changed: _is_changed,
+              // 密炼步序list
               'process_details': step_details_list,
               'processes': {
               // 配方基础信息中第一行
