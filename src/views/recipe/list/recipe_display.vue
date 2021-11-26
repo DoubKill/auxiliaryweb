@@ -83,16 +83,16 @@
               <el-input v-model="sp_num" size="mini" :disabled="true" style="width: 70px" />
             </el-form-item>
             <el-form-item label="车/托" />
-            <el-form-item label="成环时间">
+            <el-form-item v-if="category__category_name==='GK255'" label="成环时间">
               <el-input v-model="ch_time" size="mini" :disabled="true" style="width: 70px" />
             </el-form-item>
-            <el-form-item label="捣胶时间">
+            <el-form-item v-if="category__category_name==='GK255'" label="捣胶时间">
               <el-input v-model="dj_time" size="mini" :disabled="true" style="width: 70px" />
             </el-form-item>
-            <el-form-item label="拉断时间">
+            <el-form-item v-if="category__category_name==='GK255'" label="拉断时间">
               <el-input v-model="ld_time" size="mini" :disabled="true" style="width: 70px" />
             </el-form-item>
-            <el-form-item label="是否启用">
+            <el-form-item v-if="category__category_name==='GK255'" label="是否启用">
               <el-checkbox v-model="use_flag" :disabled="true" />
             </el-form-item>
           </div>
