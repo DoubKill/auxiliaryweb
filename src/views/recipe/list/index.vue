@@ -1300,7 +1300,7 @@ export default {
         const data = await devTypeBatching('get', { params: { dev_type: row.dev_type_name, product_no: row.stage_product_batch_no }})
 
         recipe_listData.batching_details.forEach(d => {
-          const _arr = data.filter(D => D.material === d.material)
+          const _arr = data.filter(D => D.material_name === d.material_name)
           if (!_arr.length) {
             d.markedRed = true
           } else if (Number(_arr[0].actual_weight) !== Number(d.actual_weight) ||
