@@ -245,6 +245,7 @@
             </el-form-item>
             <el-form-item label="车/托" />
             <el-form-item
+              v-if="category__category_name==='GK255'"
               label="成环时间"
               prop="ch_time"
             >
@@ -260,6 +261,7 @@
               />
             </el-form-item>
             <el-form-item
+              v-if="category__category_name==='GK255'"
               label="捣胶时间"
               prop="dj_time"
             >
@@ -275,6 +277,7 @@
               />
             </el-form-item>
             <el-form-item
+              v-if="category__category_name==='GK255'"
               label="拉断时间"
               prop="ld_time"
             >
@@ -289,7 +292,7 @@
                 style="width: 70px"
               />
             </el-form-item>
-            <el-form-item label="是否启用">
+            <el-form-item v-if="category__category_name==='GK255'" label="是否启用">
               <el-checkbox v-model="use_flag" />
             </el-form-item>
           </div>
