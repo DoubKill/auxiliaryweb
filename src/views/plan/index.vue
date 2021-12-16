@@ -41,6 +41,9 @@
               @change="searchChange"
             />
           </el-form-item>
+          <div style="border:4px solid #a6a9ad;display:inline-block;padding:10px 60px;margin:-30px 0 0 40px;font-size:100px;position:absolute">
+            {{ equip }}
+          </div>
           <el-form-item label="班次: ">
             <el-select
               v-model="classes"
