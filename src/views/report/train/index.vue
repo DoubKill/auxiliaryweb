@@ -128,7 +128,7 @@
       />
       <el-table-column
         :prop="editionNo === 'v1'?'production_details.排胶能量':'evacuation_energy'"
-        label="排胶能量(J)"
+        label="排胶能量(kW·h)"
       />
       <el-table-column
         :prop="editionNo === 'v1'?'production_details.员工代号':'operation_user'"
@@ -236,7 +236,7 @@
               >
                 <td>排胶温度(°C)</td>
                 <td>{{ rowInfo.production_details.排胶温度 ||'--' }}</td>
-                <td>排胶能量(J)</td>
+                <td>排胶能量(kW·h)</td>
                 <td>{{ rowInfo.production_details.排胶能量 ||'--' }}</td>
                 <td class="begin_time_width">时间(s)</td>
                 <td>{{ rowInfo.production_details.排胶时间 ||'--' }}</td>
@@ -249,7 +249,7 @@
               >
                 <td>排胶温度(°C)</td>
                 <td>{{ rowInfo.evacuation_temperature ||'--' }}</td>
-                <td>排胶能量(J)</td>
+                <td>排胶能量(kW·h)</td>
                 <td>{{ rowInfo.evacuation_energy ||'--' }}</td>
                 <td class="begin_time_width">时间(s)</td>
                 <td>{{ rowInfo.evacuation_time ||'--' }}</td>
@@ -436,7 +436,7 @@
               v-if="editionNo === 'v1'"
               class="police-record"
             >
-              <span>排胶能量(J): {{ rowInfo.production_details.排胶能量 ||'--' }}</span>
+              <span>排胶能量(kW·h): {{ rowInfo.production_details.排胶能量 ||'--' }}</span>
               <span>设定: {{ rowInfo.plan_trains ||'--' }}</span>
               <span>时间(s): {{ rowInfo.begin_time || '--' }} 至 {{ rowInfo.end_time|| '--' }}</span>
               <br>
@@ -450,7 +450,7 @@
               v-if="editionNo === 'v2'"
               class="police-record"
             >
-              <span>排胶能量(J): {{ rowInfo.evacuation_energy ||'--' }}</span>
+              <span>排胶能量(kW·h): {{ rowInfo.evacuation_energy ||'--' }}</span>
               <span>设定: {{ rowInfo.plan_trains ||'--' }}</span>
               <span>时间(s): {{ rowInfo.begin_time || '--' }} 至 {{ rowInfo.end_time|| '--' }}</span>
               <br>
