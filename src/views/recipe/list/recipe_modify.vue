@@ -209,9 +209,23 @@
                 <el-input-number v-model="scope.row.standard_error" :precision="2" :step="0.1" :min="0" style="width: 70px" size="mini" :controls="false" />
               </template>
             </el-table-column>
-            <el-table-column align="center" label="操作">
+            <el-table-column align="center" label="操作" width="160px">
               <template slot-scope="scope">
-                <el-button size="mini" type="danger" @click="removeRubberRow(scope.row)">删除</el-button>
+                <el-button-group>
+                  <el-button
+                    icon="el-icon-caret-top"
+                    size="mini"
+                    type="primary"
+                    @click="moveUp(scope.$index,scope.row,rubber_tableData)"
+                  />
+                  <el-button
+                    icon="el-icon-caret-bottom"
+                    size="mini"
+                    type="primary"
+                    @click="moveDown(scope.$index,scope.row,rubber_tableData)"
+                  />
+                  <el-button icon="el-icon-delete" size="mini" type="danger" @click="removeRubberRow(scope.row)" />
+                </el-button-group>
               </template>
             </el-table-column>
           </el-table>
@@ -267,9 +281,23 @@
                 <el-input-number v-model="scope.row.standard_error" :precision="2" :step="0.1" :min="0" style="width: 70px" size="mini" :controls="false" />
               </template>
             </el-table-column>
-            <el-table-column align="center" label="操作">
+            <el-table-column align="center" label="操作" width="160px">
               <template slot-scope="scope">
-                <el-button size="mini" type="danger" @click="removeCarbonRow(scope.row)">删除</el-button>
+                <el-button-group>
+                  <el-button
+                    icon="el-icon-caret-top"
+                    size="mini"
+                    type="primary"
+                    @click="moveUp(scope.$index,scope.row,carbon_tableData)"
+                  />
+                  <el-button
+                    icon="el-icon-caret-bottom"
+                    size="mini"
+                    type="primary"
+                    @click="moveDown(scope.$index,scope.row,carbon_tableData)"
+                  />
+                  <el-button icon="el-icon-delete" size="mini" type="danger" @click="removeCarbonRow(scope.row)" />
+                </el-button-group>
               </template>
             </el-table-column>
           </el-table>
@@ -326,9 +354,23 @@
                 <el-input-number v-model="scope.row.standard_error" :precision="2" :step="0.1" :min="0" style="width: 70px" size="mini" :controls="false" />
               </template>
             </el-table-column>
-            <el-table-column align="center" label="操作">
+            <el-table-column align="center" label="操作" width="160px">
               <template slot-scope="scope">
-                <el-button size="mini" type="danger" @click="removeOilRow(scope.row)">删除</el-button>
+                <el-button-group>
+                  <el-button
+                    icon="el-icon-caret-top"
+                    size="mini"
+                    type="primary"
+                    @click="moveUp(scope.$index,scope.row,oil_tableData)"
+                  />
+                  <el-button
+                    icon="el-icon-caret-bottom"
+                    size="mini"
+                    type="primary"
+                    @click="moveDown(scope.$index,scope.row,oil_tableData)"
+                  />
+                  <el-button icon="el-icon-delete" size="mini" type="danger" @click="removeOilRow(scope.row)" />
+                </el-button-group>
               </template>
             </el-table-column>
           </el-table>
@@ -727,12 +769,53 @@ export default {
     },
     removeCarbonRow(row) {
       this.carbon_tableData.splice(this.carbon_tableData.indexOf(row), 1)
+      this.carbon_tableData.forEach((d, i) => {
+        d.sn = i + 1
+      })
     },
     removeRubberRow(row) {
       this.rubber_tableData.splice(this.rubber_tableData.indexOf(row), 1)
+      this.rubber_tableData.forEach((d, i) => {
+        d.sn = i + 1
+      })
     },
     removeOilRow(row) {
       this.oil_tableData.splice(this.oil_tableData.indexOf(row), 1)
+      this.oil_tableData.forEach((d, i) => {
+        d.sn = i + 1
+      })
+    },
+    moveUp(index, row, list) {
+      if (index === 0) {
+        this.$message({
+          message: '处于顶端，不能继续上移',
+          type: 'warning'
+        })
+        return
+      }
+      list[index - 1].sn = row.sn
+      row.sn = row.sn - 1
+      const arr = [
+        row,
+        list[index - 1]
+      ]
+      list.splice(index - 1, 2, ...arr)
+    },
+    moveDown(index, row, list) {
+      if (index + 1 === list.length) {
+        this.$message({
+          message: '处于末端，不能继续下移',
+          type: 'warning'
+        })
+        return
+      }
+      list[index + 1].sn = row.sn
+      row.sn = row.sn + 1
+      const arr = [
+        list[index + 1],
+        row
+      ]
+      list.splice(index, 2, ...arr)
     },
     insertRubberEnbale() {
       return this.rubber_tableData.some(rb => {
