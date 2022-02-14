@@ -312,13 +312,13 @@
               {{ scope.row.used_type===4?'停用':'启用' }}
             </el-button>
             <el-button
-              v-if="!scope.row.is_synced"
+              v-if="(permissionObj.recipe.prod && permissionObj.recipe.prod.indexOf('upload')>-1)&&!scope.row.is_synced"
               size="mini"
               :disabled="scope.row.used_type !== 4"
               @click.stop="uploadMes(scope.row)"
             >上传到mes</el-button>
             <el-button
-              v-if="scope.row.is_synced&&scope.row.is_changed"
+              v-if="(permissionObj.recipe.prod && permissionObj.recipe.prod.indexOf('upload')>-1)&&scope.row.is_synced&&scope.row.is_changed"
               size="mini"
               :disabled="scope.row.used_type !== 4"
               @click.stop="synchroMesShow(scope.row)"
