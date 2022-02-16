@@ -5,7 +5,7 @@
         style="margin-left: 10px"
         :inline="true"
       >
-        <el-col :span="16">
+        <el-col :span="12">
           <el-form-item label="机台">
             <el-select
               v-model="equip"
@@ -41,9 +41,6 @@
               @change="searchChange"
             />
           </el-form-item>
-          <div style="background: #e99d2a;color:#fff;display:inline-block;padding:10px 56px;margin:-20px 0 0 40px;font-size:100px;position:absolute">
-            {{ equip }}
-          </div>
           <el-form-item label="班次: ">
             <el-select
               v-model="classes"
@@ -78,8 +75,13 @@
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col :span="8">
-          <el-form-item style="float: right">
+        <el-col :span="5">
+          <div style="width:100%;text-align:center;background: #e99d2a;color:#fff;display:inline-block;font-size:100px;word-wrap:break-word;padding:8px 0;">
+            {{ equip }}
+          </div>
+        </el-col>
+        <el-col :span="7">
+          <el-form-item style="float: right;margin-left:10px">
             <el-button
               v-if="permissionObj.plan.productclassesplan.indexOf('view')>-1"
               type="info"
@@ -109,6 +111,34 @@
               @click="issuedPlan"
             >下达</el-button>
           </el-form-item>
+
+          <el-form-item style="float: right;margin-left:10px">
+            <el-button
+              v-if="permissionObj.plan.productclassesplan.indexOf('change')>-1"
+              type="info"
+              :disabled="disabled"
+              @click="upPlan"
+            >上调</el-button>
+            <el-button
+              v-if="permissionObj.plan.productclassesplan.indexOf('change')>-1"
+              type="info"
+              :disabled="disabled"
+              @click="downPlan"
+            >下调</el-button>
+            <el-button
+              v-if="permissionObj.plan.productclassesplan.indexOf('change')>-1"
+              type="info"
+              :disabled="disabled"
+              @click="showAlterTrainNumberDialog"
+            >修改车次</el-button>
+            <el-button
+              v-if="permissionObj.plan.productclassesplan.indexOf('change')>-1&&version!=='v3'"
+              type="info"
+              style="width: 120px"
+              :disabled="disabled"
+              @click="retransmissionpPlan"
+            >重传</el-button>
+          </el-form-item>
         </el-col>
         <!-- </el-form> -->
         <!-- </el-row>
@@ -117,33 +147,6 @@
         style="margin-left: 10px"
         :inline="true"
       > -->
-        <el-form-item style="float: right">
-          <el-button
-            v-if="permissionObj.plan.productclassesplan.indexOf('change')>-1"
-            type="info"
-            :disabled="disabled"
-            @click="upPlan"
-          >上调</el-button>
-          <el-button
-            v-if="permissionObj.plan.productclassesplan.indexOf('change')>-1"
-            type="info"
-            :disabled="disabled"
-            @click="downPlan"
-          >下调</el-button>
-          <el-button
-            v-if="permissionObj.plan.productclassesplan.indexOf('change')>-1"
-            type="info"
-            :disabled="disabled"
-            @click="showAlterTrainNumberDialog"
-          >修改车次</el-button>
-          <el-button
-            v-if="permissionObj.plan.productclassesplan.indexOf('change')>-1&&version!=='v3'"
-            type="info"
-            style="width: 120px"
-            :disabled="disabled"
-            @click="retransmissionpPlan"
-          >重传</el-button>
-        </el-form-item>
       </el-form>
     </el-row>
     <div style="border-radius: 2px; border:.5px solid #000; padding:10px">
@@ -696,4 +699,6 @@ export default {
 </script>
 
 <style scoped>
+ /* @media screen and (max-width: 700px) {
+        } */
 </style>
