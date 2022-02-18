@@ -293,7 +293,7 @@
         fixed="right"
         align="center"
         label="操作"
-        width="230px"
+        width="150px"
       >
         <template slot-scope="scope">
           <el-button-group>
@@ -311,7 +311,7 @@
             >
               {{ scope.row.used_type===4?'停用':'启用' }}
             </el-button>
-            <el-button
+            <!-- <el-button
               v-if="(permissionObj.recipe.prod && permissionObj.recipe.prod.indexOf('upload')>-1)&&!scope.row.is_synced"
               size="mini"
               :disabled="scope.row.used_type !== 4"
@@ -322,7 +322,7 @@
               size="mini"
               :disabled="scope.row.used_type !== 4"
               @click.stop="synchroMesShow(scope.row)"
-            >同步到mes</el-button>
+            >同步到mes</el-button> -->
           </el-button-group>
         </template>
       </el-table-column>
