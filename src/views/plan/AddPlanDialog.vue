@@ -43,6 +43,7 @@
 
         <el-button style="float: right" :disabled="!saveEnable" @click="batchSave">保存</el-button>
         <el-button :loading="loadingBtn" @click="addOnePlan">添加</el-button>
+        <el-button :loading="loadingBtn1" @click="addOnePlan1">从mes添加</el-button>
       </div>
       <p style="text-align: right; color: red"> {{ weightError }} </p>
       <p style="text-align: right; color: red"> {{ timeError }} </p>
@@ -190,6 +191,88 @@
           </template>
         </el-table-column>
       </el-table>
+
+      <el-dialog
+        width="900px"
+        :visible.sync="addPlanVisible1"
+        title="参考MES排程数据添加计划"
+        append-to-body
+        :before-close="handleClose1"
+      >
+        <el-form :inline="true">
+          <el-form-item label="班次: ">
+            <el-select
+              v-model="classes_add"
+            >
+              <el-option
+                v-for="item in [{name:'早班',id:0},{name:'中班',id:1},{name:'夜班',id:2}]"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="机台: ">
+            <el-select
+              v-model="equipIdForAdd"
+              disabled
+            >
+              <el-option
+                v-for="equip in equips"
+                :key="equip.id"
+                :label="equip.equip_no"
+                :value="equip.id"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="机型: ">
+            <el-input v-model="category" type="text" :disabled="true" />
+          </el-form-item>
+        </el-form>
+        <h3>参考MES排程数据添加计划</h3>
+        <el-table
+          ref="singleTable"
+          :data="mesPlanList"
+          border
+          highlight-current-row
+          @current-change="handleCurrentChange"
+        >
+          <el-table-column
+            prop="recipe_name"
+            label="规格"
+            min-width="20"
+            align="center"
+          />
+          <el-table-column
+            prop="plan_trains"
+            label="车数"
+            min-width="20"
+            align="center"
+          />
+          <el-table-column
+            prop="time_consume"
+            label="耗时（小时）"
+            min-width="20"
+            align="center"
+          />
+          <el-table-column
+            prop="desc"
+            label="备注"
+            min-width="20"
+            align="center"
+          />
+          <el-table-column
+            prop="status"
+            label="状态"
+            min-width="20"
+            align="center"
+          />
+        </el-table>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="handleClose1(false)">取 消</el-button>
+          <el-button type="primary" @click="submitAddOnePlan">确 定</el-button>
+        </span>
+      </el-dialog>
     </div>
   </el-dialog>
 </template>
@@ -202,7 +285,8 @@ import {
   getPlanSchedules,
   getPlanSchedule,
   postProductDayPlanManyCreate,
-  hfRecipeList
+  hfRecipeList,
+  schedulingResult
 } from '@/api/plan'
 
 import dayjs from 'dayjs'
@@ -225,7 +309,15 @@ export default {
       timeError: '',
       version: null,
       loadingBtn: false,
-      loadingFrom: true
+      loadingFrom: true,
+      loadingBtn1: false,
+      addPlanVisible1: false,
+      formData: {},
+      category: '',
+      classes_add: 0,
+      mesPlanList: [],
+      equip_no: '',
+      currentRowMes: null
     }
   },
   watch: {
@@ -262,6 +354,8 @@ export default {
     equipSelected(equip) {
       const arr = this.equips.filter(D => D.id === Number(equip))
       this.version = arr[0].version
+      this.category = arr[0].category__category_name
+      this.equip_no = arr[0].equip_no
       localStorage.setItem('addPlan:equip', equip)
     },
     show() {
@@ -279,6 +373,8 @@ export default {
         const equipId = localStorage.getItem('addPlan:equip')
         const arr = this.equips.filter(D => D.id === Number(equipId))
         this.version = arr[0].version
+        this.category = arr[0].category__category_name
+        this.equip_no = arr[0].equip_no
         if (equipId) {
           this.equipIdForAdd = Number(equipId)
         }
@@ -399,6 +495,20 @@ export default {
           })
           return
         }
+        const _api = this.version === 'v3' ? hfRecipeList : getRubberMateria
+        // 获取胶料
+        const rubberMateriaData = await _api({
+          all: 1,
+          used_type: 4,
+          equip_id: this.equipIdForAdd
+        })
+        this.loadingBtn = false
+        // 查找匹配的配方
+        if (this.currentRowMes && this.currentRowMes.recipe_name) {
+          const _obj = rubberMateriaData.results.find(d => d.stage_product_batch_no === this.currentRowMes.recipe_name)
+          this.currentRowMes.product_batching = _obj.id
+        }
+
         var classesdetail_set_ = workSchedule.classesdetail_set
         var init_class_plan = {
           plan_trains: 0,
@@ -423,13 +533,17 @@ export default {
             enable
           }
           if (enable && planSchedule.work_schedule_plan[i].classes_name === '早班') {
+            class_plan.plan_trains = this.classes_add === 0 && this.currentRowMes ? this.currentRowMes.plan_trains : 0
             pdp_product_classes_plan[0] = class_plan
           } else if (enable && planSchedule.work_schedule_plan[i].classes_name === '中班') {
+            class_plan.plan_trains = this.classes_add === 1 && this.currentRowMes ? this.currentRowMes.plan_trains : 0
             pdp_product_classes_plan[1] = class_plan
           } else if (enable && planSchedule.work_schedule_plan[i].classes_name === '夜班') {
+            class_plan.plan_trains = this.classes_add === 2 && this.currentRowMes ? this.currentRowMes.plan_trains : 0
             pdp_product_classes_plan[2] = class_plan
           }
         }
+
         var plan = {
           equip_: this.equipById[this.equipIdForAdd],
           equip: this.equipIdForAdd,
@@ -437,15 +551,11 @@ export default {
           pdp_product_classes_plan,
           day_time: planSchedule.day_time,
           work_schedule_name: planSchedule.work_schedule_name,
-          planSchedule: planSchedule
+          planSchedule: planSchedule,
+          product_batch_no: this.currentRowMes ? this.currentRowMes.recipe_name : '',
+          product_batching: this.currentRowMes ? this.currentRowMes.product_batching : ''
         }
-        const _api = this.version === 'v3' ? hfRecipeList : getRubberMateria
-        const rubberMateriaData = await _api({
-          all: 1,
-          used_type: 4,
-          equip_id: this.equipIdForAdd
-        })
-        this.loadingBtn = false
+        //
         if (this.version === 'v3') {
           rubberMateriaData.results.forEach((D, i) => {
             D.batching_weight = 0
@@ -471,11 +581,41 @@ export default {
           var lastIndex = this.equipLastIndexInPlansForAdd()
           this.plansForAdd.splice(lastIndex, 0, plan)
         }
+        if (this.currentRowMes) {
+          this.productBatchingChanged(plan)
+        }
+        this.currentRowMes = null
       } catch (e) {
         console.log(e, 'e')
         this.$message.error('添加失败')
         this.loadingBtn = false
       }
+    },
+    async addOnePlan1() {
+      if (!this.equipIdForAdd || !this.day_time || !this.planScheduleId) {
+        this.$alert('请选择机台和时间、排班规则', '错误', {
+          confirmButtonText: '确定'
+        })
+        return
+      }
+      if (this.$refs.singleTable) {
+        this.$refs.singleTable.setCurrentRow()
+      }
+      this.addPlanVisible1 = true
+      try {
+        const data = await schedulingResult({ factory_date: this.day_time, equip_no: this.equip_no })
+        this.mesPlanList = data || []
+      } catch (e) {
+        //
+      }
+    },
+    submitAddOnePlan() {
+      if (!this.currentRowMes) {
+        this.$message('请选择计划')
+        return
+      }
+      this.handleClose1(false)
+      this.addOnePlan()
     },
     equipLastIndexInPlansForAdd() {
       for (var i = 0; i < this.plansForAdd.length; i++) {
@@ -577,6 +717,15 @@ export default {
     handleClose(done) {
       this.$parent.getEquip()
       done()
+    },
+    handleClose1(done) {
+      this.addPlanVisible1 = false
+      if (done) {
+        done()
+      }
+    },
+    handleCurrentChange(val) {
+      this.currentRowMes = val
     }
   }
 }

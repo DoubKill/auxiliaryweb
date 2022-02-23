@@ -173,4 +173,11 @@ export function hfRecipeList(params) {
     params
   })
 }
+export function schedulingResult(params) {
+  return request({
+    url: API.SchedulingResult,
+    method: 'get',
+    params
+  })
+}
 
