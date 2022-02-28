@@ -43,7 +43,7 @@
 
         <el-button style="float: right" :disabled="!saveEnable" @click="batchSave">保存</el-button>
         <el-button :loading="loadingBtn" @click="addOnePlan">添加</el-button>
-        <el-button :loading="loadingBtn1" @click="addOnePlan1">从mes添加</el-button>
+        <!-- <el-button :loading="loadingBtn1" @click="addOnePlan1">从mes添加</el-button> -->
       </div>
       <p style="text-align: right; color: red"> {{ weightError }} </p>
       <p style="text-align: right; color: red"> {{ timeError }} </p>
