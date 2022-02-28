@@ -184,7 +184,7 @@
             <el-table-column align="center" width="60%" prop="time" label="时间" />
             <el-table-column align="center" width="60%" prop="temperature" label="温度" />
             <el-table-column align="center" width="60%" prop="energy" label="能量" />
-            <el-table-column align="center" width="60%" prop="power" label="功率" />
+            <el-table-column align="center" width="60%" prop="power" label="AI值" />
             <el-table-column align="center" width="148%" prop="action_name" label="动作" />
             <el-table-column align="center" width="60%" prop="pressure" label="压力" />
             <el-table-column align="center" width="60%" prop="rpm" label="转速" />

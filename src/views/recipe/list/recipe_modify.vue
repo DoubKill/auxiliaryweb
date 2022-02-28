@@ -403,7 +403,7 @@
                 <th style="text-align: center; height: 48px">时间</th>
                 <th style="text-align: center; height: 48px">温度</th>
                 <td style="text-align: center; height: 48px">能量</td>
-                <td style="text-align: center; height: 48px">功率</td>
+                <td style="text-align: center; height: 48px">AI值</td>
                 <th style="text-align: center; height: 48px">动作</th>
                 <th style="text-align: center; height: 48px">压力</th>
                 <th style="text-align: center; height: 48px">转速</th>
