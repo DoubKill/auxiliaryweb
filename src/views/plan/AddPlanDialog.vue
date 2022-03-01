@@ -30,6 +30,7 @@
           type="date"
           value-format="yyyy-MM-dd"
           placeholder="选择日期"
+          disabled
           @change="getPlanSchedules"
         />
         <el-select v-model="planScheduleId" filterable placeholder="倒班规则">
@@ -43,7 +44,7 @@
 
         <el-button style="float: right" :disabled="!saveEnable" @click="batchSave">保存</el-button>
         <el-button :loading="loadingBtn" @click="addOnePlan">添加</el-button>
-        <!-- <el-button :loading="loadingBtn1" @click="addOnePlan1">从mes添加</el-button> -->
+        <el-button :loading="loadingBtn1" @click="addOnePlan1">从mes添加</el-button>
       </div>
       <p style="text-align: right; color: red"> {{ weightError }} </p>
       <p style="text-align: right; color: red"> {{ timeError }} </p>
@@ -80,7 +81,43 @@
         <el-table-column prop="batching_weight" label="配料重量（吨）" width="70" align="center" />
         <el-table-column prop="production_time_interval" label="炼胶时间（秒）" width="70" align="center" />
         <el-table-column label="当前库存（吨）" width="70" align="center" />
-        <el-table-column label="早班计划" align="center">
+        <el-table-column v-for="(item,i) in classesOptions" :key="i" :label="`${item.classes_name}计划`" align="center">
+          <el-table-column label="顺序" width="210">
+            <template v-if="!scope.row.sum && scope.row.pdp_product_classes_plan[item.no].enable" slot-scope="scope">
+              <el-input-number
+                v-model.number="scope.row.pdp_product_classes_plan[item.no].sn"
+                :precision="0"
+                :min="0"
+                :disabled="item.classes_name!==currentFactory.classes"
+                @blur="() => {
+                  if (!scope.row.pdp_product_classes_plan[item.no].sn) {
+                    scope.row.pdp_product_classes_plan[item.no].sn = 0
+                  }
+                }"
+              />
+            </template>
+          </el-table-column>
+          <el-table-column label="车次" width="210" align="center">
+            <template v-if="scope.row.pdp_product_classes_plan[item.no].enable" slot-scope="scope">
+              <el-input-number
+                v-model.number="scope.row.pdp_product_classes_plan[item.no].plan_trains"
+                :precision="0"
+                :disabled="scope.row.sum||item.classes_name!==currentFactory.classes"
+                :min="0"
+                @blur="() => {
+                  if (!scope.row.pdp_product_classes_plan[item.no].plan_trains) {
+                    scope.row.pdp_product_classes_plan[item.no].plan_trains = 0
+                    planTrainsChanged(scope.row, item.no)
+                  }
+                }"
+                @change="planTrainsChanged(scope.row, item.no)"
+              />
+            </template>
+          </el-table-column>
+          <el-table-column :prop="`pdp_product_classes_plan[${item.no}].weight`" label="重量" align="center" />
+          <el-table-column :prop="`pdp_product_classes_plan[${item.no}].time`" label="时间" align="center" />
+        </el-table-column>
+        <!-- <el-table-column label="早班计划" align="center">
           <el-table-column label="顺序" width="210">
             <template v-if="!scope.row.sum && scope.row.pdp_product_classes_plan[0].enable" slot-scope="scope">
               <el-input-number
@@ -114,8 +151,8 @@
           </el-table-column>
           <el-table-column prop="pdp_product_classes_plan[0].weight" label="重量" align="center" />
           <el-table-column prop="pdp_product_classes_plan[0].time" label="时间" align="center" />
-        </el-table-column>
-        <el-table-column label="中班计划" align="center">
+        </el-table-column> -->
+        <!-- <el-table-column label="中班计划" align="center">
           <el-table-column label="顺序" width="210" align="center">
             <template v-if="!scope.row.sum && scope.row.pdp_product_classes_plan[1].enable" slot-scope="scope">
               <el-input-number
@@ -149,8 +186,8 @@
           </el-table-column>
           <el-table-column prop="pdp_product_classes_plan[1].weight" label="重量" align="center" />
           <el-table-column prop="pdp_product_classes_plan[1].time" label="时间" align="center" />
-        </el-table-column>
-        <el-table-column label="夜班计划" align="center">
+        </el-table-column> -->
+        <!-- <el-table-column label="夜班计划" align="center">
           <el-table-column label="顺序" width="210" align="center">
             <template v-if="!scope.row.sum && scope.row.pdp_product_classes_plan[2].enable" slot-scope="scope">
               <el-input-number
@@ -184,7 +221,7 @@
           </el-table-column>
           <el-table-column prop="pdp_product_classes_plan[2].weight" label="重量" align="center" />
           <el-table-column prop="pdp_product_classes_plan[2].time" label="时间" align="center" />
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column label="操作" align="center">
           <template v-if="!scope.row.sum" slot-scope="scope">
             <el-button type="danger" @click="deleteOnePlan(scope.row)">删除</el-button>
@@ -203,6 +240,7 @@
           <el-form-item label="班次: ">
             <el-select
               v-model="classes_add"
+              disabled
             >
               <el-option
                 v-for="item in [{name:'早班',id:0},{name:'中班',id:1},{name:'夜班',id:2}]"
@@ -286,7 +324,8 @@ import {
   getPlanSchedule,
   postProductDayPlanManyCreate,
   hfRecipeList,
-  schedulingResult
+  schedulingResult,
+  currentFactoryDate
 } from '@/api/plan'
 
 import dayjs from 'dayjs'
@@ -317,7 +356,9 @@ export default {
       classes_add: 0,
       mesPlanList: [],
       equip_no: '',
-      currentRowMes: null
+      currentRowMes: null,
+      classesOptions: [],
+      currentFactory: {}
     }
   },
   watch: {
@@ -346,6 +387,7 @@ export default {
   },
   created() {
     // this.getEquipList()
+    this.getCurrentFactoryDate()
     this.getRubberMateria()
     this.getWorkSchedules()
     this.getPlanSchedules()
@@ -395,10 +437,30 @@ export default {
       // eslint-disable-next-line no-empty
       } catch (e) {}
     },
+    async getCurrentFactoryDate() {
+      try {
+        const data = await currentFactoryDate()
+        this.currentFactory = data
+        this.day_time = this.currentFactory.factory_date
+        const obj = this.classesOptions.find(d => d.classes_name === this.currentFactory.classes)
+        this.classes_add = obj.no
+      // eslint-disable-next-line no-empty
+      } catch (e) {}
+    },
     async getWorkSchedules() {
       try {
         const workSchedulesData = await getWorkSchedules({ all: 1, work_procedure: '密炼' })
         this.workSchedules = workSchedulesData.results
+        this.classesOptions = workSchedulesData.results[0].classesdetail_set
+        this.classesOptions.forEach(d => {
+          if (d.classes_name === '早班') {
+            d.no = 0
+          } else if (d.classes_name === '中班') {
+            d.no = 1
+          } else if (d.classes_name === '夜班') {
+            d.no = 2
+          }
+        })
       // eslint-disable-next-line no-empty
       } catch (e) {}
     },

@@ -106,6 +106,7 @@ export default {
   // 其他库查的胶料配方编码
   HfRecipeList: '/api/v1/plan/hf-recipe-list/',
   SchedulingResult: '/api/v1/plan/scheduling-result/',
+  CurrentFactoryDate: '/api/v1/basics/current-factory-date/',
   // 查mes的配方
   DevTypeBatching: '/api/v1/recipe/dev-type-batching/'
 }

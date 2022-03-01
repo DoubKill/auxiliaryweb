@@ -180,4 +180,11 @@ export function schedulingResult(params) {
     params
   })
 }
+export function currentFactoryDate(params) {
+  return request({
+    url: API.CurrentFactoryDate,
+    method: 'get',
+    params
+  })
+}
 
