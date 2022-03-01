@@ -187,4 +187,11 @@ export function currentFactoryDate(params) {
     params
   })
 }
+export function productTechParams(params) {
+  return request({
+    url: API.ProductTechParams,
+    method: 'get',
+    params
+  })
+}
 

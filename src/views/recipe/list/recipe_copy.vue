@@ -199,6 +199,7 @@
         <el-button @click="recipe_return_list">返回</el-button>
       </el-form-item>
       <el-form-item style="float: right">
+        <el-button type="primary" @click="replicationProcessDialog">复制工艺参数</el-button>
         <el-button @click="recipe_save_return">确定保存</el-button>
       </el-form-item>
       <!-- <el-form-item style="float: right">
@@ -1186,6 +1187,51 @@
         @current-change="pagehandleCurrentChange"
       />
     </el-dialog>
+
+    <el-dialog
+      title="选择参考配方"
+      :visible.sync="dialogVisible"
+      width="600px"
+      :before-close="handleClose"
+    >
+      <el-form ref="formData" :model="formData" label-width="100px">
+        <el-form-item label="机台">
+          <el-select
+            v-model="formData.equip_id"
+            style="width: 250px"
+            placeholder="请选择"
+            @change="SelectEquipChange1"
+          >
+            <el-option
+              v-for="item in SelectEquipOptions"
+              :key="item.id"
+              :label="item.equip_name"
+              :value="item.id"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="配方">
+          <el-select
+            v-model="formData.recipe_no"
+            style="width: 250px"
+            placeholder="请选择"
+            filterable
+            @visible-change="selectRecipeDisplay"
+          >
+            <el-option
+              v-for="item in SelectRecipeOptions"
+              :key="item.id"
+              :label="item.stage_product_batch_no"
+              :value="item.stage_product_batch_no"
+            />
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="handleClose(false)">取 消</el-button>
+        <el-button type="primary" :loading="loadingBtn" @click="submitBtn">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -1193,6 +1239,7 @@
 import { recipe_no_url, stage_url, global_SITE_url, site_url, tank_materials, recipe_list, equip_url, rubber_process_url, raw_material_url, material_type_url, condition_url, action_url } from '@/api/recipe_fun'
 // import { constantRoutes } from '@/router'
 // import { dataTool } from 'echarts/lib/echarts'
+import { productbatching, productTechParams } from '@/api/plan'
 
 var timer = null
 export default {
@@ -1303,7 +1350,11 @@ export default {
       rubberSnForInsert: 1,
       carbonSnForInsert: 1,
       oilSnForInsert: 1,
-      isNormalRecipe: true
+      isNormalRecipe: true,
+      dialogVisible: false,
+      formData: {},
+      SelectRecipeOptions: [],
+      loadingBtn: false
     }
   },
   async created() {
@@ -1321,6 +1372,7 @@ export default {
     this.recipe_material_list(this.$route.params['id'])
     // 配方详情界面的配方信息和created密炼步序信息接口访问（已废弃）
     // this.recipe_process_step_list(this.$route.params['id'], this.$route.params['equip'])
+    this.SelectEquipDisplay1()
     this.condition_list()
     this.action_list()
     this.material_type_list()
@@ -2310,6 +2362,79 @@ export default {
       this.$set(arrList[index], 'tank_no', Obj.tank_no)
       this.$set(arrList[index], 'provenance', Obj.provenance)
       this.$set(arrList[index], 'material', Obj.id)
+    },
+    SelectEquipChange1() {
+      const obj = this.SelectEquipOptions.find(d => d.equip_name === this.generateRecipeForm.SelectEquip)
+      this.$set(this.formData, 'recipe_no', null)
+      if (obj && this.formData.equip_id === obj.id) {
+        this.$set(this.formData, 'recipe_no', this.stage_product_batch_no)
+      }
+    },
+    async SelectEquipDisplay1() {
+      try {
+        const equip_list = await equip_url('get', {
+          params: { category_name: '密炼设备' }
+        })
+        this.SelectEquipOptions = equip_list.results || []
+      } catch (e) { throw new Error(e) }
+    },
+    async selectRecipeDisplay(bool) {
+      if (bool) {
+        try {
+          const data = await productbatching('get', {
+            params: { equip_id: this.formData.equip_id, all: 1 }
+          })
+          this.SelectRecipeOptions = data.results || []
+        } catch (e) { throw new Error(e) }
+      }
+    },
+    replicationProcessDialog() {
+      this.dialogVisible = true
+    },
+    handleClose(done) {
+      this.dialogVisible = false
+      this.formData = {}
+      if (done) {
+        done()
+      }
+    },
+    async submitBtn() {
+      if (!this.formData.equip_id || !this.formData.recipe_no) {
+        this.$message('请选择机台和配方')
+        return
+      }
+      try {
+        this.loadingBtn = true
+        const data = await productTechParams({ equip_id: this.formData.equip_id, recipe_no: this.formData.recipe_no })
+        console.log(data, 'data')
+        this.generateRecipeForm.SelectEquip = this.formData.equip_id
+        this.mini_time = data.process_data.mini_time
+        this.mini_temp = data.process_data.mini_time
+        this.over_temp = data.process_data.over_temp
+        this.batching_error = data.process_data.batching_error
+        this.zz_temp = data.process_data.zz_temp
+        this.xlm_temp = data.process_data.xlm_temp
+        this.cb_temp = data.process_data.cb_temp
+        this.over_time = data.process_data.over_time
+        this.max_temp = data.process_data.max_temp
+        this.reuse_time = data.process_data.reuse_time
+        this.reuse_flag = data.process_data.reuse_flag
+        this.temp_use_flag = data.process_data.temp_use_flag
+        this.sp_num = data.process_data.sp_num
+        this.use_flag = data.process_data.use_flag
+        this.ch_time = data.process_data.ch_time
+        this.dj_time = data.process_data.dj_time
+        this.ld_time = data.process_data.ld_time
+
+        if (data.process_detail_data && data.process_detail_data.length) {
+          this.RecipeMaterialList = data.process_detail_data
+        }
+        this.$message.success('复制成功')
+        this.handleClose(false)
+      } catch (e) {
+        //
+      }
+      this.loadingBtn = false
     }
   }
 }
