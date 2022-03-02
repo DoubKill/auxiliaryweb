@@ -799,7 +799,6 @@
             style="width: 250px"
             placeholder="请选择"
             filterable
-            @visible-change="selectRecipeDisplay"
           >
             <el-option
               v-for="item in SelectRecipeOptions"
@@ -1899,11 +1898,8 @@ export default {
       this.$set(arrList[index], 'material', Obj.id)
     },
     SelectEquipChange1() {
-      const obj = this.SelectEquipOptions.find(d => d.equip_name === this.generateRecipeForm.SelectEquip)
       this.$set(this.formData, 'recipe_no', null)
-      if (obj && this.formData.equip_id === obj.id) {
-        this.$set(this.formData, 'recipe_no', this.stage_product_batch_no)
-      }
+      this.selectRecipeDisplay()
     },
     async SelectEquipDisplay1() {
       try {
@@ -1913,15 +1909,17 @@ export default {
         this.SelectEquipOptions = equip_list.results || []
       } catch (e) { throw new Error(e) }
     },
-    async selectRecipeDisplay(bool) {
-      if (bool) {
-        try {
-          const data = await productbatching('get', {
-            params: { equip_id: this.formData.equip_id, all: 1 }
-          })
-          this.SelectRecipeOptions = data.results || []
-        } catch (e) { throw new Error(e) }
-      }
+    async selectRecipeDisplay() {
+      try {
+        const data = await productbatching('get', {
+          params: { equip_id: this.formData.equip_id, all: 1 }
+        })
+        this.SelectRecipeOptions = data.results || []
+        const obj = this.SelectRecipeOptions.find(d => d.stage_product_batch_no === this.stage_product_batch_no)
+        if (obj) {
+          this.$set(this.formData, 'recipe_no', this.stage_product_batch_no)
+        }
+      } catch (e) { throw new Error(e) }
     },
     replicationProcessDialog() {
       this.dialogVisible = true
@@ -1944,7 +1942,7 @@ export default {
         console.log(data, 'data')
         this.generateRecipeForm.SelectEquip = this.formData.equip_id
         this.mini_time = data.process_data.mini_time
-        this.mini_temp = data.process_data.mini_time
+        this.mini_temp = data.process_data.mini_temp
         this.over_temp = data.process_data.over_temp
         this.batching_error = data.process_data.batching_error
         this.zz_temp = data.process_data.zz_temp

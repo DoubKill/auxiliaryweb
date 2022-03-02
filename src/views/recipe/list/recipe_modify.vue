@@ -654,7 +654,6 @@
             style="width: 250px"
             placeholder="请选择"
             filterable
-            @visible-change="selectRecipeDisplay"
           >
             <el-option
               v-for="item in SelectRecipeOptions"
@@ -1009,6 +1008,7 @@ export default {
               _index: carbonItem._index
             })
           } else if (recipe_listData['batching_details'][j]['type'] === 3) {
+            console.log(this.tankOils, 666)
             let oilItem = this.tankOils.find(item => {
               return (item.id === recipe_listData['batching_details'][j].material) &&
                (Number(item.tank_no) === Number(recipe_listData['batching_details'][j].tank_no))
@@ -1040,31 +1040,30 @@ export default {
         this.carbon_tableData = this.carbon_tableData.sort(this.compareSn)
         this.oil_tableData = this.oil_tableData.sort(this.compareSn)
         this.rubber_tableData = this.rubber_tableData.sort(this.compareSn)
-        // console.log('----------------------get--------------------')
-        // console.log(recipe_listData)
-        this.recipe_step_id = recipe_listData['processes']['id']
-        // console.log('aaaaaaaaaaaaaaa----------------')
-        // console.log(typeof (recipe_listData['processes']['mini_time']), typeof (recipe_listData['processes']['mini_temp']), typeof (recipe_listData['processes']['over_time']))
-        // console.log('aaaaaaaaaaaaaaa----------------')
-        // 超温最短时间、进胶最低温度...
-        this.mini_time = (recipe_listData['processes']['mini_time'])
-        this.mini_temp = (recipe_listData['processes']['mini_temp'])
-        this.over_temp = (recipe_listData['processes']['over_temp'])
-        this.batching_error = (recipe_listData['processes']['batching_error'])
-        this.zz_temp = (recipe_listData['processes']['zz_temp'])
-        this.xlm_temp = (recipe_listData['processes']['xlm_temp'])
-        this.cb_temp = (recipe_listData['processes']['cb_temp'])
-        // 炼胶超时时间、进胶最高温度...
-        this.over_time = (recipe_listData['processes']['over_time'])
-        this.max_temp = (recipe_listData['processes']['max_temp'])
-        this.reuse_time = (recipe_listData['processes']['reuse_time'])
-        this.reuse_flag = recipe_listData['processes']['reuse_flag']
-        this.temp_use_flag = recipe_listData['processes']['temp_use_flag']
-        this.sp_num = recipe_listData['processes']['sp_num']
-        this.use_flag = recipe_listData['processes']['use_flag']
-        this.ch_time = recipe_listData['processes']['ch_time']
-        this.dj_time = recipe_listData['processes']['dj_time']
-        this.ld_time = recipe_listData['processes']['ld_time']
+
+        if (recipe_listData['processes']) {
+          this.recipe_step_id = recipe_listData['processes']['id']
+          // 超温最短时间、进胶最低温度...
+          this.mini_time = (recipe_listData['processes']['mini_time'])
+          this.mini_temp = (recipe_listData['processes']['mini_temp'])
+          this.over_temp = (recipe_listData['processes']['over_temp'])
+          this.batching_error = (recipe_listData['processes']['batching_error'])
+          this.zz_temp = (recipe_listData['processes']['zz_temp'])
+          this.xlm_temp = (recipe_listData['processes']['xlm_temp'])
+          this.cb_temp = (recipe_listData['processes']['cb_temp'])
+          // 炼胶超时时间、进胶最高温度...
+          this.over_time = (recipe_listData['processes']['over_time'])
+          this.max_temp = (recipe_listData['processes']['max_temp'])
+          this.reuse_time = (recipe_listData['processes']['reuse_time'])
+          this.reuse_flag = recipe_listData['processes']['reuse_flag']
+          this.temp_use_flag = recipe_listData['processes']['temp_use_flag']
+          this.sp_num = recipe_listData['processes']['sp_num']
+          this.use_flag = recipe_listData['processes']['use_flag']
+          this.ch_time = recipe_listData['processes']['ch_time']
+          this.dj_time = recipe_listData['processes']['dj_time']
+          this.ld_time = recipe_listData['processes']['ld_time']
+        }
+
         this.RecipeMaterialList = []
         for (var i = 0; i < recipe_listData['process_details'].length; ++i) {
           this.RecipeMaterialList.push({
@@ -1683,11 +1682,8 @@ export default {
       this.$set(arrList[index], 'material', Obj.id)
     },
     SelectEquipChange1() {
-      const obj = this.SelectEquipOptions.find(d => d.equip_name === this.equip_name)
       this.$set(this.formData, 'recipe_no', null)
-      if (obj && this.formData.equip_id === obj.id) {
-        this.$set(this.formData, 'recipe_no', this.stage_product_batch_no)
-      }
+      this.selectRecipeDisplay()
     },
     async SelectEquipDisplay1() {
       try {
@@ -1697,15 +1693,17 @@ export default {
         this.SelectEquipOptions = equip_list.results || []
       } catch (e) { throw new Error(e) }
     },
-    async selectRecipeDisplay(bool) {
-      if (bool) {
-        try {
-          const data = await productbatching('get', {
-            params: { equip_id: this.formData.equip_id, all: 1 }
-          })
-          this.SelectRecipeOptions = data.results || []
-        } catch (e) { throw new Error(e) }
-      }
+    async selectRecipeDisplay() {
+      try {
+        const data = await productbatching('get', {
+          params: { equip_id: this.formData.equip_id, all: 1 }
+        })
+        this.SelectRecipeOptions = data.results || []
+        const obj = this.SelectRecipeOptions.find(d => d.stage_product_batch_no === this.stage_product_batch_no)
+        if (obj) {
+          this.$set(this.formData, 'recipe_no', this.stage_product_batch_no)
+        }
+      } catch (e) { throw new Error(e) }
     },
     replicationProcessDialog() {
       this.dialogVisible = true
@@ -1726,7 +1724,7 @@ export default {
         this.loadingBtn = true
         const data = await productTechParams({ equip_id: this.formData.equip_id, recipe_no: this.formData.recipe_no })
         this.mini_time = data.process_data.mini_time
-        this.mini_temp = data.process_data.mini_time
+        this.mini_temp = data.process_data.mini_temp
         this.over_temp = data.process_data.over_temp
         this.batching_error = data.process_data.batching_error
         this.zz_temp = data.process_data.zz_temp
