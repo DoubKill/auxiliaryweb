@@ -410,6 +410,7 @@ export default {
       localStorage.setItem('addPlan:equip', equip)
     },
     show() {
+      this.getCurrentFactoryDate()
       this.plansForAdd = []
       this.addPlanVisible = true
       this.getEquipList()
