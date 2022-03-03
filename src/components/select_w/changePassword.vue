@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import { validPassword, validCheckPass } from '@/utils/validate'
+import { validPassword, validPassword1, validCheckPass } from '@/utils/validate'
 import { changePassword } from '@/api/user'
 export default {
   props: {
@@ -77,7 +77,7 @@ export default {
           { required: true, validator: (rule, value, callback) => { validPassword(rule, value, callback, this) }, trigger: 'blur' }
         ],
         new_password: [
-          { required: true, validator: (rule, value, callback) => { validPassword(rule, value, callback, this) }, trigger: 'blur' }
+          { required: true, validator: (rule, value, callback) => { validPassword1(rule, value, callback, this) }, trigger: 'blur' }
         ],
         checkPass: [
           { required: true, validator: (rule, value, callback) => { validCheckPass(rule, value, callback, this) }, trigger: 'blur' }
@@ -91,6 +91,15 @@ export default {
         this.dialogTableVisible = bool
       }
     }
+  },
+  created() {
+    var reg = /(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[\W_]).{8,}/
+    if (this.$route.query.password && !reg.test(this.$route.query.password)) {
+      this.tableVisible1 = true
+    } else {
+      this.tableVisible1 = false
+    }
+    this.dialogTableVisible = this.tableVisible1
   },
   methods: {
     async submitForm(formName) {
@@ -112,10 +121,15 @@ export default {
       })
     },
     beforeClose(done) {
-      this.loading = false
-      this.$refs.ruleForm.resetFields()
-      this.$emit('dialogTableVisible')
-      done()
+      var reg = /(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[\W_]).{8,}/
+      if (this.$route.query.password && !reg.test(this.$route.query.password)) {
+        this.$parent.logout()
+      } else {
+        this.loading = false
+        this.$refs.ruleForm.resetFields()
+        this.$emit('dialogTableVisible')
+        done()
+      }
     }
   }
 }
