@@ -108,5 +108,6 @@ export default {
   SchedulingResult: '/api/v1/plan/scheduling-result/',
   CurrentFactoryDate: '/api/v1/basics/current-factory-date/',
   // 查mes的配方
-  DevTypeBatching: '/api/v1/recipe/dev-type-batching/'
+  DevTypeBatching: '/api/v1/recipe/dev-type-batching/',
+  ProductTechParams: '/api/v1/recipe/product-tech-params/'
 }

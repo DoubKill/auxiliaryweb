@@ -325,6 +325,7 @@ import {
   postProductDayPlanManyCreate,
   hfRecipeList,
   schedulingResult,
+  schedulingResultPost,
   currentFactoryDate
 } from '@/api/plan'
 
@@ -525,13 +526,24 @@ export default {
           delete D.product_batching
         }
       })
-      // console.log(plansForAdd_, 'plansForAdd_')
-      // return
+      const result_id = []
+      plansForAdd_.forEach(d => {
+        if (d.isMes) {
+          result_id.push(d.isMes)
+        }
+      })
       postProductDayPlanManyCreate(plansForAdd_)
         .then(response => {
           app.addPlanVisible = false
-          app.$message('创建成功')
+          app.$message.success('创建成功')
           app.$emit('handleSuccessed')
+
+          schedulingResultPost({ result_id: result_id })
+            .then(response => {
+            })
+          // eslint-disable-next-line handle-callback-err
+            .catch(error => {
+            })
         })
         // eslint-disable-next-line handle-callback-err
         .catch(error => {
@@ -568,7 +580,12 @@ export default {
         // 查找匹配的配方
         if (this.currentRowMes && this.currentRowMes.recipe_name) {
           const _obj = rubberMateriaData.results.find(d => d.stage_product_batch_no === this.currentRowMes.recipe_name)
-          this.currentRowMes.product_batching = _obj.id
+          if (_obj) {
+            this.currentRowMes.product_batching = _obj.id
+          } else {
+            this.currentRowMes = null
+            throw new Error('该胶料配方编码不存在')
+          }
         }
 
         var classesdetail_set_ = workSchedule.classesdetail_set
@@ -614,6 +631,7 @@ export default {
           day_time: planSchedule.day_time,
           work_schedule_name: planSchedule.work_schedule_name,
           planSchedule: planSchedule,
+          isMes: this.currentRowMes ? this.currentRowMes.id : false,
           product_batch_no: this.currentRowMes ? this.currentRowMes.recipe_name : '',
           product_batching: this.currentRowMes ? this.currentRowMes.product_batching : ''
         }
@@ -649,7 +667,7 @@ export default {
         this.currentRowMes = null
       } catch (e) {
         console.log(e, 'e')
-        this.$message.error('添加失败')
+        this.$message.error(e + ',添加失败')
         this.loadingBtn = false
       }
     },
@@ -676,8 +694,21 @@ export default {
         this.$message('请选择计划')
         return
       }
-      this.handleClose1(false)
-      this.addOnePlan()
+      if (this.currentRowMes.status === '已下发') {
+        this.$confirm(this.currentRowMes.recipe_name + '规格的计划已经下发, 是否继续下发?', '提示', {
+          confirmButtonText: 'Y',
+          cancelButtonText: 'N',
+          type: 'warning'
+        }).then(() => {
+          this.handleClose1(false)
+          this.addOnePlan()
+        }).catch(function() {
+
+        })
+      } else {
+        this.handleClose1(false)
+        this.addOnePlan()
+      }
     },
     equipLastIndexInPlansForAdd() {
       for (var i = 0; i < this.plansForAdd.length; i++) {
