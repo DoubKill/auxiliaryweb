@@ -29,6 +29,19 @@ export function validPassword(rule, value, callback, _this) {
   }
 }
 
+export function validPassword1(rule, value, callback, _this) {
+  var reg = /(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[\W_]).{8,}/
+  if (!value) {
+    callback(new Error('请输入密码'))
+  } else if (_this.userForm.old_password === _this.userForm.new_password) {
+    callback(new Error('新密码和原密码相同!'))
+  } else if (value && !reg.test(value)) {
+    callback(new Error('密码必须同时包含大写英文,小写英文,数字,符号,且不少于8位'))
+  } else {
+    callback()
+  }
+}
+
 export function validCheckPass(rule, value, callback, _this) {
   if (!value) {
     callback(new Error('请再次输入密码'))

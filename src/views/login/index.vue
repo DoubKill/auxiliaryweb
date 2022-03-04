@@ -119,7 +119,11 @@ export default {
           this.$store
             .dispatch('user/login', this.loginForm)
             .then(() => {
-              this.$router.push({ path: '/' })
+              this.$router.push({
+                path: '/',
+                query: {
+                  password: this.loginForm.password
+                }})
               this.loading = false
             })
             // eslint-disable-next-line handle-callback-err

@@ -24,15 +24,23 @@
             :value="equip.id"
           />
         </el-select>
-        <el-date-picker
+        <!-- <el-date-picker
           v-model="day_time"
           style="margin-right: 10px"
           type="date"
           value-format="yyyy-MM-dd"
           placeholder="选择日期"
-          disabled
           @change="getPlanSchedules"
-        />
+        /> -->
+        <el-select v-model="day_time" filterable placeholder="选择日期" @change="changeDate">
+          <el-option
+            v-for="planSchedule in factoryDateList"
+            :key="planSchedule.factory_date"
+            :label="planSchedule.factory_date"
+            :value="planSchedule.factory_date"
+          />
+        </el-select>
+
         <el-select v-model="planScheduleId" filterable placeholder="倒班规则">
           <el-option
             v-for="planSchedule in planSchedules"
@@ -88,7 +96,7 @@
                 v-model.number="scope.row.pdp_product_classes_plan[item.no].sn"
                 :precision="0"
                 :min="0"
-                :disabled="item.classes_name!==currentFactory.classes"
+                :disabled="!currentFactory.classes.includes(item.classes_name)"
                 @blur="() => {
                   if (!scope.row.pdp_product_classes_plan[item.no].sn) {
                     scope.row.pdp_product_classes_plan[item.no].sn = 0
@@ -102,7 +110,7 @@
               <el-input-number
                 v-model.number="scope.row.pdp_product_classes_plan[item.no].plan_trains"
                 :precision="0"
-                :disabled="scope.row.sum||item.classes_name!==currentFactory.classes"
+                :disabled="scope.row.sum||!currentFactory.classes.includes(item.classes_name)"
                 :min="0"
                 @blur="() => {
                   if (!scope.row.pdp_product_classes_plan[item.no].plan_trains) {
@@ -240,10 +248,9 @@
           <el-form-item label="班次: ">
             <el-select
               v-model="classes_add"
-              disabled
             >
               <el-option
-                v-for="item in [{name:'早班',id:0},{name:'中班',id:1},{name:'夜班',id:2}]"
+                v-for="item in currentFactory._classes"
                 :key="item.id"
                 :label="item.name"
                 :value="item.id"
@@ -359,7 +366,9 @@ export default {
       equip_no: '',
       currentRowMes: null,
       classesOptions: [],
-      currentFactory: {}
+      currentFactory: {},
+      currentClassesList: [],
+      factoryDateList: []
     }
   },
   watch: {
@@ -391,7 +400,6 @@ export default {
     this.getCurrentFactoryDate()
     this.getRubberMateria()
     this.getWorkSchedules()
-    this.getPlanSchedules()
   },
   methods: {
     equipSelected(equip) {
@@ -402,6 +410,7 @@ export default {
       localStorage.setItem('addPlan:equip', equip)
     },
     show() {
+      this.getCurrentFactoryDate()
       this.plansForAdd = []
       this.addPlanVisible = true
       this.getEquipList()
@@ -441,12 +450,20 @@ export default {
     async getCurrentFactoryDate() {
       try {
         const data = await currentFactoryDate()
-        this.currentFactory = data
-        this.day_time = this.currentFactory.factory_date
-        const obj = this.classesOptions.find(d => d.classes_name === this.currentFactory.classes)
-        this.classes_add = obj.no
+        this.factoryDateList = data
+
+        this.currentFactory = this.factoryDateList[0]
+        this.day_time = this.factoryDateList[0].factory_date
+
+        this.getPlanSchedules()
       // eslint-disable-next-line no-empty
       } catch (e) {}
+    },
+    changeDate() {
+      this.plansForAdd = []
+      const obj = this.factoryDateList.find(d => d.factory_date === this.day_time)
+      this.currentFactory = obj
+      this.getPlanSchedules()
     },
     async getWorkSchedules() {
       try {
@@ -467,6 +484,18 @@ export default {
     },
     async getPlanSchedules() {
       try {
+        this.currentFactory._classes = []
+        this.currentFactory.classes.forEach((D, index) => {
+          if (D === '早班') {
+            this.currentFactory._classes[index] = { name: '早班', id: 0 }
+          } else if (D === '中班') {
+            this.currentFactory._classes[index] = { name: '中班', id: 1 }
+          } else if (D === '夜班') {
+            this.currentFactory._classes[index] = { name: '夜班', id: 2 }
+          }
+        })
+        this.classes_add = this.currentFactory._classes[0].id
+
         this.loadingFrom = true
         this.planSchedules = []
         this.planScheduleId = null
