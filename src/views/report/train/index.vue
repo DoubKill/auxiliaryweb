@@ -115,6 +115,10 @@
         label="手/自动"
       />
       <el-table-column
+        prop="ai_value"
+        label="AI值"
+      />
+      <el-table-column
         :prop="editionNo === 'v1'?'production_details.总重量':'actual_weight'"
         label="总重量(kg)"
       />
