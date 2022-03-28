@@ -67,7 +67,7 @@
       />
       <el-table-column
         prop="actual_weight"
-        label="实际重量kg"
+        label="实际重量(kg)"
       />
     </el-table>
     <page
