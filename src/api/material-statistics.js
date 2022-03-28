@@ -8,3 +8,11 @@ export function getMaterialStatistics(params) {
     params
   })
 }
+export function materialStatisticsExport(params) {
+  return request({
+    url: API.MaterialStatisticsUrl,
+    method: 'get',
+    responseType: 'blob',
+    params
+  })
+}
