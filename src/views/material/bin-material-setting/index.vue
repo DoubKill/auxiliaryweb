@@ -28,6 +28,7 @@
             <el-select
               v-model="scope.row.material_no"
               style="width:100%"
+              filterable
               :disabled="!scope.row.use_flag"
               @change="masterialChange(scope.row,cbOptions)"
             >
@@ -45,6 +46,7 @@
             <el-select
               v-model="scope.row.provenance"
               style="width:100%"
+              filterable
               :disabled="!scope.row.use_flag"
               @visible-change="getProvenanceOptions($event, scope.row.material_no)"
             >
@@ -78,6 +80,7 @@
           <template slot-scope="scope">
             <el-select
               v-model="scope.row.material_no"
+              filterable
               style="width:100%"
               :disabled="!scope.row.use_flag"
               @change="masterialChange(scope.row,oilOptions)"
@@ -96,6 +99,7 @@
             <el-select
               v-model="scope.row.provenance"
               style="width:100%"
+              filterable
               :disabled="!scope.row.use_flag"
               @visible-change="getProvenanceOptions($event, scope.row.material_no)"
             >
