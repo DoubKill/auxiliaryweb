@@ -35,7 +35,7 @@
               <el-option
                 v-for="item in cbOptions"
                 :key="item.material_no"
-                :label="item.material_name"
+                :label="item._material_name1"
                 :value="item.material_no"
               />
             </el-select>
@@ -88,7 +88,7 @@
               <el-option
                 v-for="item in oilOptions"
                 :key="item.material_no"
-                :label="item.material_name"
+                :label="item._material_name1"
                 :value="item.material_no"
               />
             </el-select>
@@ -163,8 +163,8 @@ export default {
   },
   methods: {
     getProvenanceOptions(bool, material_no) {
-      console.log(bool, 'bool')
-      console.log(material_no, 'material_no')
+      // console.log(bool, 'bool')
+      // console.log(material_no, 'material_no')
       if (bool) {
         getMaterialSuppliers({ material_no: material_no })
           .then(response => {
@@ -246,6 +246,10 @@ export default {
           params: { material_type_name: '炭黑', all: 1 }
         })
         this.cbOptions = materialsData.results
+        this.cbOptions.forEach(d => {
+          var reg = new RegExp('-C|-X', 'g')
+          d._material_name1 = d.material_name.replace(reg, '')
+        })
       // eslint-disable-next-line no-empty
       } catch (e) {}
     },
@@ -255,6 +259,10 @@ export default {
           params: { material_type_name: '油料', all: 1 }
         })
         this.oilOptions = materialsData.results
+        this.oilOptions.forEach(d => {
+          var reg = new RegExp('-C|-X', 'g')
+          d._material_name1 = d.material_name.replace(reg, '')
+        })
       // eslint-disable-next-line no-empty
       } catch (e) {}
     },
@@ -282,8 +290,8 @@ export default {
     },
     stateChange() {},
     save() {
-      console.log(this.tableBinCbData)
-      console.log(this.tableBinOilData)
+      // console.log(this.tableBinCbData)
+      // console.log(this.tableBinOilData)
       this.putCbList()
       // this.putOilList()
     }
