@@ -119,10 +119,11 @@ export default {
           this.$store
             .dispatch('user/login', this.loginForm)
             .then(() => {
+              setCookie('password', this.loginForm.password, 9999)
               this.$router.push({
                 path: '/',
                 query: {
-                  password: this.loginForm.password
+                  // password: this.loginForm.password
                 }})
               this.loading = false
             })
@@ -137,6 +138,11 @@ export default {
       })
     }
   }
+}
+function setCookie(cName, value, expiredays) {
+  var exdate = new Date()
+  exdate.setDate(exdate.getDate() + expiredays)
+  document.cookie = cName + '=' + value + ((expiredays == null) ? '' : ';expires=' + exdate.toGMTString())
 }
 </script>
 
