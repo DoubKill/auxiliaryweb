@@ -93,7 +93,6 @@ export default {
     }
   },
   created() {
-    console.log(getCookie('password'))
     var reg = /(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[\W_]).{8,}/
     if (getCookie('password') && !reg.test(getCookie('password'))) {
       this.tableVisible1 = true
