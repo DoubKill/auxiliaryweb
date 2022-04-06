@@ -11,6 +11,7 @@
           placeholder="选择日期"
           value-format="yyyy-MM-dd HH:mm:ss"
           :clearable="false"
+          default-time="08:00:00"
           @change="search"
         />
       </el-form-item>
@@ -19,6 +20,7 @@
           v-model="params.et"
           type="datetime"
           placeholder="选择日期"
+          default-time="07:59:59"
           value-format="yyyy-MM-dd HH:mm:ss"
           @change="search"
         />
@@ -32,6 +34,21 @@
       </el-form-item>
       <el-form-item label="物料类别">
         <material-type-select @materialTypeChanged="materialTypeChanged" />
+      </el-form-item>
+      <el-form-item label="物料名称">
+        <el-select
+          v-model="params.material_no"
+          filterable
+          clearable
+          @change="search"
+        >
+          <el-option
+            v-for="item in options"
+            :key="item.material_no"
+            :label="item.material_name"
+            :value="item.material_no"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item style="float: right">
         <el-button :loading="btnExportLoad" @click="exportTable">导出</el-button>
@@ -80,6 +97,7 @@
 
 <script>
 import { getMaterialStatistics, materialStatisticsExport } from '@/api/material-statistics'
+import { getMaterials } from '@/api/material'
 import page from '@/components/page'
 import EquipSelect from '@/components/EquipSelect'
 import ProductNoSelect from '@/components/ProductNoSelect'
@@ -101,12 +119,14 @@ export default {
         equip_no: null,
         product_no: null
       },
-      btnExportLoad: false
+      btnExportLoad: false,
+      options: []
     }
   },
   created() {
-    this.params.st = setDate() + ' ' + '00:00:00'
+    this.params.st = setDate() + ' ' + '08:00:00'
     this.getMaterialStatistics()
+    this.getMaterial()
   },
   methods: {
     equipChanged(equip) {
@@ -137,6 +157,13 @@ export default {
         this.loading = false
       }).catch(e => {
         this.loading = false
+      })
+    },
+    getMaterial() {
+      getMaterials({ all: 1 }).then(response => {
+        this.options = response.results || []
+      }).catch(e => {
+        //
       })
     },
     currentChange(page) {
