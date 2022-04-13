@@ -139,6 +139,13 @@
               @click="retransmissionpPlan"
             >重传</el-button>
           </el-form-item>
+          <el-form-item style="float: right;margin-left:10px">
+            <el-button
+              v-if="permissionObj.production.manualinputtrains.indexOf('add')>-1"
+              type="primary"
+              @click="showManualEntry"
+            >人工录入手动生产车次</el-button>
+          </el-form-item>
         </el-col>
         <!-- </el-form> -->
         <!-- </el-row>
@@ -320,6 +327,128 @@
       ref="addPlanDialog"
       @handleSuccessed="getEquip"
     />
+
+    <el-dialog
+      title="人工录入手动生产车次"
+      :visible.sync="dialogVisible"
+      width="80%"
+      :before-close="handleClose"
+    >
+      <el-form :inline="true">
+        <el-form-item label="日期">
+          <el-date-picker
+            v-model="search.factory_date"
+            type="date"
+            :clearable="false"
+            value-format="yyyy-MM-dd"
+            placeholder="选择日期"
+            @change="changeSearch"
+          />
+        </el-form-item>
+        <el-form-item label="机台">
+          <el-input v-model="search.equip_no" disabled />
+        </el-form-item>
+      </el-form>
+      <el-table
+        :data="tableData1"
+        border
+      >
+        <el-table-column
+          label="日期"
+          min-width="20"
+        >
+          <template slot-scope="{row}">
+            <el-date-picker
+              v-model="row.factory_date"
+              disabled
+              type="date"
+              value-format="yyyy-MM-dd"
+              placeholder="选择日期"
+            />
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="classes"
+          label="班次"
+          min-width="20"
+        >
+          <template slot-scope="{row}">
+            <el-select
+              v-model="row.classes"
+              placeholder="请选择"
+              @visible-change="classesVisibleChange"
+            >
+              <el-option
+                v-for="item in classesOptions"
+                :key="item.global_name"
+                :label="item.global_name"
+                :value="item.global_name"
+              />
+            </el-select>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="product_no"
+          label="胶料编码"
+          min-width="20"
+        >
+          <template slot-scope="{row}">
+            <el-select
+              v-model="row.product_no"
+              placeholder="请选择胶料编码"
+              filterable
+              allow-create
+              @visible-change="recipeVisibleChange"
+            >
+              <el-option
+                v-for="(item, index) in recipeOptions"
+                :key="index"
+                :label="item"
+                :value="item"
+              />
+            </el-select>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="车数"
+          min-width="20"
+        >
+          <template slot-scope="{row}">
+            <el-input v-model="row.actual_trains" />
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="操作"
+          width="160"
+        >
+          <template slot-scope="scope">
+            <el-button
+              v-if="permissionObj.plan.productclassesplan.indexOf('change')>-1"
+              size="mini"
+              type="danger"
+              @click="handleDelete(scope.row,scope.$index)"
+            >
+              删除
+            </el-button>
+            <el-button
+              v-if="permissionObj.plan.productclassesplan.indexOf('change')>-1"
+              size="mini"
+              type="primary"
+              @click="handleSubmit(scope.row)"
+            >
+              保存
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div style="width:100%;text-align:center;margin-top:15px">
+        <el-button
+          v-if="permissionObj.plan.productclassesplan.indexOf('change')>-1"
+          size="small"
+          @click="addCellDispose"
+        >插入一行</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -335,7 +464,10 @@ import {
   downRegulation,
   globalCodes,
   productbatching,
-  getPlanStatusList
+  getPlanStatusList,
+  currentFactoryDate,
+  manualInputTrains,
+  manualInputTrainsPost
 } from '@/api/plan'
 import AlterTrainNumberDialog from './AlterTrainNumberDialog'
 import AddPlanDialog from './AddPlanDialog'
@@ -369,7 +501,10 @@ export default {
 
       updateTrainsId: '',
       disabled: true,
-      version: null
+      version: null,
+      dialogVisible: false,
+      search: {},
+      tableData1: []
     }
   },
   computed: {
@@ -378,6 +513,7 @@ export default {
   created() {
     this.permissionObj = this.permission
     this.getEquip()
+    this.getCurrentFactory1()
   },
   methods: {
     async getEquip() {
@@ -693,6 +829,57 @@ export default {
     currentChange(page) {
       this.page = page
       this.getPlanList()
+    },
+    showManualEntry() {
+      if (!this.equip) {
+        this.$message('请选择机台')
+        return
+      }
+      this.dialogVisible = true
+      this.search.equip_no = this.equip
+      this.getManualEntry()
+    },
+    getManualEntry() {
+      manualInputTrains(this.search).then((response) => {
+        this.tableData1 = response
+      })
+    },
+    getCurrentFactory1() {
+      currentFactoryDate().then((response) => {
+        this.$set(this.search, 'factory_date', response[0].factory_date)
+        this.$set(this.search, 'classes', response[0].classes[0])
+      })
+    },
+    changeSearch() {
+      this.tableData1 = []
+      this.getManualEntry()
+    },
+    handleDelete(row, index) {
+      manualInputTrainsPost('delete', { id: row.id }).then((response) => {
+        this.$message.success('删除成功')
+        this.tableData1.splice(index, 1)
+      })
+    },
+    handleSubmit(row) {
+      const type = row.id ? 'put' : 'post'
+      if (!row.factory_date || !row.equip_no || !row.classes || !row.product_no || !row.actual_trains) {
+        this.$message('一行的数据都必填')
+        return
+      }
+      manualInputTrainsPost(type, row).then((response) => {
+        this.$message.success('保存成功')
+      })
+    },
+    addCellDispose() {
+      this.tableData1.push({
+        factory_date: this.search.factory_date,
+        classes: this.search.classes,
+        equip_no: this.search.equip_no
+      })
+    },
+    handleClose(done) {
+      this.tableData1 = []
+      done()
     }
   }
 }

@@ -109,5 +109,6 @@ export default {
   CurrentFactoryDate: '/api/v1/basics/current-factory-date/',
   // 查mes的配方
   DevTypeBatching: '/api/v1/recipe/dev-type-batching/',
-  ProductTechParams: '/api/v1/recipe/product-tech-params/'
+  ProductTechParams: '/api/v1/recipe/product-tech-params/',
+  ManualInputTrains: '/api/v1/production/manual-input-trains/'
 }
