@@ -868,6 +868,7 @@ export default {
       }
       manualInputTrainsPost(type, row).then((response) => {
         this.$message.success('保存成功')
+        this.getManualEntry()
       })
     },
     addCellDispose() {
