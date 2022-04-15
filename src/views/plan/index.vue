@@ -414,7 +414,13 @@
           min-width="20"
         >
           <template slot-scope="{row}">
-            <el-input v-model="row.actual_trains" />
+            <el-input-number
+              v-model="row.actual_trains"
+              controls-position="right"
+              :min="1"
+              :step="1"
+              step-strictly
+            />
           </template>
         </el-table-column>
         <el-table-column
