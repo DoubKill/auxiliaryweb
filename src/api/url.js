@@ -14,6 +14,7 @@ export default {
 
   // 胶料配料标准管理接口
   RubberMaterialUrl: '/api/v1/recipe/product-batching/',
+  BatchingMaterials: '/api/v1/system/batching-materials/',
   // 胶料配料标准复制接口
   RubberMaterialCopyUrl: '/api/v1/recipe/product-batching-copy/',
   // 胶料配料步序接口

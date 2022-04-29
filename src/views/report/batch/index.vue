@@ -23,8 +23,6 @@
       </el-form-item>
       <el-form-item label="胶料">
         <productNo-select
-          :is-stage-productbatch-no-remove="true"
-          :make-use-batch="true"
           @productBatchingChanged="productBatchingChanged"
         />
       </el-form-item>
@@ -296,7 +294,7 @@
 import { setDate } from '@/utils/index'
 import page from '@/components/page'
 import selectEquip from '@/components/select_w/equip'
-import ProductNoSelect from '@/components/ProductNoSelect'
+import ProductNoSelect from '@/components/reportProductNoSelect'
 import {
   reportBatch,
   classesList,
@@ -513,7 +511,7 @@ export default {
       chartObj.setOption(this.options)
     },
     productBatchingChanged(val) {
-      this.getParams.product_no = val ? val.stage_product_batch_no : ''
+      this.getParams.product_no = val || ''
 
       this.getParams.page = 1
       this.loadingTable = true

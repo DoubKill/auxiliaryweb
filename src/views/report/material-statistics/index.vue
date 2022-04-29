@@ -100,7 +100,7 @@ import { getMaterialStatistics, materialStatisticsExport } from '@/api/material-
 import { getMaterials } from '@/api/material'
 import page from '@/components/page'
 import EquipSelect from '@/components/EquipSelect'
-import ProductNoSelect from '@/components/ProductNoSelect'
+import ProductNoSelect from '@/components/reportProductNoSelect'
 import MaterialTypeSelect from '@/components/MaterialTypeSelect'
 import { setDate } from '@/utils'
 
@@ -134,7 +134,7 @@ export default {
       this.search()
     },
     productBatchingChanged(productBatching) {
-      this.params.product_no = productBatching ? productBatching.stage_product_batch_no : null
+      this.params.product_no = productBatching || null
       this.search()
     },
     materialTypeChanged(materialType) {
