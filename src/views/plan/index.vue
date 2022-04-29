@@ -83,29 +83,29 @@
         <el-col :span="7">
           <el-form-item style="float: right;margin-left:10px">
             <el-button
-              v-if="permissionObj.plan.productclassesplan.indexOf('view')>-1"
+              v-if="permissionObj.plan.productclassesplan&&permissionObj.plan.productclassesplan.indexOf('view')>-1"
               type="info"
               @click="refreshPlan"
             >刷新</el-button>
             <el-button
-              v-if="permissionObj.plan.productclassesplan.indexOf('add')>-1"
+              v-if="permissionObj.plan.productclassesplan&&permissionObj.plan.productclassesplan.indexOf('add')>-1"
               type="info"
               @click="showAddPlanDialog"
             >新增</el-button>
             <el-button
-              v-if="permissionObj.plan.productclassesplan.indexOf('change')>-1&&version!=='v3'"
+              v-if="permissionObj.plan.productclassesplan&&permissionObj.plan.productclassesplan.indexOf('change')>-1&&version!=='v3'"
               type="info"
               :disabled="disabled"
               @click="stopPlan"
             >停止</el-button>
             <el-button
-              v-if="permissionObj.plan.productclassesplan.indexOf('delete')>-1"
+              v-if="permissionObj.plan.productclassesplan&&permissionObj.plan.productclassesplan.indexOf('delete')>-1"
               type="info"
               :disabled="disabled"
               @click="delPlan"
             >删除</el-button>
             <el-button
-              v-if="permissionObj.plan.productclassesplan.indexOf('change')>-1"
+              v-if="permissionObj.plan.productclassesplan&&permissionObj.plan.productclassesplan.indexOf('change')>-1"
               type="info"
               :disabled="disabled"
               @click="issuedPlan"
@@ -114,25 +114,25 @@
 
           <el-form-item style="float: right;margin-left:10px">
             <el-button
-              v-if="permissionObj.plan.productclassesplan.indexOf('change')>-1"
+              v-if="permissionObj.plan.productclassesplan&&permissionObj.plan.productclassesplan.indexOf('change')>-1"
               type="info"
               :disabled="disabled"
               @click="upPlan"
             >上调</el-button>
             <el-button
-              v-if="permissionObj.plan.productclassesplan.indexOf('change')>-1"
+              v-if="permissionObj.plan.productclassesplan&&permissionObj.plan.productclassesplan.indexOf('change')>-1"
               type="info"
               :disabled="disabled"
               @click="downPlan"
             >下调</el-button>
             <el-button
-              v-if="permissionObj.plan.productclassesplan.indexOf('change')>-1"
+              v-if="permissionObj.plan.productclassesplan&&permissionObj.plan.productclassesplan.indexOf('change')>-1"
               type="info"
               :disabled="disabled"
               @click="showAlterTrainNumberDialog"
             >修改车次</el-button>
             <el-button
-              v-if="permissionObj.plan.productclassesplan.indexOf('change')>-1&&version!=='v3'"
+              v-if="permissionObj.plan.productclassesplan&&permissionObj.plan.productclassesplan.indexOf('change')>-1&&version!=='v3'"
               type="info"
               style="width: 120px"
               :disabled="disabled"
@@ -141,7 +141,7 @@
           </el-form-item>
           <el-form-item style="float: right;margin-left:10px">
             <el-button
-              v-if="permissionObj.production.manualinputtrains.indexOf('add')>-1"
+              v-if="permissionObj.production.manualinputtrains&&permissionObj.production.manualinputtrains.indexOf('add')>-1"
               type="primary"
               @click="showManualEntry"
             >人工录入手动生产车次</el-button>
@@ -429,7 +429,7 @@
         >
           <template slot-scope="scope">
             <el-button
-              v-if="permissionObj.plan.productclassesplan.indexOf('change')>-1"
+              v-if="permissionObj.plan.productclassesplan&&permissionObj.plan.productclassesplan.indexOf('change')>-1"
               size="mini"
               type="danger"
               @click="handleDelete(scope.row,scope.$index)"
@@ -437,7 +437,7 @@
               删除
             </el-button>
             <el-button
-              v-if="permissionObj.plan.productclassesplan.indexOf('change')>-1"
+              v-if="permissionObj.plan.productclassesplan&&permissionObj.plan.productclassesplan.indexOf('change')>-1"
               size="mini"
               type="primary"
               @click="handleSubmit(scope.row)"
@@ -449,7 +449,7 @@
       </el-table>
       <div style="width:100%;text-align:center;margin-top:15px">
         <el-button
-          v-if="permissionObj.plan.productclassesplan.indexOf('change')>-1"
+          v-if="permissionObj.plan.productclassesplan&&permissionObj.plan.productclassesplan.indexOf('change')>-1"
           size="small"
           @click="addCellDispose"
         >插入一行</el-button>
