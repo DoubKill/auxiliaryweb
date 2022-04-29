@@ -33,7 +33,7 @@
         </el-select>
       </el-form-item>
       <el-form-item
-        v-if="permissionObj.system.user.indexOf('add')>-1"
+        v-if="permissionObj.system.user&&permissionObj.system.user.indexOf('add')>-1"
         style="float: right"
       >
         <el-button @click="showCreateUserDialog">新建</el-button>
@@ -93,13 +93,13 @@
         <template slot-scope="scope">
           <el-button-group>
             <el-button
-              v-if="permissionObj.system.user.indexOf('change')>-1"
+              v-if="permissionObj.system.user&&permissionObj.system.user.indexOf('change')>-1"
               size="mini"
               @click="showEditUserDialog(scope.row)"
             >编辑
             </el-button>
             <el-button
-              v-if="permissionObj.system.user.indexOf('delete')>-1"
+              v-if="permissionObj.system.user&&permissionObj.system.user.indexOf('delete')>-1"
               size="mini"
               type="danger"
               @click="handleUserDelete(scope.row)"
@@ -335,8 +335,8 @@ export default {
   created() {
     this.permissionObj = this.permission
     this.loading = true
-    if (this.permissionObj.system.user.indexOf('change') > -1 ||
-      this.permissionObj.system.user.indexOf('add') > -1) {
+    if ((this.permissionObj.system.user && this.permissionObj.system.user.indexOf('change') > -1) ||
+      (this.permissionObj.system.user && this.permissionObj.system.user.indexOf('add') > -1)) {
       roles('get', null, {
         params: { all: 1 }
       }).then(response => {

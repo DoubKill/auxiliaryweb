@@ -41,7 +41,7 @@
         />
       </el-form-item>
       <el-form-item
-        v-if="permissionObj.production.material.indexOf('add')>-1"
+        v-if="permissionObj.production.material&&permissionObj.production.material.indexOf('add')>-1"
         style="float: right;"
       >
         <el-button @click="showCreateMaterialDialog">新建</el-button>
@@ -118,13 +118,13 @@
         <template slot-scope="scope">
           <!-- <el-button-group> -->
           <el-button
-            v-if="permissionObj.production.material.indexOf('change')>-1"
+            v-if="permissionObj.production.material&&permissionObj.production.material.indexOf('change')>-1"
             size="mini"
             @click="showUpdateMaterialDialog(scope.row)"
           >编辑
           </el-button>
           <el-button
-            v-if="permissionObj.production.material.indexOf('change')>-1"
+            v-if="permissionObj.production.material&&permissionObj.production.material.indexOf('change')>-1"
             size="mini"
             type="danger"
             @click="deleteMaterial(scope.row)"

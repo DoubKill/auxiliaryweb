@@ -32,7 +32,7 @@
         </el-select>
       </el-form-item>
       <el-form-item
-        v-if="permissionObj.system.groupextension.indexOf('add')>-1"
+        v-if="permissionObj.system.groupextension&&permissionObj.system.groupextension.indexOf('add')>-1"
         style="float: right"
       >
         <el-button @click="showCreateGroupDialog">新建</el-button>
@@ -77,13 +77,13 @@
         <template slot-scope="scope">
           <el-button-group>
             <el-button
-              v-if="permissionObj.system.groupextension.indexOf('change')>-1"
+              v-if="permissionObj.system.groupextension&&permissionObj.system.groupextension.indexOf('change')>-1"
               size="mini"
               @click="showEditGroupDialog(scope.row)"
             >编辑
             </el-button>
             <el-button
-              v-if="permissionObj.system.groupextension.indexOf('delete')>-1"
+              v-if="permissionObj.system.groupextension&&permissionObj.system.groupextension.indexOf('delete')>-1"
               size="mini"
               type="danger"
               @click="handleGroupDelete(scope.row)"
@@ -203,8 +203,8 @@ export default {
   created() {
     this.permissionObj = this.permission
     this.currentChange()
-    if (this.permissionObj.system.groupextension.indexOf('change') > -1 ||
-      this.permissionObj.system.groupextension.indexOf('add') > -1) {
+    if ((this.permissionObj.system && this.permissionObj.system.groupextension.indexOf('change') > -1) ||
+      (this.permissionObj.system.groupextension && this.permissionObj.system.groupextension.indexOf('add') > -1)) {
       permissions('get', null).then(response => {
         const permissionsArr = response.results
         permissionsArr.forEach(D => {
