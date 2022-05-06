@@ -1610,7 +1610,7 @@ export default {
             type: 'success'
           })
           loading.close()
-          this.$router.push({ name: 'RecipeList' })
+          this.$router.push({ name: 'RecipeList', params: { currentPage: this.$route.params.currentPage }})
         } catch (e) {
           loading.close()
         }
