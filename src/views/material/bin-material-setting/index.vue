@@ -243,7 +243,7 @@ export default {
     async getMaterialsCbList() {
       try {
         const materialsData = await materials('get', {
-          params: { material_type_name: '炭黑', all: 1 }
+          params: { material_type_name: '炭黑', all: 1, mc_code: 1 }
         })
         this.cbOptions = materialsData.results
         this.cbOptions.forEach(d => {
@@ -256,7 +256,7 @@ export default {
     async getMaterialsOilList() {
       try {
         const materialsData = await materials('get', {
-          params: { material_type_name: '油料', all: 1 }
+          params: { material_type_name: '油料', all: 1, mc_code: 1 }
         })
         this.oilOptions = materialsData.results
         this.oilOptions.forEach(d => {
