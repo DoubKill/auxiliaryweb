@@ -1472,7 +1472,7 @@ export default {
       for (var i = 0; i < this.RecipeMaterialList.length; ++i) {
         // 只有步序的所有字段都填时，才能往step_details_list中push
         // if (this.RecipeMaterialList[i].temperature && this.RecipeMaterialList[i].energy && this.RecipeMaterialList[i].power && this.RecipeMaterialList[i].action && this.RecipeMaterialList[i].pressure && this.RecipeMaterialList[i].rpm) {
-        if (this.RecipeMaterialList[i].action) {
+        if (this.RecipeMaterialList[i].action || this.equip_no === 'Z04') {
           var now_recipe_step = {
             sn: this.RecipeMaterialList[i].sn,
             condition: this.RecipeMaterialList[i].condition,
@@ -1562,8 +1562,8 @@ export default {
             const _arr = this.old_batching_details.filter(D => D.material === d.material)
             if (!_arr.length) {
               throw new Error('')
-            } else if (Number(_arr[0].actual_weight) !== Number(d.actual_weight) ||
-          Number(_arr[0].standard_error) !== Number(d.standard_error)) {
+            } else if ((Number(_arr[0].actual_weight) !== Number(d.actual_weight) ||
+          Number(_arr[0].standard_error) !== Number(d.standard_error))) {
               throw new Error('')
             }
           })
