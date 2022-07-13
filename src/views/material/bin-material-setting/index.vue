@@ -19,6 +19,12 @@
       <el-form-item label="当前机台">
         <el-input v-model="equip" type="text" :disabled="true" />
       </el-form-item>
+      <el-form-item label="最新修改人">
+        <el-input v-model="last_updated_username" type="text" :disabled="true" />
+      </el-form-item>
+      <el-form-item label="最新修改日期">
+        <el-input v-model="last_updated_date" type="text" :disabled="true" />
+      </el-form-item>
     </el-form>
     <el-table :data="tableBinCbData" border style="width: 80%">
       <el-table-column label="炭黑称">
@@ -149,7 +155,9 @@ export default {
       cbOptions: [],
       oilOptions: [],
       disabled: true,
-      provenanceOptions: []
+      provenanceOptions: [],
+      last_updated_username: '',
+      last_updated_date: ''
     }
   },
   computed: {
@@ -196,6 +204,11 @@ export default {
       try {
         const cbData = await weighCb('get', { params: { equip_no: this.equip }})
         this.tableBinCbData = cbData.results
+        if (this.tableBinCbData.length) {
+          this.last_updated_username = this.tableBinCbData[0].last_updated_username
+          this.last_updated_date = this.tableBinCbData[0].last_updated_date
+        }
+
       // eslint-disable-next-line no-empty
       } catch (e) {}
     },
