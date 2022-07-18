@@ -1734,7 +1734,9 @@ export default {
         }
         var step_details_list = []
         // 循环整个表格
-        if (this.RecipeMaterialList.length === 0) {
+        const arr = this.SelectEquipOptions.filter(d => d.id === this.generateRecipeForm.SelectEquip)
+        const _equip_no = arr[0] ? arr[0].equip_no : '' // z04可以不用选步序
+        if (this.RecipeMaterialList.length === 0 && _equip_no !== 'Z04') {
           this.$message({
             message: '密炼步序不能为空',
             type: 'error'
@@ -1744,8 +1746,6 @@ export default {
         for (var i = 0; i < this.RecipeMaterialList.length; ++i) {
           // 只有步序的所有字段都填时，才能往step_details_list中push
           // if (this.RecipeMaterialList[i].temperature && this.RecipeMaterialList[i].energy && this.RecipeMaterialList[i].power && this.RecipeMaterialList[i].action && this.RecipeMaterialList[i].pressure && this.RecipeMaterialList[i].rpm) {
-          const arr = this.SelectEquipOptions.filter(d => d.id === this.generateRecipeForm.SelectEquip)
-          const _equip_no = arr[0].equip_no // z04可以不用选步序
           if (this.RecipeMaterialList[i].action || _equip_no === 'Z04') {
             var now_recipe_step = {
               sn: i + 1,

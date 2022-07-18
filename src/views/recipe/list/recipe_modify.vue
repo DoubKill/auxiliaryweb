@@ -1460,7 +1460,7 @@ export default {
         })
         return
       }
-      if (this.RecipeMaterialList.length === 0) {
+      if (this.RecipeMaterialList.length === 0 && this.equip_no !== 'Z04') {
         this.$message({
           message: '密炼步序不能为空',
           type: 'error'
