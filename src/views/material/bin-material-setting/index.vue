@@ -231,6 +231,7 @@ export default {
           center: true
         })
         this.putOilList()
+        this.getCbList()
       // eslint-disable-next-line no-empty
       } catch (e) {}
     },
