@@ -218,4 +218,11 @@ export function manualInputTrainsPost(type, data) {
     data
   })
 }
+export function planIssueValidate(params) {
+  return request({
+    url: API.PlanIssueValidate,
+    method: 'get',
+    params
+  })
+}
 

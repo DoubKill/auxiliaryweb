@@ -1468,11 +1468,37 @@ export default {
         return
       }
       var step_details_list = []
+
+      let breakbulkIndex = 99999
+      const _oilNums = [0, 0] // 油料数量
+      const _carbonNums = [0, 0] // 炭黑数量
+      let _val_w = ''
+      let _val_w1 = ''
       // 循环整个表格
       for (var i = 0; i < this.RecipeMaterialList.length; ++i) {
         // 只有步序的所有字段都填时，才能往step_details_list中push
         // if (this.RecipeMaterialList[i].temperature && this.RecipeMaterialList[i].energy && this.RecipeMaterialList[i].power && this.RecipeMaterialList[i].action && this.RecipeMaterialList[i].pressure && this.RecipeMaterialList[i].rpm) {
         if (this.RecipeMaterialList[i].action || this.equip_no === 'Z04') {
+          if (this.equip_no !== 'Z04') {
+            const _arr_w = this.SelectActionOptions.filter(d => d.id === this.RecipeMaterialList[i].action) // 动作
+            const _arrC_w = this.SelectConditionOptions.filter(d => d.id === this.RecipeMaterialList[i].condition) // 条件
+            if (_arr_w.length) {
+              this.RecipeMaterialList[i].actionName = _arr_w[0].action
+            }
+            if (_arrC_w.length) {
+              this.RecipeMaterialList[i].conditionName = _arrC_w[0].condition
+            }
+            if (this.RecipeMaterialList[i].actionName === '开卸料门') {
+              breakbulkIndex = i
+            }
+            if (!['同时执行', '配方结束'].includes(this.RecipeMaterialList[i].conditionName) && i > breakbulkIndex) {
+              _val_w = '必须要在最后一个 "条件" 之后，才能开卸料门'
+            }
+            if (this.RecipeMaterialList[i].actionName) {
+              _oilNums[1] += this.RecipeMaterialList[i].actionName.split('油').length - 1
+              _carbonNums[1] += this.RecipeMaterialList[i].actionName.split('炭黑').length - 1
+            }
+          }
           var now_recipe_step = {
             sn: this.RecipeMaterialList[i].sn,
             condition: this.RecipeMaterialList[i].condition,
@@ -1493,8 +1519,8 @@ export default {
           return
         }
       }
-      // console.log(this.oil_tableData, 111)
-      // console.log(this.carbon_tableData, 2222)
+      // console.log(this.oil_tableData, 'oil_tableData')
+      // console.log(this.carbon_tableData, 'carbon_tableData')
       // return
       if (this.sp_num) {
         var batching_details_list = []
@@ -1515,6 +1541,9 @@ export default {
           if (!this.carbon_tableData[j].material) {
             continue
           }
+          if (this.carbon_tableData[j].material_name.indexOf('卸料') > -1 && this.equip_no !== 'Z04') {
+            _carbonNums[0]++
+          }
           var now_stage_material_ = {
             sn: this.carbon_tableData[j].sn,
             auto_flag: 0,
@@ -1530,6 +1559,9 @@ export default {
           if (!this.oil_tableData[j].material) {
             continue
           }
+          if (this.oil_tableData[j].material_name.indexOf('卸料') > -1 && this.equip_no !== 'Z04') {
+            _oilNums[0]++
+          }
           var now_stage_material__ = {
             sn: this.oil_tableData[j].sn,
             auto_flag: 0,
@@ -1541,17 +1573,13 @@ export default {
           }
           batching_details_list.push(now_stage_material__)
         }
+        if (_oilNums[0] !== _oilNums[1] || _carbonNums[0] !== _carbonNums[1]) {
+          _val_w1 = '称量列表中的卸料次数，需要和步序里的次数匹配'
+        }
         var v_production_time_interval = null
         if (this.production_time_interval) {
           v_production_time_interval = this.production_time_interval
         }
-
-        const loading = this.$loading({
-          lock: true,
-          text: '提交中',
-          spinner: 'el-icon-loading'
-        })
-
         // 监听配方是否有更改
         let _is_changed = false
         try {
@@ -1570,6 +1598,29 @@ export default {
         } catch (e) {
           _is_changed = true
         }
+        if (_val_w || _val_w1) {
+          try {
+            await this.$confirm(
+              `${_val_w}${_val_w && _val_w1 ? '；' : ''}${_val_w1}, 是否继续? `,
+              '提示',
+              {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+              }
+            )
+          } catch (e) {
+            return
+          }
+        }
+        // console.log(step_details_list, 'step_details_list')
+        // console.log(this.RecipeMaterialList, 'RecipeMaterialList')
+        // console.log(batching_details_list, 'batching_details_list')
+        const loading = this.$loading({
+          lock: true,
+          text: '提交中',
+          spinner: 'el-icon-loading'
+        })
         try {
           await this.put_recipe_list(
             this.$route.params['id'],
@@ -1680,6 +1731,7 @@ export default {
       this.$set(arrList[index], 'tank_no', Obj.tank_no)
       this.$set(arrList[index], 'provenance', Obj.provenance)
       this.$set(arrList[index], 'material', Obj.id)
+      this.$set(arrList[index], 'material_name', Obj.material_name)
     },
     SelectEquipChange1() {
       this.$set(this.formData, 'recipe_no', null)
