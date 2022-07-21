@@ -398,13 +398,13 @@
               placeholder="请选择胶料编码"
               filterable
               allow-create
-              @visible-change="recipeVisibleChange"
+              @visible-change="recipeVisibleChangeNew"
             >
               <el-option
-                v-for="(item, index) in recipeOptions"
-                :key="index"
-                :label="item"
-                :value="item"
+                v-for="(item) in recipeOptionsNew"
+                :key="item.id"
+                :label="item.stage_product_batch_no"
+                :value="item.stage_product_batch_no"
               />
             </el-select>
           </template>
@@ -474,7 +474,8 @@ import {
   getPlanStatusList,
   currentFactoryDate,
   manualInputTrains,
-  manualInputTrainsPost
+  manualInputTrainsPost,
+  getRubberMateria
 } from '@/api/plan'
 import AlterTrainNumberDialog from './AlterTrainNumberDialog'
 import AddPlanDialog from './AddPlanDialog'
@@ -486,6 +487,7 @@ export default {
   data: function() {
     return {
       equip: '',
+      equip_id: '',
       equipOptions: [],
       params: {
         page: 1
@@ -501,6 +503,7 @@ export default {
       // yesterday: '',
       recipe: '',
       recipeOptions: [],
+      recipeOptionsNew: [],
       classes: '',
       classesOptions: [],
       findForm: {},
@@ -532,12 +535,14 @@ export default {
           if (equipData.results[i].id === Number(equipId)) {
             this.equip = equipData.results[i].equip_no
             this.version = equipData.results[i].version
+            this.equip_id = Number(equipId)
           }
         }
       } else {
         this.equip = equipData.results[0].equip_no
         this.version = equipData.results[0].version
         localStorage.setItem('addPlan:equip', JSON.stringify(equipData.results[0].id))
+        this.equip_id = equipData.results[0].id
       }
       this.clearFindForm()
       // this.beginTime = this.yesterday
@@ -593,6 +598,11 @@ export default {
         this.getRecipeList()
       }
     },
+    recipeVisibleChangeNew(bool) {
+      if (bool) {
+        this.getRubberMateria()
+      }
+    },
     equipVisibleChange(bool) {
       if (bool) {
         this.getEquipList()
@@ -605,6 +615,7 @@ export default {
         if (this.equipOptions[i].equip_no === this.equip) {
           localStorage.setItem('addPlan:equip', JSON.stringify(this.equipOptions[i].id))
           this.version = this.equipOptions[i].version
+          this.equip_id = this.equipOptions[i].id
         }
       }
       this.clearFindForm()
@@ -662,6 +673,17 @@ export default {
       this.params = {
         page: 1
       }
+    },
+    async getRubberMateria() {
+      try {
+        const rubberMateriaData = await getRubberMateria({
+          all: 1,
+          used_type: 4,
+          equip_id: this.equip_id
+        })
+        this.recipeOptionsNew = rubberMateriaData.results
+      // eslint-disable-next-line no-empty
+      } catch (e) {}
     },
     searchChange() {
       // if (this.beginTime) {
