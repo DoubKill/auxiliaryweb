@@ -1688,7 +1688,8 @@ export default {
     },
     async postRecipeList() {
       if (this.sp_num) {
-        let breakbulkIndex = 99999
+        let _breakbulk = false // 记录开卸料门得索引
+        let _conditional = false // 记录条件得索引
         const _oilNums = [0, 0] // 油料数量
         const _carbonNums = [0, 0] // 炭黑数量
         let _val_w = ''
@@ -1769,10 +1770,11 @@ export default {
                 this.RecipeMaterialList[i].conditionName = _arrC_w[0].condition
               }
               if (this.RecipeMaterialList[i].actionName === '开卸料门') {
-                breakbulkIndex = i
+                _breakbulk = i
               }
-              if (!['同时执行', '配方结束'].includes(this.RecipeMaterialList[i].conditionName) && i > breakbulkIndex) {
-                _val_w = '必须要在最后一个 "条件" 之后，才能开卸料门'
+              if (this.RecipeMaterialList[i].condition &&
+            !['同时执行', '配方结束'].includes(this.RecipeMaterialList[i].conditionName)) {
+                _conditional = i
               }
               if (this.RecipeMaterialList[i].actionName) {
                 _oilNums[1] += this.RecipeMaterialList[i].actionName.split('油').length - 1
@@ -1798,6 +1800,9 @@ export default {
             })
             return
           }
+        }
+        if ((_breakbulk !== false && _breakbulk <= _conditional) || (_breakbulk && _conditional === false)) {
+          _val_w = '必须要在最后一个 "条件" 之后，才能开卸料门'
         }
         if (_oilNums[0] !== _oilNums[1] || _carbonNums[0] !== _carbonNums[1]) {
           _val_w1 = '称量列表中的卸料次数，需要和步序里的次数匹配'
