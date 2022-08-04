@@ -2191,6 +2191,9 @@ export default {
       let _conditional = false // 记录条件得索引
       const _oilNums = [0, 0] // 油料数量
       const _carbonNums = [0, 0] // 炭黑数量
+      let multipleDoor = 0 // 开卸料门次数
+      let carbonIndex = false
+      let oilIndex = false
       let _val_w = ''
       let _val_w1 = ''
       var step_details_list = []
@@ -2211,6 +2214,7 @@ export default {
 
             if (this.RecipeMaterialList[i].actionName === '开卸料门') {
               _breakbulk = i
+              multipleDoor++
             }
             if (this.RecipeMaterialList[i].condition &&
             !['同时执行', '配方结束'].includes(this.RecipeMaterialList[i].conditionName)) {
@@ -2275,6 +2279,7 @@ export default {
           }
           if (this.carbon_tableData[j].material_name.indexOf('卸料') > -1 && _equip_no !== 'Z04') {
             _carbonNums[0]++
+            carbonIndex = j
           }
           var now_stage_material_ = {
             sn: this.carbon_tableData[j].sn,
@@ -2293,6 +2298,7 @@ export default {
           }
           if (this.oil_tableData[j].material_name.indexOf('卸料') > -1 && _equip_no !== 'Z04') {
             _oilNums[0]++
+            oilIndex = j
           }
           var now_stage_material__ = {
             sn: this.oil_tableData[j].sn,
@@ -2305,15 +2311,32 @@ export default {
           }
           batching_details_list.push(now_stage_material__)
         }
+        if (_breakbulk !== false && (!this.RecipeMaterialList[_breakbulk + 1] || this.RecipeMaterialList[_breakbulk + 1].actionName !== '保持')) {
+          this.$message("'开卸料门'下一列动作只能选择'保持'")
+          return
+        }
+        if (multipleDoor > 1) {
+          this.$message("请选择1个'开卸料门'")
+          return
+        }
+        if (carbonIndex !== false && (!this.carbon_tableData[carbonIndex - 1] || this.carbon_tableData[carbonIndex - 1].material_name.indexOf('卸料') > -1)) {
+          this.$message('炭黑称量中，卸料前请选择其他炭黑')
+          return
+        }
+        if (oilIndex !== false && (!this.oil_tableData[oilIndex - 1] || this.oil_tableData[oilIndex - 1].material_name.indexOf('卸料') > -1)) {
+          this.$message('油料称量中，卸料前请选择其他油料')
+          return
+        }
         if (_oilNums[0] !== _oilNums[1] || _carbonNums[0] !== _carbonNums[1]) {
           _val_w1 = '称量列表中的卸料次数，需要和步序里的次数匹配'
         }
         if (_val_w || _val_w1) {
           try {
             await this.$confirm(
-              `${_val_w}${_val_w && _val_w1 ? '；' : ''}${_val_w1}, 是否继续? `,
+              `<h2 style="color:red;">${_val_w}${_val_w && _val_w1 ? '；' : ''}${_val_w1}, 是否继续? </h2>`,
               '提示',
               {
+                dangerouslyUseHTMLString: true,
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
