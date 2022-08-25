@@ -61,7 +61,7 @@
       </el-table-column>
     </el-table>
     <el-table :data="tableBinOilData" border style="width: 75%">
-      <el-table-column label="油料称">
+      <el-table-column :label="equip === 'Z07'?'油料称1':'油料称'">
         <el-table-column prop="tank_name" label="油料罐" />
         <el-table-column prop="material_name1" label="物料名称">
           <template slot-scope="scope">{{ scope.row.material_name1 }}</template>
@@ -89,7 +89,7 @@
       </el-table-column>
     </el-table>
     <el-table v-if="equip === 'Z07'" :data="tableBinOilData1" border style="width: 75%">
-      <el-table-column label="油料称1">
+      <el-table-column label="油料称2">
         <el-table-column prop="tank_name" label="油料罐" />
         <el-table-column prop="material_name1" label="物料名称">
           <template slot-scope="scope">{{ scope.row.material_name1 }}</template>

@@ -143,7 +143,7 @@
             <el-table-column align="center" width="90%" prop="actual_weight" label="设定值(kg)" />
             <el-table-column align="center" width="90%" prop="standard_error" label="误差值(kg)" />
           </el-table>
-          <span class="font_custom">油料称量</span>
+          <span class="font_custom">{{ equip_no==='Z07'?'油料称量1':'油料称量' }}</span>
           <el-table
             highlight-current-row
             :data="oil_tableData"
@@ -167,7 +167,7 @@
             <el-table-column align="center" width="90%" prop="standard_error" label="误差值(kg)" />
 
           </el-table>
-          <span v-if="equip_no==='Z07'" class="font_custom">油料称量1</span>
+          <span v-if="equip_no==='Z07'" class="font_custom">油料称量2</span>
           <el-table
             v-if="equip_no==='Z07'"
             highlight-current-row
