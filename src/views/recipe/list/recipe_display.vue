@@ -167,6 +167,30 @@
             <el-table-column align="center" width="90%" prop="standard_error" label="误差值(kg)" />
 
           </el-table>
+          <span v-if="equip_no==='Z07'" class="font_custom">油料称量1</span>
+          <el-table
+            v-if="equip_no==='Z07'"
+            highlight-current-row
+            :data="oil_tableData1"
+            border
+            style="width: 100%"
+          >
+            <el-table-column align="center" width="50%" prop="sn" label="序号" />
+            <el-table-column align="center" width="60%" prop="action_name" label="动作">投料</el-table-column>
+            <!-- <el-table-column prop="auto_flag" label="自动与否" /> -->
+            <el-table-column align="center" prop="material_name" label="油脂名称">
+              <template slot-scope="{row}">
+                {{ row.material_name }} ({{ row.tank_no }}号罐)
+              </template>
+            </el-table-column>
+            <el-table-column align="center" width="90%" label="产地">
+              <template slot-scope="{row}">
+                {{ row.provenance?row.provenance:'' }}
+              </template>
+            </el-table-column>
+            <el-table-column align="center" width="90%" prop="actual_weight" label="设定值(kg)" />
+            <el-table-column align="center" width="90%" prop="standard_error" label="误差值(kg)" />
+          </el-table>
         </div>
       </el-col>
 
@@ -206,6 +230,7 @@ export default {
     return {
       // 机台、配方编号、配方名称
       equip_name: null,
+      equip_no: null,
       category__category_name: null,
       stage_product_batch_no: null,
       product_name: null,
@@ -232,7 +257,8 @@ export default {
       rubber_tableData: [],
       carbon_tableData: [],
       oil_tableData: [],
-      process_step_tableData: []
+      process_step_tableData: [],
+      oil_tableData1: []
     }
   },
   created() {
@@ -253,6 +279,7 @@ export default {
         })
         // 机台、配方编号、配方名称
         this.equip_name = this.$route.params['equip_name']
+        this.equip_no = recipe_listData.equip_no
         this.category__category_name = recipe_listData.category__category_name
         this.stage_product_batch_no = this.$route.params['stage_product_batch_no']
         this.product_name = this.$route.params['product_name']
@@ -285,7 +312,8 @@ export default {
               actual_weight: recipe_listData['batching_details'][j]['actual_weight'],
               standard_error: recipe_listData['batching_details'][j]['standard_error'],
               provenance: recipe_listData['batching_details'][j]['provenance'],
-              tank_no: recipe_listData['batching_details'][j]['tank_no']
+              tank_no: recipe_listData['batching_details'][j]['tank_no'],
+              line_no: recipe_listData['batching_details'][j]['line_no']
             })
           } else {
             this.rubber_tableData.push({
@@ -299,7 +327,6 @@ export default {
           }
         }
         this.carbon_tableData = this.carbon_tableData.sort(this.compareSn)
-        this.oil_tableData = this.oil_tableData.sort(this.compareSn)
         this.rubber_tableData = this.rubber_tableData.sort(this.compareSn)
         // 超温最短时间、进胶最低温度...
         this.mini_time = (recipe_listData['processes']['mini_time'])
@@ -336,6 +363,14 @@ export default {
           })
         }
         this.process_step_tableData = this.process_step_tableData.sort(this.compareSn)
+
+        if (this.equip_no === 'Z07') {
+          this.oil_tableData1 = this.oil_tableData.filter(d => d.line_no === 2)
+          this.oil_tableData = this.oil_tableData.filter(d => d.line_no === 1 || !d.line_no)
+          return
+        }
+        this.oil_tableData = this.oil_tableData.sort(this.compareSn)
+        this.oil_tableData1 = this.oil_tableData1.sort(this.compareSn)
       } catch (e) { e }
     },
     compareSn(o1, o2) {
