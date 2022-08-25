@@ -1686,9 +1686,21 @@ export default {
       this.raw_material_index = index
       this.dialogRawMaterialSync = true
     },
-    postRecipeList() {
+    async postRecipeList() {
       if (this.sp_num) {
+        let _breakbulk = false // 记录开卸料门得索引
+        let _conditional = false // 记录条件得索引
+        const _oilNums = [0, 0] // 油料数量
+        const _carbonNums = [0, 0] // 炭黑数量
+        let multipleDoor = 0 // 开卸料门次数
+        let carbonIndex = false
+        let oilIndex = false
+        let _val_w = ''
+        let _val_w1 = ''
         var batching_details_list = []
+
+        const arr = this.SelectEquipOptions.filter(d => d.id === this.generateRecipeForm.SelectEquip)
+        const _equip_no = arr[0] ? arr[0].equip_no : '' // z04可以不用选步序
         for (var j = 0; j < this.rubber_tableData.length; ++j) {
           if (this.rubber_tableData[j].material) {
             var now_stage_material = {
@@ -1706,6 +1718,10 @@ export default {
           if (!this.carbon_tableData[j].material) {
             continue
           }
+          if (this.carbon_tableData[j].material_name.indexOf('卸料') > -1 && _equip_no !== 'Z04') {
+            _carbonNums[0]++
+            carbonIndex = j
+          }
           var now_stage_material_ = {
             sn: this.carbon_tableData[j].sn,
             auto_flag: 0,
@@ -1721,6 +1737,10 @@ export default {
           if (!this.oil_tableData[j].material) {
             continue
           }
+          if (this.oil_tableData[j].material_name.indexOf('卸料') > -1 && _equip_no !== 'Z04') {
+            _oilNums[0]++
+            oilIndex = j
+          }
           var now_stage_material__ = {
             sn: this.oil_tableData[j].sn,
             auto_flag: 0,
@@ -1734,7 +1754,7 @@ export default {
         }
         var step_details_list = []
         // 循环整个表格
-        if (this.RecipeMaterialList.length === 0) {
+        if (this.RecipeMaterialList.length === 0 && _equip_no !== 'Z04') {
           this.$message({
             message: '密炼步序不能为空',
             type: 'error'
@@ -1744,7 +1764,29 @@ export default {
         for (var i = 0; i < this.RecipeMaterialList.length; ++i) {
           // 只有步序的所有字段都填时，才能往step_details_list中push
           // if (this.RecipeMaterialList[i].temperature && this.RecipeMaterialList[i].energy && this.RecipeMaterialList[i].power && this.RecipeMaterialList[i].action && this.RecipeMaterialList[i].pressure && this.RecipeMaterialList[i].rpm) {
-          if (this.RecipeMaterialList[i].action) {
+          if (this.RecipeMaterialList[i].action || _equip_no === 'Z04') {
+            if (_equip_no !== 'Z04') {
+              const _arr_w = this.SelectActionOptions.filter(d => d.id === this.RecipeMaterialList[i].action) // 动作
+              const _arrC_w = this.SelectConditionOptions.filter(d => d.id === this.RecipeMaterialList[i].condition) // 条件
+              if (_arr_w.length) {
+                this.RecipeMaterialList[i].actionName = _arr_w[0].action
+              }
+              if (_arrC_w.length) {
+                this.RecipeMaterialList[i].conditionName = _arrC_w[0].condition
+              }
+              if (this.RecipeMaterialList[i].actionName === '开卸料门') {
+                _breakbulk = i
+                multipleDoor++
+              }
+              if (this.RecipeMaterialList[i].condition &&
+            !['同时执行', '配方结束'].includes(this.RecipeMaterialList[i].conditionName)) {
+                _conditional = i
+              }
+              if (this.RecipeMaterialList[i].actionName) {
+                _oilNums[1] += this.RecipeMaterialList[i].actionName.split('油').length - 1
+                _carbonNums[1] += this.RecipeMaterialList[i].actionName.split('炭黑').length - 1
+              }
+            }
             var now_recipe_step = {
               sn: i + 1,
               condition: this.RecipeMaterialList[i].condition,
@@ -1765,7 +1807,44 @@ export default {
             return
           }
         }
-
+        if (_breakbulk !== false && (!this.RecipeMaterialList[_breakbulk + 1] || this.RecipeMaterialList[_breakbulk + 1].actionName !== '保持')) {
+          this.$message("'开卸料门'下一列动作只能选择'保持'")
+          return
+        }
+        if (multipleDoor > 1) {
+          this.$message("请选择1个'开卸料门'")
+          return
+        }
+        if (carbonIndex !== false && (!this.carbon_tableData[carbonIndex - 1] || this.carbon_tableData[carbonIndex - 1].material_name.indexOf('卸料') > -1)) {
+          this.$message('炭黑称量中，卸料前请选择其他炭黑')
+          return
+        }
+        if (oilIndex !== false && (!this.oil_tableData[oilIndex - 1] || this.oil_tableData[oilIndex - 1].material_name.indexOf('卸料') > -1)) {
+          this.$message('油料称量中，卸料前请选择其他油料')
+          return
+        }
+        if ((_breakbulk !== false && _breakbulk <= _conditional) || (_breakbulk && _conditional === false)) {
+          _val_w = '必须要在最后一个 "条件" 之后，才能开卸料门'
+        }
+        if (_oilNums[0] !== _oilNums[1] || _carbonNums[0] !== _carbonNums[1]) {
+          _val_w1 = '称量列表中的卸料次数，需要和步序里的次数匹配'
+        }
+        if (_val_w || _val_w1) {
+          try {
+            await this.$confirm(
+              `<h2 style="color:red;">${_val_w}${_val_w && _val_w1 ? '；' : ''}${_val_w1}, 是否继续? </h2>`,
+              '提示',
+              {
+                dangerouslyUseHTMLString: true,
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+              }
+            )
+          } catch (e) {
+            return
+          }
+        }
         recipe_list('post', null, { data: {
           'factory': this.generateRecipeForm['SelectSite'],
           'site': this.normalReceipe ? this.generateRecipeForm['SelectSITE'] : null,
@@ -1896,6 +1975,7 @@ export default {
       this.$set(arrList[index], 'tank_no', Obj.tank_no)
       this.$set(arrList[index], 'provenance', Obj.provenance)
       this.$set(arrList[index], 'material', Obj.id)
+      this.$set(arrList[index], 'material_name', Obj.material_name)
     },
     SelectEquipChange1() {
       this.$set(this.formData, 'recipe_no', null)

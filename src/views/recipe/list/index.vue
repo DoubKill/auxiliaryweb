@@ -279,6 +279,11 @@
       />
       <el-table-column
         align="center"
+        prop="last_update_username"
+        label="修改人"
+      />
+      <el-table-column
+        align="center"
         width="180%"
         prop="last_updated_date"
         label="修改时间"
@@ -1147,7 +1152,6 @@ export default {
 
     recipe_display_change: function(raw) {
       this.$router.push({ name: 'RecipeDisplay', params: { ...raw, currentPage: this.currentPage }})
-      this.$route.params
     },
     AddRecipeButton: function() {
       this.$router.push({ name: 'RecipeCreate', params: {}})
@@ -1156,7 +1160,6 @@ export default {
     ModifyRecipeButton: function(modify_row) {
       // console.log(modify_row)
       this.$router.push({ name: 'RecipeModify', params: { ...modify_row, currentPage: this.currentPage }})
-      this.$route.params
     },
     handleRecipeDelete: function(delete_row) {
       const str = delete_row.used_type === 4 ? '停用' : '启用'
@@ -1207,6 +1210,7 @@ export default {
         })
       }
       // console.log(add_currentRow)
+      add_currentRow.page = this.currentPage || 1
       this.$router.push({ name: 'RecipeCopy', params: add_currentRow })
     },
     CopyRecipeConfirm: async function(formName) {

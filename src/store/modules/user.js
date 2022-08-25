@@ -148,6 +148,7 @@ const actions = {
       commit('SET_NAME', '')
       localStorage.setItem('recipeGetParams', '')
       // localStorage.clear()
+      Cookies.remove('password')
       resolve()
       // }).catch(error => {
       //   reject(error)

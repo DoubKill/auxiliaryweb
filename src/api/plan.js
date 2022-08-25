@@ -187,6 +187,15 @@ export function schedulingResultPost(data) {
     data
   })
 }
+
+export function productTechParams(params) {
+  return request({
+    url: API.ProductTechParams,
+    method: 'get',
+    params
+  })
+}
+
 export function currentFactoryDate(params) {
   return request({
     url: API.CurrentFactoryDate,
@@ -194,9 +203,24 @@ export function currentFactoryDate(params) {
     params
   })
 }
-export function productTechParams(params) {
+
+export function manualInputTrains(params) {
   return request({
-    url: API.ProductTechParams,
+    url: API.ManualInputTrains,
+    method: 'get',
+    params
+  })
+}
+export function manualInputTrainsPost(type, data) {
+  return request({
+    url: API.ManualInputTrains,
+    method: type,
+    data
+  })
+}
+export function planIssueValidate(params) {
+  return request({
+    url: API.PlanIssueValidate,
     method: 'get',
     params
   })

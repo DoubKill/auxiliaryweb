@@ -10,6 +10,8 @@
           type="datetime"
           placeholder="选择日期"
           value-format="yyyy-MM-dd HH:mm:ss"
+          :clearable="false"
+          default-time="08:00:00"
           @change="search"
         />
       </el-form-item>
@@ -18,6 +20,7 @@
           v-model="params.et"
           type="datetime"
           placeholder="选择日期"
+          default-time="07:59:59"
           value-format="yyyy-MM-dd HH:mm:ss"
           @change="search"
         />
@@ -32,11 +35,27 @@
       <el-form-item label="物料类别">
         <material-type-select @materialTypeChanged="materialTypeChanged" />
       </el-form-item>
+      <el-form-item label="物料名称">
+        <el-select
+          v-model="params.material_no"
+          filterable
+          clearable
+          @change="search"
+        >
+          <el-option
+            v-for="item in options"
+            :key="item.material_no"
+            :label="item.material_name"
+            :value="item.material_no"
+          />
+        </el-select>
+      </el-form-item>
       <el-form-item style="float: right">
-        <el-button>导出</el-button>
+        <el-button :loading="btnExportLoad" @click="exportTable">导出</el-button>
       </el-form-item>
     </el-form>
     <el-table
+      v-loading="loading"
       :data="tableData"
       border
       style="width: 100%"
@@ -65,7 +84,7 @@
       />
       <el-table-column
         prop="actual_weight"
-        label="实际重量"
+        label="实际重量(kg)"
       />
     </el-table>
     <page
@@ -77,16 +96,19 @@
 </template>
 
 <script>
-import { getMaterialStatistics } from '@/api/material-statistics'
+import { getMaterialStatistics, materialStatisticsExport } from '@/api/material-statistics'
+import { getMaterials } from '@/api/material'
 import page from '@/components/page'
 import EquipSelect from '@/components/EquipSelect'
-import ProductNoSelect from '@/components/ProductNoSelect'
+import ProductNoSelect from '@/components/reportProductNoSelect'
 import MaterialTypeSelect from '@/components/MaterialTypeSelect'
+import { setDate } from '@/utils'
 
 export default {
   components: { page, EquipSelect, ProductNoSelect, MaterialTypeSelect },
   data() {
     return {
+      loading: false,
       tableData: [],
       total: 0,
       params: {
@@ -96,11 +118,15 @@ export default {
         material_type: null,
         equip_no: null,
         product_no: null
-      }
+      },
+      btnExportLoad: false,
+      options: []
     }
   },
   created() {
+    this.params.st = setDate() + ' ' + '08:00:00'
     this.getMaterialStatistics()
+    this.getMaterial()
   },
   methods: {
     equipChanged(equip) {
@@ -108,7 +134,7 @@ export default {
       this.search()
     },
     productBatchingChanged(productBatching) {
-      this.params.product_no = productBatching ? productBatching.stage_product_batch_no : null
+      this.params.product_no = productBatching || null
       this.search()
     },
     materialTypeChanged(materialType) {
@@ -124,14 +150,45 @@ export default {
       this.getMaterialStatistics()
     },
     getMaterialStatistics() {
+      this.loading = true
       getMaterialStatistics(this.params).then(response => {
         this.tableData = response.results || []
         this.total = response.count
+        this.loading = false
+      }).catch(e => {
+        this.loading = false
+      })
+    },
+    getMaterial() {
+      getMaterials({ all: 1 }).then(response => {
+        this.options = response.results || []
+      }).catch(e => {
+        //
       })
     },
     currentChange(page) {
       this.params.page = page
       this.getMaterialStatistics()
+    },
+    exportTable() {
+      this.btnExportLoad = true
+      const obj = Object.assign({ export: 1 }, this.params)
+      delete obj.page
+      const _api = materialStatisticsExport
+      _api(obj)
+        .then(res => {
+          const link = document.createElement('a')
+          const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
+          link.style.display = 'none'
+          link.href = URL.createObjectURL(blob)
+          link.download = '物料统计报表.xlsx' // 下载的文件名
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+          this.btnExportLoad = false
+        }).catch(e => {
+          this.btnExportLoad = false
+        })
     }
   }
 }

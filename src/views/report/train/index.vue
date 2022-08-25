@@ -19,7 +19,6 @@
       </el-form-item>
       <el-form-item label="配方">
         <productNo-select
-          :is-stage-productbatch-no-remove="true"
           @productBatchingChanged="productBatchingChanged"
         />
       </el-form-item>
@@ -113,6 +112,10 @@
       <el-table-column
         :prop="editionNo === 'v1'?'production_details.作业方式':'operating_type'"
         label="手/自动"
+      />
+      <el-table-column
+        prop="ai_value"
+        label="AI值"
       />
       <el-table-column
         :prop="editionNo === 'v1'?'production_details.总重量':'actual_weight'"
@@ -516,7 +519,7 @@ import {
 import { personnelsUrl } from '@/api/user'
 import page from '@/components/page'
 import selectEquip from '@/components/select_w/equip'
-import ProductNoSelect from '@/components/ProductNoSelect'
+import ProductNoSelect from '@/components/reportProductNoSelect'
 import chartMixin from '../chartMixin'
 import { mapGetters } from 'vuex'
 
@@ -663,7 +666,7 @@ export default {
       }
     },
     productBatchingChanged(val) {
-      this.getParams.product_no = val ? val.stage_product_batch_no : ''
+      this.getParams.product_no = val || ''
 
       this.getParams.page = 1
       this.getList()

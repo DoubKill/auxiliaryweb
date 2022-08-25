@@ -94,7 +94,7 @@ export default {
   },
   created() {
     var reg = /(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[\W_]).{8,}/
-    if (this.$route.query.password && !reg.test(this.$route.query.password)) {
+    if (getCookie('password') && !reg.test(getCookie('password'))) {
       this.tableVisible1 = true
     } else {
       this.tableVisible1 = false
@@ -122,7 +122,7 @@ export default {
     },
     beforeClose(done) {
       var reg = /(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[\W_]).{8,}/
-      if (this.$route.query.password && !reg.test(this.$route.query.password)) {
+      if (getCookie('password') && !reg.test(getCookie('password'))) {
         this.$parent.logout()
       } else {
         this.loading = false
@@ -132,6 +132,18 @@ export default {
       }
     }
   }
+}
+function getCookie(cName) {
+  if (document.cookie.length > 0) {
+    var cStart = document.cookie.indexOf(cName + '=')
+    if (cStart !== -1) {
+      cStart = cStart + cName.length + 1
+      var cEnd = document.cookie.indexOf(';', cStart)
+      if (cEnd === -1) cEnd = document.cookie.length
+      return document.cookie.substring(cStart, cEnd)
+    }
+  }
+  return ''
 }
 </script>
 

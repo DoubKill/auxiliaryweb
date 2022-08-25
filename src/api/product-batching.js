@@ -8,3 +8,10 @@ export function getAllProductBatchings() {
     params: { all: 1 }
   })
 }
+export function getBatchingMaterials() {
+  return request({
+    url: API.BatchingMaterials,
+    method: 'get',
+    params: { all: 1 }
+  })
+}

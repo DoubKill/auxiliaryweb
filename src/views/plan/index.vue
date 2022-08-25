@@ -83,29 +83,29 @@
         <el-col :span="7">
           <el-form-item style="float: right;margin-left:10px">
             <el-button
-              v-if="permissionObj.plan.productclassesplan.indexOf('view')>-1"
+              v-if="permissionObj.plan.productclassesplan&&permissionObj.plan.productclassesplan.indexOf('view')>-1"
               type="info"
               @click="refreshPlan"
             >刷新</el-button>
             <el-button
-              v-if="permissionObj.plan.productclassesplan.indexOf('add')>-1"
+              v-if="permissionObj.plan.productclassesplan&&permissionObj.plan.productclassesplan.indexOf('add')>-1"
               type="info"
               @click="showAddPlanDialog"
             >新增</el-button>
             <el-button
-              v-if="permissionObj.plan.productclassesplan.indexOf('change')>-1&&version!=='v3'"
+              v-if="permissionObj.plan.productclassesplan&&permissionObj.plan.productclassesplan.indexOf('change')>-1&&version!=='v3'"
               type="info"
               :disabled="disabled"
               @click="stopPlan"
             >停止</el-button>
             <el-button
-              v-if="permissionObj.plan.productclassesplan.indexOf('delete')>-1"
+              v-if="permissionObj.plan.productclassesplan&&permissionObj.plan.productclassesplan.indexOf('delete')>-1"
               type="info"
               :disabled="disabled"
               @click="delPlan"
             >删除</el-button>
             <el-button
-              v-if="permissionObj.plan.productclassesplan.indexOf('change')>-1"
+              v-if="permissionObj.plan.productclassesplan&&permissionObj.plan.productclassesplan.indexOf('change')>-1"
               type="info"
               :disabled="disabled"
               @click="issuedPlan"
@@ -114,30 +114,37 @@
 
           <el-form-item style="float: right;margin-left:10px">
             <el-button
-              v-if="permissionObj.plan.productclassesplan.indexOf('change')>-1"
+              v-if="permissionObj.plan.productclassesplan&&permissionObj.plan.productclassesplan.indexOf('change')>-1"
               type="info"
               :disabled="disabled"
               @click="upPlan"
             >上调</el-button>
             <el-button
-              v-if="permissionObj.plan.productclassesplan.indexOf('change')>-1"
+              v-if="permissionObj.plan.productclassesplan&&permissionObj.plan.productclassesplan.indexOf('change')>-1"
               type="info"
               :disabled="disabled"
               @click="downPlan"
             >下调</el-button>
             <el-button
-              v-if="permissionObj.plan.productclassesplan.indexOf('change')>-1"
+              v-if="permissionObj.plan.productclassesplan&&permissionObj.plan.productclassesplan.indexOf('change')>-1"
               type="info"
               :disabled="disabled"
               @click="showAlterTrainNumberDialog"
             >修改车次</el-button>
             <el-button
-              v-if="permissionObj.plan.productclassesplan.indexOf('change')>-1&&version!=='v3'"
+              v-if="permissionObj.plan.productclassesplan&&permissionObj.plan.productclassesplan.indexOf('change')>-1&&version!=='v3'"
               type="info"
               style="width: 120px"
               :disabled="disabled"
               @click="retransmissionpPlan"
             >重传</el-button>
+          </el-form-item>
+          <el-form-item style="float: right;margin-left:10px">
+            <el-button
+              v-if="permissionObj.production.manualinputtrains&&permissionObj.production.manualinputtrains.indexOf('add')>-1"
+              type="primary"
+              @click="showManualEntry"
+            >人工录入手动生产车次</el-button>
           </el-form-item>
         </el-col>
         <!-- </el-form> -->
@@ -320,6 +327,134 @@
       ref="addPlanDialog"
       @handleSuccessed="getEquip"
     />
+
+    <el-dialog
+      title="人工录入手动生产车次"
+      :visible.sync="dialogVisible"
+      width="80%"
+      :before-close="handleClose"
+    >
+      <el-form :inline="true">
+        <el-form-item label="日期">
+          <el-date-picker
+            v-model="search.factory_date"
+            type="date"
+            :clearable="false"
+            value-format="yyyy-MM-dd"
+            placeholder="选择日期"
+            @change="changeSearch"
+          />
+        </el-form-item>
+        <el-form-item label="机台">
+          <el-input v-model="search.equip_no" disabled />
+        </el-form-item>
+      </el-form>
+      <el-table
+        :data="tableData1"
+        border
+      >
+        <el-table-column
+          label="日期"
+          min-width="20"
+        >
+          <template slot-scope="{row}">
+            <el-date-picker
+              v-model="row.factory_date"
+              disabled
+              type="date"
+              value-format="yyyy-MM-dd"
+              placeholder="选择日期"
+            />
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="classes"
+          label="班次"
+          min-width="20"
+        >
+          <template slot-scope="{row}">
+            <el-select
+              v-model="row.classes"
+              placeholder="请选择"
+              @visible-change="classesVisibleChange"
+            >
+              <el-option
+                v-for="item in classesOptions"
+                :key="item.global_name"
+                :label="item.global_name"
+                :value="item.global_name"
+              />
+            </el-select>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="product_no"
+          label="胶料编码"
+          min-width="20"
+        >
+          <template slot-scope="{row}">
+            <el-select
+              v-model="row.product_no"
+              placeholder="请选择胶料编码"
+              filterable
+              allow-create
+              @visible-change="recipeVisibleChangeNew"
+            >
+              <el-option
+                v-for="(item) in recipeOptionsNew"
+                :key="item.id"
+                :label="item.stage_product_batch_no"
+                :value="item.stage_product_batch_no"
+              />
+            </el-select>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="车数"
+          min-width="20"
+        >
+          <template slot-scope="{row}">
+            <el-input-number
+              v-model="row.actual_trains"
+              controls-position="right"
+              :min="1"
+              :step="1"
+              step-strictly
+            />
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="操作"
+          width="160"
+        >
+          <template slot-scope="scope">
+            <el-button
+              v-if="permissionObj.plan.productclassesplan&&permissionObj.plan.productclassesplan.indexOf('change')>-1"
+              size="mini"
+              type="danger"
+              @click="handleDelete(scope.row,scope.$index)"
+            >
+              删除
+            </el-button>
+            <el-button
+              v-if="permissionObj.plan.productclassesplan&&permissionObj.plan.productclassesplan.indexOf('change')>-1"
+              size="mini"
+              type="primary"
+              @click="handleSubmit(scope.row)"
+            >
+              保存
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div style="width:100%;text-align:center;margin-top:15px">
+        <el-button
+          v-if="permissionObj.plan.productclassesplan&&permissionObj.plan.productclassesplan.indexOf('change')>-1"
+          size="small"
+          @click="addCellDispose"
+        >插入一行</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -331,11 +466,16 @@ import {
   issuedPlan,
   stopPlan,
   retransmissionpPlan,
+  planIssueValidate,
   upRegulation,
   downRegulation,
   globalCodes,
   productbatching,
-  getPlanStatusList
+  getPlanStatusList,
+  currentFactoryDate,
+  manualInputTrains,
+  manualInputTrainsPost,
+  getRubberMateria
 } from '@/api/plan'
 import AlterTrainNumberDialog from './AlterTrainNumberDialog'
 import AddPlanDialog from './AddPlanDialog'
@@ -347,6 +487,7 @@ export default {
   data: function() {
     return {
       equip: '',
+      equip_id: '',
       equipOptions: [],
       params: {
         page: 1
@@ -362,6 +503,7 @@ export default {
       // yesterday: '',
       recipe: '',
       recipeOptions: [],
+      recipeOptionsNew: [],
       classes: '',
       classesOptions: [],
       findForm: {},
@@ -369,7 +511,10 @@ export default {
 
       updateTrainsId: '',
       disabled: true,
-      version: null
+      version: null,
+      dialogVisible: false,
+      search: {},
+      tableData1: []
     }
   },
   computed: {
@@ -378,6 +523,7 @@ export default {
   created() {
     this.permissionObj = this.permission
     this.getEquip()
+    this.getCurrentFactory1()
   },
   methods: {
     async getEquip() {
@@ -389,12 +535,14 @@ export default {
           if (equipData.results[i].id === Number(equipId)) {
             this.equip = equipData.results[i].equip_no
             this.version = equipData.results[i].version
+            this.equip_id = Number(equipId)
           }
         }
       } else {
         this.equip = equipData.results[0].equip_no
         this.version = equipData.results[0].version
         localStorage.setItem('addPlan:equip', JSON.stringify(equipData.results[0].id))
+        this.equip_id = equipData.results[0].id
       }
       this.clearFindForm()
       // this.beginTime = this.yesterday
@@ -450,6 +598,11 @@ export default {
         this.getRecipeList()
       }
     },
+    recipeVisibleChangeNew(bool) {
+      if (bool) {
+        this.getRubberMateria()
+      }
+    },
     equipVisibleChange(bool) {
       if (bool) {
         this.getEquipList()
@@ -462,6 +615,7 @@ export default {
         if (this.equipOptions[i].equip_no === this.equip) {
           localStorage.setItem('addPlan:equip', JSON.stringify(this.equipOptions[i].id))
           this.version = this.equipOptions[i].version
+          this.equip_id = this.equipOptions[i].id
         }
       }
       this.clearFindForm()
@@ -519,6 +673,17 @@ export default {
       this.params = {
         page: 1
       }
+    },
+    async getRubberMateria() {
+      try {
+        const rubberMateriaData = await getRubberMateria({
+          all: 1,
+          used_type: 4,
+          equip_id: this.equip_id
+        })
+        this.recipeOptionsNew = rubberMateriaData.results
+      // eslint-disable-next-line no-empty
+      } catch (e) {}
     },
     searchChange() {
       // if (this.beginTime) {
@@ -609,7 +774,27 @@ export default {
       })
     },
 
-    retransmissionpPlan() {
+    async retransmissionpPlan() {
+      try {
+        const data = await planIssueValidate({ plan_id: this.currentRow.id })
+        if (!data.success) {
+          await this.$alert(`<h2 style="color:red;">${data.msg} 是否继续?</h2>`,
+            '重传计划', {
+              showCancelButton: true,
+              dangerouslyUseHTMLString: true,
+              confirmButtonText: '',
+              cancelButtonText: '取消'
+            }
+          )
+        }
+      } catch (e) {
+        if (e === 'cancel') {
+          this.$message({
+            message: '取消重传!'
+          })
+          return
+        }
+      }
       retransmissionpPlan(this.currentRow).then((response) => {
         this.$message({
           type: 'success',
@@ -620,61 +805,69 @@ export default {
       })
     },
 
-    issuedPlan() {
+    async issuedPlan() {
       const currentTime = new Date().getTime()
       const a = new Date(this.currentRow.classes_begin_time).getTime()
       const b = new Date(this.currentRow.classes_end_time).getTime()
       const bool = !!(currentTime < a || currentTime > b) // true不在时间里面
+
       const str = bool ? '<h2 v-if="" style="color:red;">注意：当前时间不在' + this.currentRow.classes + '时间范围内,是否继续?</h2>'
         : '机台： ' + this.equip + '<br>计划编号： ' + this.currentRow.plan_classes_uid + '<br>配方名称： ' + this.currentRow.stage_product_batch_no
 
-      this.$alert(str,
-        '下达计划', {
-          showCancelButton: true,
-          dangerouslyUseHTMLString: true,
-          confirmButtonText: '',
-          cancelButtonText: '取消'
+      try {
+        const data = await planIssueValidate({ plan_id: this.currentRow.id })
+        if (!data.success) {
+          await this.$alert(`<h2 style="color:red;">${data.msg} 是否继续?</h2>`,
+            '下达计划', {
+              showCancelButton: true,
+              dangerouslyUseHTMLString: true,
+              confirmButtonText: '',
+              cancelButtonText: '取消'
+            }
+          )
         }
-      ).then(() => {
+      } catch (e) {
+        if (e === 'cancel') {
+          this.$message({
+            message: '取消下达!'
+          })
+          return
+        }
+      }
+      try {
+        await this.$alert(str,
+          '下达计划', {
+            showCancelButton: true,
+            dangerouslyUseHTMLString: true,
+            confirmButtonText: '',
+            cancelButtonText: '取消'
+          }
+        )
         if (bool) {
-          this.$alert('机台： ' + this.equip + '<br>计划编号： ' + this.currentRow.plan_classes_uid + '<br>配方名称： ' + this.currentRow.stage_product_batch_no,
+          await this.$alert('机台： ' + this.equip + '<br>计划编号： ' + this.currentRow.plan_classes_uid + '<br>配方名称： ' + this.currentRow.stage_product_batch_no,
             '下达计划', {
               showCancelButton: true,
               dangerouslyUseHTMLString: true,
               confirmButtonText: '确定',
               cancelButtonText: '取消'
             }
-          ).then(() => {
-            issuedPlan(this.currentRow).then((response) => {
-              this.$message({
-                type: 'success',
-                message: '下达成功!'
-              })
-              this.getPlanStatusList()
-              this.getPlanList()
-            })
-          }).catch(() => {
-            this.$message({
-              type: 'info',
-              message: '已取消下达'
-            })
+          )
+        }
+        issuedPlan(this.currentRow).then((response) => {
+          this.$message({
+            type: 'success',
+            message: '下达成功!'
           })
-        } else {
-          issuedPlan(this.currentRow).then((response) => {
-            this.$message({
-              type: 'success',
-              message: '下达成功!'
-            })
-            this.getPlanStatusList()
-            this.getPlanList()
+          this.getPlanStatusList()
+          this.getPlanList()
+        })
+      } catch (e) {
+        if (e === 'cancel') {
+          this.$message({
+            message: '取消下达!'
           })
         }
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消下达'
-        })
-      })
+      }
     },
     showAlterTrainNumberDialog() {
       this.$refs.alterTrainNumberDialog.show(this.currentRow)
@@ -693,6 +886,58 @@ export default {
     currentChange(page) {
       this.page = page
       this.getPlanList()
+    },
+    showManualEntry() {
+      if (!this.equip) {
+        this.$message('请选择机台')
+        return
+      }
+      this.dialogVisible = true
+      this.search.equip_no = this.equip
+      this.getManualEntry()
+    },
+    getManualEntry() {
+      manualInputTrains(this.search).then((response) => {
+        this.tableData1 = response
+      })
+    },
+    getCurrentFactory1() {
+      currentFactoryDate().then((response) => {
+        this.$set(this.search, 'factory_date', response[0].factory_date)
+        this.$set(this.search, 'classes', response[0].classes[0])
+      })
+    },
+    changeSearch() {
+      this.tableData1 = []
+      this.getManualEntry()
+    },
+    handleDelete(row, index) {
+      manualInputTrainsPost('delete', { id: row.id }).then((response) => {
+        this.$message.success('删除成功')
+        this.tableData1.splice(index, 1)
+      })
+    },
+    handleSubmit(row) {
+      const type = row.id ? 'put' : 'post'
+      if (!row.factory_date || !row.equip_no || !row.classes || !row.product_no || !row.actual_trains) {
+        this.$message('一行的数据都必填')
+        return
+      }
+      manualInputTrainsPost(type, row).then((response) => {
+        this.$message.success('保存成功')
+        this.getManualEntry()
+      })
+    },
+    addCellDispose() {
+      this.tableData1.push({
+        factory_date: this.search.factory_date,
+        classes: this.search.classes,
+        equip_no: this.search.equip_no
+      })
+    },
+    handleClose(done) {
+      this.tableData1 = []
+      done()
     }
   }
 }

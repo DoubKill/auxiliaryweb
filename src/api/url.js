@@ -14,6 +14,7 @@ export default {
 
   // 胶料配料标准管理接口
   RubberMaterialUrl: '/api/v1/recipe/product-batching/',
+  BatchingMaterials: '/api/v1/system/batching-materials/',
   // 胶料配料标准复制接口
   RubberMaterialCopyUrl: '/api/v1/recipe/product-batching-copy/',
   // 胶料配料步序接口
@@ -109,5 +110,7 @@ export default {
   CurrentFactoryDate: '/api/v1/basics/current-factory-date/',
   // 查mes的配方
   DevTypeBatching: '/api/v1/recipe/dev-type-batching/',
-  ProductTechParams: '/api/v1/recipe/product-tech-params/'
+  ProductTechParams: '/api/v1/recipe/product-tech-params/',
+  ManualInputTrains: '/api/v1/production/manual-input-trains/',
+  PlanIssueValidate: '/api/v1/plan/plan-issue-validate/'
 }
