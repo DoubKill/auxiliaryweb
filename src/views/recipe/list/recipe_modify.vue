@@ -310,7 +310,7 @@
               <el-button size="mini" @click="insertOnecarbon">插入一行</el-button>
             </el-form-item>
           </el-form>
-          <span class="font_custom">油料称量</span>
+          <span class="font_custom">{{ equip_no==='Z07'?'油料称量1':'油料称量' }}</span>
           <el-table
             highlight-current-row
             :data="oil_tableData"
@@ -381,6 +381,87 @@
                 <el-button size="mini" :disabled="!insertOilEnbale()" @click="insertBeforeSnOneOil">前插入一行</el-button>
               </div>
               <el-button size="mini" @click="insertOneOil">插入一行</el-button>
+            </el-form-item>
+          </el-form>
+          <span v-if="equip_no==='Z07'" class="font_custom">油料称量2</span>
+          <el-table
+            v-if="equip_no==='Z07'"
+            highlight-current-row
+            :data="oil_tableData1"
+            border
+            style="width: 100%"
+          >
+            <el-table-column align="center" width="40" prop="sn" label="序号" />
+            <el-table-column align="center" prop="action_name" label="动作">投料</el-table-column>
+            <!-- <el-table-column prop="auto_flag" label="自动与否" /> -->
+            <el-table-column width="250" align="center" label="油脂名称">
+              <template slot-scope="scope">
+                <el-select
+                  v-model="scope.row._index"
+                  style="width: 220px"
+                  class="setOption"
+                  @change="materialChange($event,scope.$index,tankOils1,oil_tableData1)"
+                >
+                  <el-option
+                    v-for="(item,index) in tankOils1"
+                    :key="index"
+                    :label="item.label"
+                    :value="index"
+                  >
+                    <span>{{ item.tank_name }}</span>&nbsp;
+                    <span>{{ item.material_name }}</span>
+                    <!-- <span v-if="item.provenance" style="display:block;margin-top: -10px;">{{ item.provenance }}</span> -->
+                  </el-option>
+                </el-select>
+              </template>
+            </el-table-column>
+            <el-table-column align="center" width="95" label="产地">
+              <template slot-scope="scope">
+                {{ scope.row.provenance?scope.row.provenance:'--' }}
+              </template>
+            </el-table-column>
+            <el-table-column align="center" width="95" label="设定值(kg)">
+              <template slot-scope="scope">
+                <el-input-number v-model="scope.row.actual_weight" :precision="2" :step="0.1" :min="0.00" style="width: 70px" size="mini" :controls="false" />
+              </template>
+            </el-table-column>
+            <el-table-column align="center" width="95" label="误差值(kg)">
+              <template slot-scope="scope">
+                <el-input-number v-model="scope.row.standard_error" :precision="2" :step="0.1" :min="0" style="width: 70px" size="mini" :controls="false" />
+              </template>
+            </el-table-column>
+            <el-table-column align="center" label="操作" width="160px">
+              <template slot-scope="scope">
+                <el-button-group>
+                  <el-button
+                    icon="el-icon-caret-top"
+                    size="mini"
+                    type="primary"
+                    @click="moveUp(scope.$index,scope.row,oil_tableData1)"
+                  />
+                  <el-button
+                    icon="el-icon-caret-bottom"
+                    size="mini"
+                    type="primary"
+                    @click="moveDown(scope.$index,scope.row,oil_tableData1)"
+                  />
+                  <el-button icon="el-icon-delete" size="mini" type="danger" @click="removeOilRow1(scope.row)" />
+                </el-button-group>
+              </template>
+            </el-table-column>
+            <!-- <el-table-column align="center" width="50%" prop="sn" label="序号" /> -->
+            <!-- <el-table-column align="center" width="60%" prop="action_name" label="动作">投料</el-table-column> -->
+            <!-- <el-table-column prop="auto_flag" label="自动与否" /> -->
+            <!-- <el-table-column align="center" prop="material_name" label="油脂名称" /> -->
+            <!-- <el-table-column align="center" width="90%" :precision="2" :step="0.1" :min="0.00" prop="actual_weight" label="设定值(kg)" /> -->
+            <!-- <el-table-column align="center" width="90%" :precision="2" :step="0.1" :min="0" prop="standard_error" label="误差值(kg)" /> -->
+          </el-table>
+          <el-form v-if="equip_no==='Z07'">
+            <el-form-item style="text-align: center">
+              <div>序号<el-input-number v-model="oilSnForInsert1" :min="1" style="margin-right: 6px;margin-left: 6px;" size="mini" :controls="false" />
+                <el-button size="mini" :disabled="!insertOilEnbale1()" @click="insertBeforeSnOneOil1">前插入一行</el-button>
+              </div>
+              <el-button size="mini" @click="insertOneOil1">插入一行</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -767,7 +848,10 @@ export default {
       dialogVisible: false,
       formData: {},
       SelectRecipeOptions: [],
-      loadingBtn: false
+      loadingBtn: false,
+      oilSnForInsert1: null,
+      oil_tableData1: [],
+      tankOils1: []
     }
   },
   async created() {
@@ -798,10 +882,23 @@ export default {
       })
     },
     async getTankOils() {
+      this.tankOils1 = []
+      this.tankOils = []
       const response = await tank_materials(this.equip_no, 2)
-      this.tankOils = response.results
-      // console.log(this.tankOils, 'this.tankOils')
+      if (this.equip_no === 'Z07') {
+        this.tankOils1 = response.results.filter(d => d.line_no === 2)
+        this.tankOils = response.results.filter(d => d.line_no === 1 || !d.line_no)
+      } else {
+        this.tankOils = response.results
+      }
       this.tankOils = this.tankOils.map((ret, index) => {
+        return {
+          ...ret,
+          label: `${ret.tank_name}  ${ret.material_name}`,
+          _index: index
+        }
+      })
+      this.tankOils1 = this.tankOils1.map((ret, index) => {
         return {
           ...ret,
           label: `${ret.tank_name}  ${ret.material_name}`,
@@ -832,6 +929,12 @@ export default {
     removeOilRow(row) {
       this.oil_tableData.splice(this.oil_tableData.indexOf(row), 1)
       this.oil_tableData.forEach((d, i) => {
+        d.sn = i + 1
+      })
+    },
+    removeOilRow1(row) {
+      this.oil_tableData1.splice(this.oil_tableData1.indexOf(row), 1)
+      this.oil_tableData1.forEach((d, i) => {
         d.sn = i + 1
       })
     },
@@ -936,6 +1039,11 @@ export default {
         return oil.sn === this.oilSnForInsert
       })
     },
+    insertOilEnbale1() {
+      return this.oil_tableData1.some(oil => {
+        return oil.sn === this.oilSnForInsert1
+      })
+    },
     insertBeforeSnOneOil() {
       var t_o = this.oil_tableData.find(oil => {
         return oil.sn === this.oilSnForInsert
@@ -951,12 +1059,39 @@ export default {
         material_name: ''
       })
     },
+    insertBeforeSnOneOil1() {
+      var t_o = this.oil_tableData1.find(oil => {
+        return oil.sn === this.oilSnForInsert1
+      })
+      var index = this.oil_tableData1.indexOf(t_o)
+      for (var i = index; i < this.oil_tableData1.length; ++i) {
+        this.oil_tableData1[i].sn += 1
+      }
+      this.oil_tableData1.splice(index, 0, {
+        sn: this.oilSnForInsert1,
+        actual_weight: 0,
+        standard_error: 0,
+        material_name: ''
+      })
+    },
     insertOneOil() {
       var sn = this.oil_tableData.length + 1
       if (this.oil_tableData[this.oil_tableData.length - 1]) {
         sn = this.oil_tableData[this.oil_tableData.length - 1].sn + 1
       }
       this.oil_tableData.push({
+        sn,
+        actual_weight: 0,
+        standard_error: 0,
+        material_name: ''
+      })
+    },
+    insertOneOil1() {
+      var sn = this.oil_tableData1.length + 1
+      if (this.oil_tableData1[this.oil_tableData1.length - 1]) {
+        sn = this.oil_tableData1[this.oil_tableData1.length - 1].sn + 1
+      }
+      this.oil_tableData1.push({
         sn,
         actual_weight: 0,
         standard_error: 0,
@@ -1008,7 +1143,28 @@ export default {
               _index: carbonItem._index
             })
           } else if (recipe_listData['batching_details'][j]['type'] === 3) {
-            console.log(this.tankOils, 666)
+            if (this.equip_no === 'Z07' && recipe_listData['batching_details'][j]['line_no'] === 2) {
+              let oilItem = this.tankOils1.find(item => {
+                return (item.id === recipe_listData['batching_details'][j].material) &&
+               (Number(item.tank_no) === Number(recipe_listData['batching_details'][j].tank_no))
+              })
+              if (!oilItem) { // 不在下拉选项中的数据
+                oilItem = {
+                  id: recipe_listData['batching_details'][j].material,
+                  material_name: recipe_listData['batching_details'][j].material_name,
+                  label: recipe_listData['batching_details'][j].material_name,
+                  tank_no: recipe_listData['batching_details'][j].tank_no || '',
+                  provenance: recipe_listData['batching_details'][j].provenance || '',
+                  _index: this.tankOils1.length
+                }
+                this.tankOils1.push(oilItem)
+              }
+              this.oil_tableData1.push({
+                action_name: '投料',
+                _index: oilItem._index,
+                ...recipe_listData['batching_details'][j]
+              })
+            }
             let oilItem = this.tankOils.find(item => {
               return (item.id === recipe_listData['batching_details'][j].material) &&
                (Number(item.tank_no) === Number(recipe_listData['batching_details'][j].tank_no))
@@ -1022,13 +1178,25 @@ export default {
                 provenance: recipe_listData['batching_details'][j].provenance || '',
                 _index: this.tankOils.length
               }
-              this.tankOils.push(oilItem)
+              if (this.equip_no === 'Z07' && (recipe_listData['batching_details'][j]['line_no'] === 1 || !recipe_listData['batching_details'][j]['line_no'])) {
+                this.tankOils.push(oilItem)
+              } else if (this.equip_no !== 'Z07') {
+                this.tankOils.push(oilItem)
+              }
             }
-            this.oil_tableData.push({
-              action_name: '投料',
-              _index: oilItem._index,
-              ...recipe_listData['batching_details'][j]
-            })
+            if (this.equip_no === 'Z07' && (recipe_listData['batching_details'][j]['line_no'] === 1 || !recipe_listData['batching_details'][j]['line_no'])) {
+              this.oil_tableData.push({
+                action_name: '投料',
+                _index: oilItem._index,
+                ...recipe_listData['batching_details'][j]
+              })
+            } else if (this.equip_no !== 'Z07') {
+              this.oil_tableData.push({
+                action_name: '投料',
+                _index: oilItem._index,
+                ...recipe_listData['batching_details'][j]
+              })
+            }
           } else {
             this.rubber_tableData.push({
               // sn: this.rubber_tableData.length + 1,
@@ -1039,6 +1207,7 @@ export default {
         }
         this.carbon_tableData = this.carbon_tableData.sort(this.compareSn)
         this.oil_tableData = this.oil_tableData.sort(this.compareSn)
+        this.oil_tableData1 = this.oil_tableData1.sort(this.compareSn)
         this.rubber_tableData = this.rubber_tableData.sort(this.compareSn)
 
         if (recipe_listData['processes']) {
@@ -1081,7 +1250,6 @@ export default {
         }
         this.RecipeMaterialList = this.RecipeMaterialList.sort(this.compareSn)
         this.loading = false
-
         return recipe_listData
       } catch (e) {
         this.loading = false
@@ -1467,6 +1635,14 @@ export default {
         })
         return
       }
+      if (this.oil_tableData1.length) {
+        this.oil_tableData1.some(d => { d.line_no = 2 })
+      }
+      if (this.oil_tableData.length) {
+        this.oil_tableData.some(d => { d.line_no = 1 || !d.line_no })
+      }
+      const oil_tableDataArr = [...this.oil_tableData, ...this.oil_tableData1]
+
       var step_details_list = []
 
       let _breakbulk = false // 记录开卸料门得索引
@@ -1572,22 +1748,23 @@ export default {
           }
           batching_details_list.push(now_stage_material_)
         }
-        for (j = 0; j < this.oil_tableData.length; ++j) {
-          if (!this.oil_tableData[j].material) {
+        for (j = 0; j < oil_tableDataArr.length; ++j) {
+          if (!oil_tableDataArr[j].material) {
             continue
           }
-          if (this.oil_tableData[j].material_name.indexOf('卸料') > -1 && this.equip_no !== 'Z04') {
+          if (oil_tableDataArr[j].material_name.indexOf('卸料') > -1 && this.equip_no !== 'Z04') {
             _oilNums[0]++
             oilIndex = j
           }
           var now_stage_material__ = {
-            sn: this.oil_tableData[j].sn,
+            sn: oil_tableDataArr[j].sn,
             auto_flag: 0,
-            material: this.oil_tableData[j].material,
-            actual_weight: this.oil_tableData[j].actual_weight ? this.oil_tableData[j].actual_weight : 0,
-            standard_error: this.oil_tableData[j].standard_error,
+            material: oil_tableDataArr[j].material,
+            actual_weight: oil_tableDataArr[j].actual_weight ? oil_tableDataArr[j].actual_weight : 0,
+            standard_error: oil_tableDataArr[j].standard_error,
             type: 3,
-            tank_no: this.oil_tableData[j].tank_no
+            tank_no: oil_tableDataArr[j].tank_no,
+            line_no: oil_tableDataArr[j].line_no
           }
           batching_details_list.push(now_stage_material__)
         }
@@ -1598,7 +1775,7 @@ export default {
           this.$message('炭黑称量中，卸料前请选择其他炭黑')
           return
         }
-        if (oilIndex !== false && (!this.oil_tableData[oilIndex - 1] || this.oil_tableData[oilIndex - 1].material_name.indexOf('卸料') > -1)) {
+        if (oilIndex !== false && (!oil_tableDataArr[oilIndex - 1] || oil_tableDataArr[oilIndex - 1].material_name.indexOf('卸料') > -1)) {
           this.$message('油料称量中，卸料前请选择其他油料')
           return
         }

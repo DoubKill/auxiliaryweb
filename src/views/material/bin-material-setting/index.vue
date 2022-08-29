@@ -80,7 +80,60 @@
       </el-table-column>
     </el-table>
     <el-table :data="tableBinOilData" border style="width: 80%">
-      <el-table-column label="油料称">
+      <el-table-column :label="equip === 'Z07'?'油料称1':'油料称'">
+        <el-table-column prop="tank_name" width="150%" label="油料罐" />
+        <el-table-column prop="material_no" label="物料名称">
+          <template slot-scope="scope">
+            <el-select
+              v-model="scope.row.material_no"
+              filterable
+              style="width:100%"
+              :disabled="!scope.row.use_flag"
+              @change="masterialChange(scope.row,oilOptions)"
+            >
+              <el-option
+                v-for="item in oilOptions"
+                :key="item.material_no"
+                :label="item._material_name1"
+                :value="item.material_no"
+              />
+            </el-select>
+          </template>
+        </el-table-column>
+        <el-table-column prop="provenance" label="产地">
+          <template slot-scope="scope">
+            <el-select
+              v-model="scope.row.provenance"
+              style="width:100%"
+              filterable
+              :disabled="!scope.row.use_flag"
+              @visible-change="getProvenanceOptions($event, scope.row.material_no)"
+            >
+              <el-option
+                v-for="item in provenanceOptions"
+                :key="item"
+                :label="item"
+                :value="item"
+              />
+            </el-select>
+          </template>
+        </el-table-column>
+        <el-table-column :formatter="formatter" prop="use_flag" label="使用状态">
+          <template slot-scope="scope">
+            <el-switch
+              v-model="scope.row.use_flag"
+              active-color="#13ce66"
+              inactive-color="#ff4949"
+              active-text="启用"
+              inactive-text="停用"
+              :disabled="disabled"
+            />
+          </template>
+        </el-table-column>
+      </el-table-column>
+    </el-table>
+    <el-table v-if="equip === 'Z07'" :data="tableBinOilData1" border style="width: 80%">
+      <el-table-column label="油料称2">
         <el-table-column prop="tank_name" width="150%" label="油料罐" />
         <el-table-column prop="material_no" label="物料名称">
           <template slot-scope="scope">
@@ -149,6 +202,7 @@ export default {
     return {
       tableBinCbData: [],
       tableBinOilData: [],
+      tableBinOilData1: [],
       equip: '',
       equipOptions: [],
       materialsTypeId: '',
@@ -214,9 +268,16 @@ export default {
     },
     async getOilList() {
       try {
+        this.tableBinOilData1 = []
+        this.tableBinOilData = []
         const oilData = await weighOil('get', {
           params: { equip_no: this.equip }
         })
+        if (this.equip === 'Z07') {
+          this.tableBinOilData1 = oilData.results.filter(d => d.line_no === 2)
+          this.tableBinOilData = oilData.results.filter(d => d.line_no === 1)
+          return
+        }
         this.tableBinOilData = oilData.results
       // eslint-disable-next-line no-empty
       } catch (e) {}
@@ -237,7 +298,8 @@ export default {
     },
     async putOilList() {
       try {
-        await weighOil('put', { data: this.tableBinOilData })
+        const arr = [...this.tableBinOilData, ...this.tableBinOilData1]
+        await weighOil('put', { data: arr })
         this.$message({
           showClose: true,
           message: '油料罐保存成功',

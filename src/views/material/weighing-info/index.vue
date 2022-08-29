@@ -61,7 +61,35 @@
       </el-table-column>
     </el-table>
     <el-table :data="tableBinOilData" border style="width: 75%">
-      <el-table-column label="油料称">
+      <el-table-column :label="equip === 'Z07'?'油料称1':'油料称'">
+        <el-table-column prop="tank_name" label="油料罐" />
+        <el-table-column prop="material_name1" label="物料名称">
+          <template slot-scope="scope">{{ scope.row.material_name1 }}</template>
+        </el-table-column>
+        <el-table-column prop="low_value" label="慢称值">
+          <template slot-scope="scope">
+            <el-input-number v-model="scope.row.low_value" :disabled="disabled || !scope.row.use_flag" size="mini" :step="0.01" :max="99" :min="0" step-strictly @blur="low_value_change(scope.row, scope.row.low_value)" />
+          </template>
+        </el-table-column>
+        <el-table-column prop="advance_value" label="提前量">
+          <template slot-scope="scope">
+            <el-input-number v-model="scope.row.advance_value" :disabled="disabled || !scope.row.use_flag" size="mini" :step="0.01" :max="99" :min="0" step-strictly @blur="advance_value_change(scope.row, scope.row.advance_value)" />
+          </template>
+        </el-table-column>
+        <el-table-column prop="adjust_value" label="调整值">
+          <template slot-scope="scope">
+            <el-input-number v-model="scope.row.adjust_value" :disabled="disabled || !scope.row.use_flag" size="mini" :step="0.01" :max="99" :min="0" step-strictly @blur="adjust_value_change(scope.row, scope.row.adjust_value)" />
+          </template>
+        </el-table-column>
+        <el-table-column prop="dot_time" label="点动时间">
+          <template slot-scope="scope">
+            <el-input-number v-model="scope.row.dot_time" :disabled="disabled || !scope.row.use_flag" size="mini" :step="1" :max="99" :min="0" step-strictly @blur="dot_time_change(scope.row, scope.row.dot_time)" />
+          </template>
+        </el-table-column>
+      </el-table-column>
+    </el-table>
+    <el-table v-if="equip === 'Z07'" :data="tableBinOilData1" border style="width: 75%">
+      <el-table-column label="油料称2">
         <el-table-column prop="tank_name" label="油料罐" />
         <el-table-column prop="material_name1" label="物料名称">
           <template slot-scope="scope">{{ scope.row.material_name1 }}</template>
@@ -103,6 +131,7 @@ export default {
     return {
       tableBinCbData: [],
       tableBinOilData: [],
+      tableBinOilData1: [],
       equip: '',
       equipOptions: [],
       disabled: true
@@ -147,9 +176,16 @@ export default {
     },
     async getOilList() {
       try {
+        this.tableBinOilData1 = []
+        this.tableBinOilData = []
         const oilData = await weighOil('get', {
           params: { equip_no: this.equip }
         })
+        if (this.equip === 'Z07') {
+          this.tableBinOilData1 = oilData.results.filter(d => d.line_no === 2)
+          this.tableBinOilData = oilData.results.filter(d => d.line_no === 1)
+          return
+        }
         this.tableBinOilData = oilData.results
       // eslint-disable-next-line no-empty
       } catch (e) {}
@@ -165,7 +201,6 @@ export default {
           d.fast_speed = (d.fast_speed).toString()
           d.low_speed = (d.low_speed).toString()
         })
-        console.log(arr)
         await weighCb('put', { data: arr })
         this.$message({
           showClose: true,
@@ -179,7 +214,7 @@ export default {
     },
     async putOilList() {
       try {
-        const arr = JSON.parse(JSON.stringify(this.tableBinOilData))
+        const arr = [...this.tableBinOilData, ...this.tableBinOilData1]
         arr.forEach(d => {
           d.low_value = (d.low_value).toString()
           d.advance_value = (d.advance_value).toString()
