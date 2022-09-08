@@ -469,16 +469,6 @@ export default {
       try {
         const workSchedulesData = await getWorkSchedules({ all: 1, work_procedure: '密炼' })
         this.workSchedules = workSchedulesData.results
-        this.classesOptions = workSchedulesData.results[0].classesdetail_set
-        this.classesOptions.forEach(d => {
-          if (d.classes_name === '早班') {
-            d.no = 0
-          } else if (d.classes_name === '中班') {
-            d.no = 1
-          } else if (d.classes_name === '夜班') {
-            d.no = 2
-          }
-        })
       // eslint-disable-next-line no-empty
       } catch (e) {}
     },
@@ -589,6 +579,17 @@ export default {
         this.loadingBtn = true
 
         const planSchedule = await getPlanSchedule(this.planScheduleId)
+        this.classesOptions = planSchedule.work_schedule_plan
+        this.classesOptions.forEach(d => {
+          if (d.classes_name === '早班') {
+            d.no = 0
+          } else if (d.classes_name === '中班') {
+            d.no = 1
+          } else if (d.classes_name === '夜班') {
+            d.no = 2
+          }
+        })
+
         var workSchedule = this.workSchedules.find(workSchedule => {
           return workSchedule.id === planSchedule.work_schedule
         })
