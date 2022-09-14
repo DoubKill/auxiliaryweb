@@ -188,4 +188,12 @@ export function devTypeBatching(method, data = {}) {
   Object.assign(obj, data)
   return request(obj)
 }
+export function recipeChangeHistory(method, id, data = {}) {
+  const obj = {
+    url: id ? API.RecipeChangeHistory + id + '/' : API.RecipeChangeHistory,
+    method: method
+  }
+  Object.assign(obj, data)
+  return request(obj)
+}
 

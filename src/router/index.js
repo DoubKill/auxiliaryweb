@@ -127,6 +127,15 @@ export const asyncRoutes = [{
       permissionName: 'productbatching',
       activeMenu: '/recipe/list'
     }
+  },
+  {
+    path: '/rb/formula-resume',
+    name: 'FormulaResume',
+    component: () => import('@/views/recipe/formula-resume'),
+    meta: {
+      title: '配方变更履历',
+      permissionName: 'productbatching'
+    }
   }
   ]
 },
