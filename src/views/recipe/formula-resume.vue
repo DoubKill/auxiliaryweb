@@ -315,7 +315,7 @@ export default {
         if (type === 3) {
           jiaoliao += `${dd.key}<br>`
         } else if (dd.pv) {
-          jiaoliao += `${dd.flag}: ${dd.key}(${dd.pv}-${dd.cv})<br>`
+          jiaoliao += `${dd.flag}: ${dd.key}(${dd.pv}→${dd.cv})<br>`
         } else {
           jiaoliao += `${dd.flag}: ${dd.key}<br>`
         }
