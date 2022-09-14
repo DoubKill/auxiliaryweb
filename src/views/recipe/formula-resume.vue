@@ -279,7 +279,7 @@ export default {
                     }
                   }
                   if (Number(key) === 2) {
-                    strGY = this.seta(dd, strGY)
+                    strGY = this.seta(dd, strGY, 2)
                   }
                   if (Number(key) === 3) {
                     strBX = this.seta(dd, strBX, 3)
@@ -314,7 +314,9 @@ export default {
       if (dd.flag === '修改') {
         if (type === 3) {
           jiaoliao += `${dd.key}<br>`
-        } else if (dd.pv) {
+        } else if (type === 2) {
+          jiaoliao += `${dd.key}(${dd.pv}→${dd.cv})<br>`
+        } else if (dd.pv || dd.pv === 0) {
           jiaoliao += `${dd.flag}: ${dd.key}(${dd.pv}→${dd.cv})<br>`
         } else {
           jiaoliao += `${dd.flag}: ${dd.key}<br>`
