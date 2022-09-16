@@ -130,7 +130,7 @@ export default {
   components: { page },
   data() {
     return {
-      getParams: {},
+      getParams: { used_types: [4] },
       datePicker: [],
       options: [{
         value: 1, label: '编辑'
