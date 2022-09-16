@@ -27,7 +27,7 @@
         />
       </el-form-item>
       <el-form-item label="配方状态">
-        <el-select v-model="getParams.used_type" placeholder="请选择" clearable @change="changeList">
+        <el-select v-model="getParams.used_types" placeholder="请选择" clearable multiple @change="changeList">
           <el-option
             v-for="item in options"
             :key="item.value"
@@ -49,7 +49,7 @@
       <el-table-column
         prop="recipe_no"
         label="胶料名称"
-        min-width="20"
+        fixed
       >
         <template slot-scope="{row,$index}">
           <div>
@@ -65,43 +65,46 @@
         prop="dev_type"
         label="机型"
         width="60"
+        fixed
       />
       <el-table-column
         prop="equip_no"
         label="机台"
         width="60"
+        fixed
       />
       <el-table-column
         prop="used_type"
         label="状态"
         width="60"
+        fixed
         :formatter="usedTypeFormatter"
       />
       <el-table-column
         prop="created_time"
         label="创建时间"
-        min-width="20"
+        fixed
       />
       <el-table-column
         prop="created_username"
         label="创建人"
-        min-width="15"
+        fixed
       />
       <el-table-column
         prop="updated_username"
         label="修改人"
-        min-width="15"
+        fixed
       />
       <el-table-column
         prop="变更履历"
         label="变更履历"
         width="100"
+        fixed
       />
       <el-table-column
         v-for="item in headNum"
         :key="item"
         :label="`变更${item}`"
-        min-width="20"
       >
         <template slot-scope="{row}">
           <span
@@ -162,7 +165,9 @@ export default {
     async getList() {
       try {
         this.loading = true
-        const data = await recipeChangeHistory('get', null, { params: this.getParams })
+        const obj = JSON.parse(JSON.stringify(this.getParams))
+        obj.used_types = this.getParams.used_types ? this.getParams.used_types.join(',') : ''
+        const data = await recipeChangeHistory('get', null, { params: obj })
         this.headNum = 0
         const arr = []
         if (data.results.length) {
@@ -245,6 +250,12 @@ export default {
       row._show = !row._show
       row._childNum = 3
       if (row._show) {
+        this.tableData = this.tableData.filter((d, _i) => {
+          if (_index !== _i) {
+            d._show = false
+          }
+          return !d._listShow
+        })
         try {
           const data = await recipeChangeHistory('get', row.id)
           const resumeName = ['配方配料', '工艺参数', '密炼步序']
@@ -252,7 +263,8 @@ export default {
           resumeName.forEach((d, i) => {
             resumeList[i] = {
               '变更履历': d,
-              change_desc: []
+              change_desc: [],
+              _listShow: true
             }
           })
           for (let index = 0; index < data.change_details.length; index++) {
@@ -302,7 +314,7 @@ export default {
       setTimeout(d => {
         this.setData()
         this.loading = false
-      }, 300)
+      })
     },
     seta(dd, jiaoliao, type) {
       if (dd.flag === '新增') {
