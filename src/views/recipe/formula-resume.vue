@@ -41,10 +41,8 @@
       v-loading="loading"
       element-loading-background="transparent"
       :data="tableData"
-      row-key="_id"
       border
       :span-method="objectSpanMethod"
-      :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
     >
       <el-table-column
         prop="recipe_no"
@@ -98,11 +96,11 @@
       <el-table-column
         prop="变更履历"
         label="变更履历"
-        width="100"
+        width="115"
         fixed
       />
       <el-table-column
-        v-for="item in headNum"
+        v-for="(item) in headNum"
         :key="item"
         :label="`变更${item}`"
       >
@@ -248,17 +246,23 @@ export default {
     },
     async tableLoad(_index, row) {
       row._show = !row._show
-      row._childNum = 3
+      row._childNum = 5
+      let current_index = _index
       if (row._show) {
         this.tableData = this.tableData.filter((d, _i) => {
           if (_index !== _i) {
+            if (d._show) {
+              if (_i < current_index) {
+                current_index = current_index - 5
+              }
+            }
             d._show = false
           }
           return !d._listShow
         })
         try {
           const data = await recipeChangeHistory('get', row.id)
-          const resumeName = ['配方配料', '工艺参数', '密炼步序']
+          const resumeName = ['配方配料', '工艺参数', '密炼步序', '新增/修改 人', '新增/修改 时间']
           const resumeList = []
           resumeName.forEach((d, i) => {
             resumeList[i] = {
@@ -269,7 +273,7 @@ export default {
           })
           for (let index = 0; index < data.change_details.length; index++) {
             const d = data.change_details[index]
-            const object = JSON.parse(d)
+            const object = d.details ? JSON.parse(d.details) : {}
             let str1 = '<span style="font-weight: 700;">胶料</span>：<br>'
             let str2 = '<span style="font-weight: 700;">炭黑</span>：<br>'
             let str3 = '<span style="font-weight: 700;">油料</span>：<br>'
@@ -299,16 +303,24 @@ export default {
                 })
               }
             }
-            resumeList[0].change_desc[index] = { val: str1 + '<br>' + str2 + '<br>' + str3 }
-            resumeList[1].change_desc[index] = { val: strGY }
-            resumeList[2].change_desc[index] = { val: strBX }
+            if (index === 0) {
+              resumeList[0].change_desc[index] = { val: '新增' }
+              resumeList[1].change_desc[index] = { val: '新增' }
+              resumeList[2].change_desc[index] = { val: '新增' }
+            } else {
+              resumeList[0].change_desc[index] = { val: str1 + '<br>' + str2 + '<br>' + str3 }
+              resumeList[1].change_desc[index] = { val: strGY }
+              resumeList[2].change_desc[index] = { val: strBX }
+            }
+            resumeList[3].change_desc[index] = { val: d.changed_username }
+            resumeList[4].change_desc[index] = { val: d.changed_time }
           }
-          this.tableData.splice(_index + 2, 0, ...resumeList)
+          this.tableData.splice(current_index + 2, 0, ...resumeList)
         } catch (e) {
         //
         }
       } else {
-        this.tableData.splice(_index + 2, row._childNum)
+        this.tableData.splice(current_index + 2, row._childNum)
       }
       this.loading = true
       setTimeout(d => {
