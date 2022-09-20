@@ -246,14 +246,14 @@ export default {
     },
     async tableLoad(_index, row) {
       row._show = !row._show
-      row._childNum = 5
+      row._childNum = 6
       let current_index = _index
       if (row._show) {
         this.tableData = this.tableData.filter((d, _i) => {
           if (_index !== _i) {
             if (d._show) {
               if (_i < current_index) {
-                current_index = current_index - 5
+                current_index = current_index - 6
               }
             }
             d._show = false
@@ -262,7 +262,7 @@ export default {
         })
         try {
           const data = await recipeChangeHistory('get', row.id)
-          const resumeName = ['配方配料', '工艺参数', '密炼步序', '新增/修改 人', '新增/修改 时间']
+          const resumeName = ['配方配料', '称量误差', '工艺参数', '密炼步序', '新增/修改 人', '新增/修改 时间']
           const resumeList = []
           resumeName.forEach((d, i) => {
             resumeList[i] = {
@@ -277,6 +277,9 @@ export default {
             let str1 = '<span style="font-weight: 700;">胶料</span>：<br>'
             let str2 = '<span style="font-weight: 700;">炭黑</span>：<br>'
             let str3 = '<span style="font-weight: 700;">油料</span>：<br>'
+            let weighing1 = '<span style="font-weight: 700;">胶料</span>：<br>'
+            let weighing2 = '<span style="font-weight: 700;">炭黑</span>：<br>'
+            let weighing3 = '<span style="font-weight: 700;">油料</span>：<br>'
             let strGY = ''
             let strBX = ''
             for (const key in object) {
@@ -294,6 +297,17 @@ export default {
                       str3 = this.seta(dd, str3)
                     }
                   }
+                  if (Number(key) === 4) {
+                    if (dd.type === 1) {
+                      weighing1 = this.seta(dd, weighing1, 2)
+                    }
+                    if (dd.type === 2) {
+                      weighing2 = this.seta(dd, weighing2, 2)
+                    }
+                    if (dd.type === 3) {
+                      weighing3 = this.seta(dd, weighing3, 2)
+                    }
+                  }
                   if (Number(key) === 2) {
                     strGY = this.seta(dd, strGY, 2)
                   }
@@ -307,13 +321,15 @@ export default {
               resumeList[0].change_desc[index] = { val: '新增' }
               resumeList[1].change_desc[index] = { val: '新增' }
               resumeList[2].change_desc[index] = { val: '新增' }
+              resumeList[3].change_desc[index] = { val: '新增' }
             } else {
               resumeList[0].change_desc[index] = { val: str1 + '<br>' + str2 + '<br>' + str3 }
-              resumeList[1].change_desc[index] = { val: strGY }
-              resumeList[2].change_desc[index] = { val: strBX }
+              resumeList[1].change_desc[index] = { val: weighing1 + '<br>' + weighing2 + '<br>' + weighing3 }
+              resumeList[2].change_desc[index] = { val: strGY }
+              resumeList[3].change_desc[index] = { val: strBX }
             }
-            resumeList[3].change_desc[index] = { val: d.changed_username }
-            resumeList[4].change_desc[index] = { val: d.changed_time }
+            resumeList[4].change_desc[index] = { val: d.changed_username }
+            resumeList[5].change_desc[index] = { val: d.changed_time }
           }
           this.tableData.splice(current_index + 2, 0, ...resumeList)
         } catch (e) {
