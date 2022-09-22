@@ -112,5 +112,6 @@ export default {
   DevTypeBatching: '/api/v1/recipe/dev-type-batching/',
   ProductTechParams: '/api/v1/recipe/product-tech-params/',
   ManualInputTrains: '/api/v1/production/manual-input-trains/',
-  PlanIssueValidate: '/api/v1/plan/plan-issue-validate/'
+  PlanIssueValidate: '/api/v1/plan/plan-issue-validate/',
+  RecipeChangeHistory: '/api/v1/recipe/recipe-change-history/'
 }
