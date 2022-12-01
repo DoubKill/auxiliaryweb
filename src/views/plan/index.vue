@@ -417,8 +417,8 @@
             <el-input-number
               v-model="row.actual_trains"
               controls-position="right"
-              :min="1"
               :step="1"
+              :precision="0"
               step-strictly
             />
           </template>
