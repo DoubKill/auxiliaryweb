@@ -23,6 +23,7 @@
       </el-form-item>
       <el-form-item label="胶料">
         <productNo-select
+          :show-color="true"
           @productBatchingChanged="productBatchingChanged"
         />
       </el-form-item>

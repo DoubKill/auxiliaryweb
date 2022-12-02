@@ -92,6 +92,15 @@ export function productbatching(method, data = {}) {
   return request(obj)
 }
 
+export function productMaterials(method, data = {}) {
+  const obj = {
+    url: API.ProductMaterials,
+    method: method
+  }
+  Object.assign(obj, data)
+  return request(obj)
+}
+
 export function globalCodes(method, data = {}) {
   const obj = {
     url: API.GlobalCodesUrl,

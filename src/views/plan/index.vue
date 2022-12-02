@@ -67,11 +67,13 @@
               @change="searchChange"
             >
               <el-option
-                v-for="(item, index) in recipeOptions"
-                :key="index"
-                :label="item"
-                :value="item"
-              />
+                v-for="(item) in recipeOptions"
+                :key="item.product_no"
+                :label="item.product_no"
+                :value="item.product_no"
+              >
+                <span :style="{color: item.used?'blue':''}">{{ item.product_no }}</span>
+              </el-option>
             </el-select>
           </el-form-item>
         </el-col>
@@ -470,7 +472,7 @@ import {
   upRegulation,
   downRegulation,
   globalCodes,
-  productbatching,
+  productMaterials,
   getPlanStatusList,
   currentFactoryDate,
   manualInputTrains,
@@ -635,8 +637,8 @@ export default {
     },
     async getRecipeList() {
       try {
-        const recipeData = await productbatching('get', { params: { all: 1, distinct: 1 }})
-        this.recipeOptions = recipeData.results
+        const recipeData = await productMaterials('get')
+        this.recipeOptions = recipeData || []
         // eslint-disable-next-line no-empty
       } catch (e) { }
     },

@@ -30,7 +30,7 @@
         <equip-select @equipChanged="equipChanged" />
       </el-form-item>
       <el-form-item label="配方">
-        <product-no-select @productBatchingChanged="productBatchingChanged" />
+        <product-no-select :show-color="true" @productBatchingChanged="productBatchingChanged" />
       </el-form-item>
       <el-form-item label="物料类别">
         <material-type-select @materialTypeChanged="materialTypeChanged" />
