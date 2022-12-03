@@ -387,7 +387,7 @@ export default {
       if (typeof (param) === 'object') {
         return undefined
       } else {
-        return Number(param).toFixed(0)
+        return Number(param)
       }
     },
     async recipe_process_step_list(id, equip) {
