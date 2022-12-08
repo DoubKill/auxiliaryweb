@@ -36,8 +36,12 @@
           />
         </el-select>
       </el-form-item>
+      <el-form-item>
+        <el-button @click="exportTable">导出变更履历</el-button>
+      </el-form-item>
     </el-form>
     <el-table
+      id="out-table"
       v-loading="loading"
       element-loading-background="transparent"
       :data="tableData"
@@ -47,7 +51,7 @@
       <el-table-column
         prop="recipe_no"
         label="胶料名称"
-        fixed
+        :fixed="!btnLoading"
       >
         <template slot-scope="{row,$index}">
           <div>
@@ -63,41 +67,41 @@
         prop="dev_type"
         label="机型"
         width="60"
-        fixed
+        :fixed="!btnLoading"
       />
       <el-table-column
         prop="equip_no"
         label="机台"
         width="60"
-        fixed
+        :fixed="!btnLoading"
       />
       <el-table-column
         prop="used_type"
         label="状态"
         width="60"
-        fixed
+        :fixed="!btnLoading"
         :formatter="usedTypeFormatter"
       />
       <el-table-column
         prop="created_time"
         label="创建时间"
-        fixed
+        :fixed="!btnLoading"
       />
       <el-table-column
         prop="created_username"
         label="创建人"
-        fixed
+        :fixed="!btnLoading"
       />
       <el-table-column
         prop="updated_username"
         label="修改人"
-        fixed
+        :fixed="!btnLoading"
       />
       <el-table-column
         prop="变更履历"
         label="变更履历"
         width="115"
-        fixed
+        :fixed="!btnLoading"
       />
       <el-table-column
         v-for="(item) in headNum"
@@ -123,6 +127,7 @@
 <script>
 import { equip_url, recipeChangeHistory } from '@/api/recipe_fun'
 import page from '@/components/page'
+import { exportExcel } from '@/utils'
 export default {
   name: 'FormulaResume',
   components: { page },
@@ -150,7 +155,8 @@ export default {
       SelectEquipOptions: [],
       headNum: 0,
       spanArr: [],
-      pos: null
+      pos: null,
+      btnLoading: false
     }
   },
   created() {
@@ -394,6 +400,13 @@ export default {
         case 6:
           return '废弃'
       }
+    },
+    exportTable() {
+      this.btnLoading = true
+      setTimeout(d => {
+        exportExcel('配方变更履历', 'disposal-list-components')
+        this.btnLoading = false
+      }, 300)
     }
   }
 }

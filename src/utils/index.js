@@ -150,3 +150,41 @@ function zeroFilling(n) {
   n = Number(n)
   return n < 10 ? '0' + n : n
 }
+
+import FileSaver from 'file-saver'
+import XLSX from 'xlsx'
+import XLSXStyle from 'xlsx-style'
+/**
+ *
+ * @param {*文件名称} value
+ */
+export function exportExcel(value = 'excel', val, _wpxArr = []) {
+  value = value + ' ' + (val === 'excel' ? '' : setDate('', true))
+  /* 从表生成工作簿对象 */
+  var wb
+  if (val && (val === 'disposal-list-components')) {
+    wb = XLSX.utils.table_to_book(document.querySelector('#out-table'), { raw: true })
+  } else {
+    wb = XLSX.utils.table_to_book(document.querySelector('#out-table'), { raw: false })
+  }
+  wb.Sheets['Sheet1']['!cols'] = _wpxArr
+
+  var wbout = XLSXStyle.write(wb, {
+    bookType: 'xlsx', type: 'buffer'
+  })
+  try {
+    // XLSX.writeFile(wb, value + '.xlsx')
+    FileSaver.saveAs(
+      // Blob 对象表示一个不可变、原始数据的类文件对象。
+      // Blob 表示的不一定是JavaScript原生格式的数据。
+      // File 接口基于Blob，继承了 blob 的功能并将其扩展使其支持用户系统上的文件。
+      // 返回一个新创建的 Blob 对象，其内容由参数中给定的数组串联组成。
+      new Blob([wbout], { type: 'application/octet-stream' }),
+      // 设置导出文件名称
+      value + '.xlsx'
+    )
+  } catch (e) {
+    if (typeof console !== 'undefined') console.log(e, wbout)
+  }
+  return wbout
+}

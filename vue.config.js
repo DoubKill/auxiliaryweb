@@ -40,9 +40,10 @@ module.exports = {
       '/api': {
         // target: 'http://10.10.120.40:15009/',
         // target: 'http://liubowen.vaiwan.com/', // 博文
-        target: 'http://10.20.180.172:9000', // 博文
+        // target: 'http://10.20.181.12:9000', // 博文
+        // target: 'http://10.10.230.101:9000/', // 杨
         // target: 'http://10.4.10.55:80/', // 生产环境
-        // target: 'http://10.10.120.40:8008/',
+        target: 'http://10.10.120.40:8008/',
         ws: true,
         changeOrigin: true,
         pathRewrite: {
@@ -60,7 +61,10 @@ module.exports = {
       alias: {
         '@': resolve('src')
       }
-    }
+    },
+    externals: [{
+      './cptable': 'var cptable'
+    }]
   },
   chainWebpack(config) {
     // it can improve the speed of the first screen, it is recommended to turn on preload
