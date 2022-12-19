@@ -62,7 +62,7 @@
       :data="tableData"
       style="width: 100%"
       :height="maxHeightTable"
-      :default-sort="{prop: 'begin_time', order: 'ascending'}"
+      :default-sort="{prop: '', order: 'ascending'}"
       @selection-change="handleSelectionChange"
     >
       <el-table-column
@@ -166,6 +166,7 @@
     </el-table>
 
     <page
+      :old-page="false"
       :total="total"
       :current-page="getParams.page"
       @currentChange="currentChange"
@@ -689,8 +690,9 @@ export default {
     afterSetOption(chartObj) {
       chartObj.setOption(this.options)
     },
-    currentChange(page) {
+    currentChange(page, pageSize) {
       this.getParams.page = page
+      this.getParams.page_size = pageSize
       this.getList()
     },
     async getWeighInformation(id, page) {
