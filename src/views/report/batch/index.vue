@@ -124,6 +124,7 @@
     </el-table>
 
     <page
+      :old-page="false"
       :total="total"
       :current-page="getParams.page"
       @currentChange="currentChange"
@@ -536,8 +537,9 @@ export default {
         // echarts.init(this.$refs.main).setOption(this.option1);
       })
     },
-    currentChange(page) {
+    currentChange(page, pageSize) {
       this.getParams.page = page
+      this.getParams.page_size = pageSize
       this.getList()
     },
     visibleChange(bool) {
