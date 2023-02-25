@@ -208,7 +208,7 @@
             </el-table-column>
             <el-table-column align="center" label="误差值(kg)">
               <template slot-scope="scope">
-                <el-input-number v-model="scope.row.standard_error" :precision="2" :step="0.1" :min="0" style="width: 70px" size="mini" :controls="false" />
+                <el-input-number v-model="scope.row.standard_error" :precision="2" :step="0.1" :min="0" style="width: 70px" size="mini" :controls="false" @change="changeStandardError(scope.row)" />
               </template>
             </el-table-column>
             <el-table-column align="center" label="操作" width="160px">
@@ -926,6 +926,12 @@ export default {
       this.rubber_tableData.forEach((d, i) => {
         d.sn = i + 1
       })
+      // 计算胶料总误差
+      let allNum = 0
+      this.rubber_tableData.forEach(d => {
+        allNum += d.standard_error
+      })
+      this.batching_error = allNum
     },
     removeOilRow(row) {
       this.oil_tableData.splice(this.oil_tableData.indexOf(row), 1)
@@ -1250,11 +1256,33 @@ export default {
           })
         }
         this.RecipeMaterialList = this.RecipeMaterialList.sort(this.compareSn)
+
+        if (!recipe_listData.processes) {
+          recipe_listData.processes = { batching_error: 0 }
+        }
+        if (!recipe_listData.processes.batching_error) {
+          // 计算胶料总误差
+          let allNum = 0
+          this.rubber_tableData.forEach(d => {
+            allNum += d.standard_error
+          })
+          this.batching_error = allNum
+        }
         this.loading = false
         return recipe_listData
       } catch (e) {
         this.loading = false
         throw new Error(e)
+      }
+    },
+    changeStandardError(row) {
+      // 计算胶料总误差
+      if (row.material_name) {
+        let allNum = 0
+        this.rubber_tableData.forEach(d => {
+          allNum += d.standard_error
+        })
+        this.batching_error = allNum
       }
     },
     compareSn(o1, o2) {
@@ -1465,6 +1493,12 @@ export default {
         app.ProductRecipe[app.raw_material_index].material_type = row.material_type_name
         app.dialogRawMaterialSync = false
       }
+      // 计算胶料总误差
+      let allNum = 0
+      this.rubber_tableData.forEach(d => {
+        allNum += d.standard_error
+      })
+      this.batching_error = allNum
     },
     saveMaterialClicked: async function() {
       var app = this

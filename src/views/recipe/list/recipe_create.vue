@@ -333,7 +333,7 @@
             </el-table-column>
             <el-table-column align="center" label="误差值(kg)">
               <template slot-scope="scope">
-                <el-input-number v-model="scope.row.standard_error" style="width: 70px" :precision="2" :step="0.1" :min="0" size="mini" :controls="false" />
+                <el-input-number v-model="scope.row.standard_error" style="width: 70px" :precision="2" :step="0.1" :min="0" size="mini" :controls="false" @change="changeStandardError(scope.row)" />
               </template>
             </el-table-column>
             <el-table-column align="center" label="操作" width="160px">
@@ -1235,6 +1235,12 @@ export default {
       this.rubber_tableData.forEach((d, i) => {
         d.sn = i + 1
       })
+      // 计算胶料总误差
+      let allNum = 0
+      this.rubber_tableData.forEach(d => {
+        allNum += d.standard_error
+      })
+      this.batching_error = allNum
     },
     selectMaterial(rubberRow) {
       this.rubberRow = rubberRow
@@ -1463,6 +1469,12 @@ export default {
         app.ProductRecipe[app.raw_material_index].material_type = row.material_type_name
         app.dialogRawMaterialSync = false
       }
+      // 计算胶料总误差
+      let allNum = 0
+      this.rubber_tableData.forEach(d => {
+        allNum += d.standard_error
+      })
+      this.batching_error = allNum
     },
 
     saveMaterialClicked: async function() {
@@ -2075,6 +2087,16 @@ export default {
           message: '收皮信息不能为空',
           type: 'error'
         })
+      }
+    },
+    changeStandardError(row) {
+      // 计算胶料总误差
+      if (row.material_name) {
+        let allNum = 0
+        this.rubber_tableData.forEach(d => {
+          allNum += d.standard_error
+        })
+        this.batching_error = allNum
       }
     },
     AddRecipeInfoStep: async function() {

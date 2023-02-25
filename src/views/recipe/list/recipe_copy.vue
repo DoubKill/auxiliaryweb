@@ -504,6 +504,7 @@
                   style="width: 70px"
                   size="mini"
                   :controls="false"
+                  @change="changeStandardError(scope.row)"
                 />
               </template>
             </el-table-column>
@@ -1614,6 +1615,12 @@ export default {
       this.rubber_tableData.forEach((d, i) => {
         d.sn = i + 1
       })
+      // 计算胶料总误差
+      let allNum = 0
+      this.rubber_tableData.forEach(d => {
+        allNum += d.standard_error
+      })
+      this.batching_error = allNum
     },
     removeOilRow(row) {
       this.oil_tableData.splice(this.oil_tableData.indexOf(row), 1)
@@ -1964,9 +1971,31 @@ export default {
           this.generateRecipeForm.stage_product_batch_no = this.$route.params['stage_product_batch_no']
           this.recipeNameChange()
         }
+
+        if (!recipe_listData.processes) {
+          recipe_listData.processes = { batching_error: 0 }
+        }
+        if (!recipe_listData.processes.batching_error) {
+          // 计算胶料总误差
+          let allNum = 0
+          this.rubber_tableData.forEach(d => {
+            allNum += d.standard_error
+          })
+          this.batching_error = allNum
+        }
         this.loading = false
         return recipe_listData
       } catch (e) { throw new Error(e) }
+    },
+    changeStandardError(row) {
+      // 计算胶料总误差
+      if (row.material_name) {
+        let allNum = 0
+        this.rubber_tableData.forEach(d => {
+          allNum += d.standard_error
+        })
+        this.batching_error = allNum
+      }
     },
     compareSn(o1, o2) {
       return Number(o1.sn) - Number(o2.sn)
@@ -2166,6 +2195,13 @@ export default {
         app.ProductRecipe[app.raw_material_index].material_type = row.material_type_name
         app.dialogRawMaterialSync = false
       }
+
+      // 计算胶料总误差
+      let allNum = 0
+      this.rubber_tableData.forEach(d => {
+        allNum += d.standard_error
+      })
+      this.batching_error = allNum
     },
     saveMaterialClicked: async function() {
       // 循环整个表格
