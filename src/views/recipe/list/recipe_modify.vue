@@ -931,6 +931,9 @@ export default {
       this.rubber_tableData.forEach(d => {
         allNum += d.standard_error
       })
+      if (this.rubber_tableData.length === 1) {
+        allNum = 0
+      }
       this.batching_error = allNum
     },
     removeOilRow(row) {
@@ -1266,6 +1269,9 @@ export default {
           this.rubber_tableData.forEach(d => {
             allNum += d.standard_error
           })
+          if (this.rubber_tableData.length === 1) {
+            allNum = 0
+          }
           this.batching_error = allNum
         }
         this.loading = false
@@ -1282,6 +1288,9 @@ export default {
         this.rubber_tableData.forEach(d => {
           allNum += d.standard_error
         })
+        if (this.rubber_tableData.length === 1) {
+          allNum = 0
+        }
         this.batching_error = allNum
       }
     },
@@ -1498,6 +1507,9 @@ export default {
       this.rubber_tableData.forEach(d => {
         allNum += d.standard_error
       })
+      if (this.rubber_tableData.length === 1) {
+        allNum = 0
+      }
       this.batching_error = allNum
     },
     saveMaterialClicked: async function() {

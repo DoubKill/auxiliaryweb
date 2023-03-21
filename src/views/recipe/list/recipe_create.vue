@@ -1240,6 +1240,9 @@ export default {
       this.rubber_tableData.forEach(d => {
         allNum += d.standard_error
       })
+      if (this.rubber_tableData.length === 1) {
+        allNum = 0
+      }
       this.batching_error = allNum
     },
     selectMaterial(rubberRow) {
@@ -1474,6 +1477,9 @@ export default {
       this.rubber_tableData.forEach(d => {
         allNum += d.standard_error
       })
+      if (this.rubber_tableData.length === 1) {
+        allNum = 0
+      }
       this.batching_error = allNum
     },
 
@@ -2096,6 +2102,9 @@ export default {
         this.rubber_tableData.forEach(d => {
           allNum += d.standard_error
         })
+        if (this.rubber_tableData.length === 1) {
+          allNum = 0
+        }
         this.batching_error = allNum
       }
     },
