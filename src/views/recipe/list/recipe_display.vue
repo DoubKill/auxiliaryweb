@@ -17,7 +17,6 @@
       <el-form-item label="预计炼胶时间">
         <el-input v-model="production_time_interval" :disabled="true" size="mini" style="width: 120px" />
       </el-form-item>
-
       <el-form-item style="float: right">
         <el-button @click="recipe_return_list">返回</el-button>
       </el-form-item>
@@ -108,12 +107,7 @@
       <el-col :span="9">
         <div class="grid-content bg-purple">
           <span class="font_custom">胶料称量</span>
-          <el-table
-            highlight-current-row
-            :data="rubber_tableData"
-            border
-            style="width: 100%"
-          >
+          <el-table highlight-current-row :data="rubber_tableData" border style="width: 100%">
             <el-table-column align="center" width="50%" prop="sn" label="序号" />
             <!-- <el-table-column width="80%" prop="auto_flag" label="自动与否" /> -->
             <el-table-column align="center" prop="material_name" label="胶料名称" />
@@ -121,12 +115,7 @@
             <el-table-column align="center" width="90%" prop="standard_error" label="误差值(kg)" />
           </el-table>
           <span class="font_custom">炭黑称量</span>
-          <el-table
-            highlight-current-row
-            :data="carbon_tableData"
-            border
-            style="width: 100%"
-          >
+          <el-table highlight-current-row :data="carbon_tableData" border style="width: 100%">
             <el-table-column align="center" width="50%" prop="sn" label="序号" />
             <el-table-column align="center" width="60%" prop="action_name" label="动作">投料</el-table-column>
             <!-- <el-table-column prop="auto_flag" label="自动与否" /> -->
@@ -144,12 +133,7 @@
             <el-table-column align="center" width="90%" prop="standard_error" label="误差值(kg)" />
           </el-table>
           <span class="font_custom">{{ equip_no==='Z07'?'油料称量1':'油料称量' }}</span>
-          <el-table
-            highlight-current-row
-            :data="oil_tableData"
-            border
-            style="width: 100%"
-          >
+          <el-table highlight-current-row :data="oil_tableData" border style="width: 100%">
             <el-table-column align="center" width="50%" prop="sn" label="序号" />
             <el-table-column align="center" width="60%" prop="action_name" label="动作">投料</el-table-column>
             <!-- <el-table-column prop="auto_flag" label="自动与否" /> -->
@@ -168,13 +152,7 @@
 
           </el-table>
           <span v-if="equip_no==='Z07'" class="font_custom">油料称量2</span>
-          <el-table
-            v-if="equip_no==='Z07'"
-            highlight-current-row
-            :data="oil_tableData1"
-            border
-            style="width: 100%"
-          >
+          <el-table v-if="equip_no==='Z07'" highlight-current-row :data="oil_tableData1" border style="width: 100%">
             <el-table-column align="center" width="50%" prop="sn" label="序号" />
             <el-table-column align="center" width="60%" prop="action_name" label="动作">投料</el-table-column>
             <!-- <el-table-column prop="auto_flag" label="自动与否" /> -->
@@ -197,12 +175,7 @@
       <el-col :span="15">
         <div class="grid-content bg-purple">
           <span class="font_custom">密炼规程</span>
-          <el-table
-            highlight-current-row
-            :data="process_step_tableData"
-            border
-            style="width: 100%"
-          >
+          <el-table highlight-current-row :data="process_step_tableData" border style="width: 100%">
             <el-table-column align="center" width="50%" prop="sn" label="序号" />
             <el-table-column align="center" prop="condition_name" label="条件" />
             <el-table-column align="center" width="60%" prop="time" label="时间" />
@@ -214,7 +187,25 @@
             <el-table-column align="center" width="60%" prop="rpm" label="转速" />
 
           </el-table>
-        </div></el-col>
+        </div>
+      </el-col>
+
+      <el-col :span="15">
+        <div class="grid-content bg-purple">
+          <span class="font_custom">密炼规程2</span>
+          <el-table highlight-current-row :data="process_step_tableData2" border style="width: 100%">
+            <el-table-column align="center" width="50%" prop="sn" label="序号" />
+            <el-table-column align="center" prop="condition_name" label="条件" />
+            <el-table-column align="center" width="60%" prop="time" label="时间" />
+            <el-table-column align="center" width="60%" prop="temperature" label="温度" />
+            <el-table-column align="center" width="60%" prop="energy" label="能量" />
+            <el-table-column align="center" width="60%" prop="power" label="AI值" />
+            <el-table-column align="center" width="148%" prop="action_name" label="动作" />
+            <el-table-column align="center" width="60%" prop="pressure" label="压力" />
+            <el-table-column align="center" width="60%" prop="rpm" label="转速" />
+          </el-table>
+        </div>
+      </el-col>
     </el-row>
 
   </div>
@@ -258,7 +249,8 @@ export default {
       carbon_tableData: [],
       oil_tableData: [],
       process_step_tableData: [],
-      oil_tableData1: []
+      oil_tableData1: [],
+      process_step_tableData2: []
     }
   },
   created() {
@@ -275,7 +267,7 @@ export default {
     async recipe_material_list(id) {
       try {
         const recipe_listData = await recipe_list('get', id, {
-          params: { }
+          params: {}
         })
         // 机台、配方编号、配方名称
         this.equip_name = this.$route.params['equip_name']
@@ -363,6 +355,22 @@ export default {
           })
         }
         this.process_step_tableData = this.process_step_tableData.sort(this.compareSn)
+        for (var i = 0; i < recipe_listData['process_details2'].length; ++i) {
+          this.process_step_tableData2.push({
+            sn: recipe_listData['process_details2'][i]['sn'],
+            condition: recipe_listData['process_details2'][i]['condition'],
+            time: this.step_type_conversion(recipe_listData['process_details2'][i]['time']),
+            temperature: this.step_type_conversion(recipe_listData['process_details2'][i]['temperature']),
+            energy: this.step_type_conversion(recipe_listData['process_details2'][i]['energy']),
+            power: this.step_type_conversion(recipe_listData['process_details2'][i]['power']),
+            action: recipe_listData['process_details2'][i]['action'],
+            pressure: this.step_type_conversion(recipe_listData['process_details2'][i]['pressure']),
+            rpm: this.step_type_conversion(recipe_listData['process_details2'][i]['rpm']),
+            action_name: recipe_listData['process_details2'][i]['action_name'],
+            condition_name: recipe_listData['process_details2'][i]['condition_name']
+          })
+        }
+        this.process_step_tableData2 = this.process_step_tableData2.sort(this.compareSn)
 
         if (this.equip_no === 'Z07') {
           this.oil_tableData1 = this.oil_tableData.filter(d => d.line_no === 2)
@@ -432,7 +440,7 @@ export default {
       } catch (e) { e }
     },
     recipe_return_list: function() {
-      this.$router.push({ name: 'RecipeList', params: { currentPage: this.$route.params.currentPage }})
+      this.$router.push({ name: 'RecipeList', params: { currentPage: this.$route.params.currentPage } })
     },
     sp_numFormatter: function() {
       return this.sp_numChoice(this.sp_num)
