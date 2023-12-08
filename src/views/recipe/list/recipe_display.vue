@@ -190,7 +190,7 @@
         </div>
       </el-col>
 
-      <el-col :span="15">
+      <el-col :span="15" v-if="equip_no==='Z04'">
         <div class="grid-content bg-purple">
           <span class="font_custom">密炼规程2</span>
           <el-table highlight-current-row :data="process_step_tableData2" border style="width: 100%">
