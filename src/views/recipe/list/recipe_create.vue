@@ -171,6 +171,29 @@
             <el-form-item v-if="category__category_name==='GK255'" label="是否启用">
               <el-checkbox v-model="use_flag" />
             </el-form-item>
+
+            <el-form :model="speedObj" :rules="rules" ref="ruleForm">
+              <div v-if="equip_no==='Z04'">
+                <el-form-item label="上密炼最低转速" prop="mix1_min_speed">
+                  <el-input-number v-model="speedObj.mix1_min_speed" :step="1" step-strictly :min="0" controls-position="right" size="mini" style="width: 70px" />
+                </el-form-item>
+                <el-form-item label="上密炼最高转速" prop="mix1_max_speed">
+                  <el-input-number v-model="speedObj.mix1_max_speed" :step="1" step-strictly :min="0" controls-position="right" size="mini" style="width: 70px" />
+                </el-form-item>
+                <el-form-item label="下密炼最低转速" prop="mix2_min_speed">
+                  <el-input-number v-model="speedObj.mix2_min_speed" :step="1" step-strictly :min="0" controls-position="right" size="mini" style="width: 70px" />
+                </el-form-item>
+                <el-form-item label="下密炼最高转速" prop="mix2_max_speed">
+                  <el-input-number v-model="speedObj.mix2_max_speed" :step="1" step-strictly :min="0" controls-position="right" size="mini" style="width: 70px" />
+                </el-form-item>
+                <el-form-item label="下密炼超温排胶温度" prop="mix2_over_temp">
+                  <el-input-number v-model="speedObj.mix2_over_temp" :step="1" step-strictly :min="0" controls-position="right" size="mini" style="width: 70px" />
+                </el-form-item>
+                <el-form-item label="下密炼超时排胶时间" prop="mix2_max_time">
+                  <el-input-number v-model="speedObj.mix2_max_time" :step="1" step-strictly :min="0" controls-position="right" size="mini" style="width: 70px" />
+                </el-form-item>
+              </div>
+            </el-form>
           </div>
         </el-col>
         <el-col :span="0">
@@ -797,7 +820,28 @@ export default {
       oil_tableData1: [],
       equip_no: '',
       RecipeMaterialList2: [],
-      recipeStepSnForInsert2: 1
+      recipeStepSnForInsert2: 1,
+      speedObj: {},
+      rules: {
+        mix1_min_speed: [
+          { required: true, message: '不能为空', trigger: 'blur' }
+        ],
+        mix1_max_speed: [
+          { required: true, message: '不能为空', trigger: 'blur' }
+        ],
+        mix2_min_speed: [
+          { required: true, message: '不能为空', trigger: 'blur' }
+        ],
+        mix2_max_speed: [
+          { required: true, message: '不能为空', trigger: 'blur' }
+        ],
+        mix2_over_temp: [
+          { required: true, message: '不能为空', trigger: 'blur' }
+        ],
+        mix2_max_time: [
+          { required: true, message: '不能为空', trigger: 'blur' }
+        ],
+      }
     }
   },
   created() {
@@ -1765,53 +1809,69 @@ export default {
           }
         }
         let step_details_list2 = this.step_details_list2()
-        recipe_list('post', null, {
-          data: {
-            'factory': this.generateRecipeForm['SelectSite'],
-            'site': this.normalReceipe ? this.generateRecipeForm['SelectSITE'] : null,
-            'product_info': this.normalReceipe ? this.generateRecipeForm['SelectRecipeNo'] : null,
-            'precept': this.generateRecipeForm['scheme'],
-            'stage_product_batch_no': this.normalReceipe ? null : this.stage_product_batch_no,
-            'stage': this.normalReceipe ? this.generateRecipeForm['SelectStage'] : null,
-            'versions': this.normalReceipe ? this.generateRecipeForm['version'] : null,
-            'production_time_interval': this.production_time_interval,
-            'batching_details': batching_details_list,
-            'batching_details': batching_details_list,
-            'equip': this.generateRecipeForm['SelectEquip'],
-            // 密炼步序list
-            'process_details': step_details_list,
-            'process_details2': step_details_list2,
-            'processes': {
-              // 配方基础信息中第一行
-              'mini_time': (this.mini_time === undefined) ? 0 : this.mini_time,
-              'mini_temp': (this.mini_temp === undefined) ? 0 : this.mini_temp,
-              'over_temp': (this.over_temp === undefined) ? 0 : this.over_temp,
-              'batching_error': (this.batching_error === undefined) ? 0 : this.batching_error,
-              'zz_temp': (this.zz_temp === undefined) ? 0 : this.zz_temp,
-              'xlm_temp': (this.xlm_temp === undefined) ? 0 : this.xlm_temp,
-              'cb_temp': (this.cb_temp === undefined) ? 0 : this.cb_temp,
-              // 配方基础信息中第二行
-              'over_time': (this.over_time === undefined) ? 0 : this.over_time,
-              'max_temp': (this.max_temp === undefined) ? 0 : this.max_temp,
-              'reuse_time': (this.reuse_time === undefined) ? 0 : this.reuse_time,
-              'reuse_flag': this.reuse_flag,
-              'temp_use_flag': this.temp_use_flag,
-              'sp_num': this.sp_num,
-              'use_flag': this.use_flag,
-              ch_time: this.ch_time,
-              dj_time: this.dj_time,
-              ld_time: this.ld_time,
-              // 设备id与配方id
-              'equip': this.generateRecipeForm['SelectEquip'],
-              'product_batching': this.product_batching
-            }
+
+        this.$refs['ruleForm'].validate(async valide => {
+          if (!valide) {
+            this.$message({
+              message: '密炼转速\时间未填写',
+              type: 'error'
+            })
           }
-        }).then(response => {
-          this.$message({
-            message: this.stage_product_batch_no + '配方步序添加成功',
-            type: 'success'
+          if (!valide) return
+          recipe_list('post', null, {
+            data: {
+              'factory': this.generateRecipeForm['SelectSite'],
+              'site': this.normalReceipe ? this.generateRecipeForm['SelectSITE'] : null,
+              'product_info': this.normalReceipe ? this.generateRecipeForm['SelectRecipeNo'] : null,
+              'precept': this.generateRecipeForm['scheme'],
+              'stage_product_batch_no': this.normalReceipe ? null : this.stage_product_batch_no,
+              'stage': this.normalReceipe ? this.generateRecipeForm['SelectStage'] : null,
+              'versions': this.normalReceipe ? this.generateRecipeForm['version'] : null,
+              'production_time_interval': this.production_time_interval,
+              'batching_details': batching_details_list,
+              'batching_details': batching_details_list,
+              'equip': this.generateRecipeForm['SelectEquip'],
+              // 密炼步序list
+              'process_details': step_details_list,
+              'process_details2': step_details_list2,
+              'processes': {
+                // 配方基础信息中第一行
+                'mini_time': (this.mini_time === undefined) ? 0 : this.mini_time,
+                'mini_temp': (this.mini_temp === undefined) ? 0 : this.mini_temp,
+                'over_temp': (this.over_temp === undefined) ? 0 : this.over_temp,
+                'batching_error': (this.batching_error === undefined) ? 0 : this.batching_error,
+                'zz_temp': (this.zz_temp === undefined) ? 0 : this.zz_temp,
+                'xlm_temp': (this.xlm_temp === undefined) ? 0 : this.xlm_temp,
+                'cb_temp': (this.cb_temp === undefined) ? 0 : this.cb_temp,
+                // 配方基础信息中第二行
+                'over_time': (this.over_time === undefined) ? 0 : this.over_time,
+                'max_temp': (this.max_temp === undefined) ? 0 : this.max_temp,
+                'reuse_time': (this.reuse_time === undefined) ? 0 : this.reuse_time,
+                'reuse_flag': this.reuse_flag,
+                'temp_use_flag': this.temp_use_flag,
+                'sp_num': this.sp_num,
+                'use_flag': this.use_flag,
+                ch_time: this.ch_time,
+                dj_time: this.dj_time,
+                ld_time: this.ld_time,
+                mix1_min_speed: this.speedObj['mix1_min_speed'],
+                mix1_max_speed: this.speedObj['mix1_max_speed'],
+                mix2_min_speed: this.speedObj['mix2_min_speed'],
+                mix2_max_speed: this.speedObj['mix2_max_speed'],
+                mix2_over_temp: this.speedObj['mix2_over_temp'],
+                mix2_max_time: this.speedObj['mix2_max_time'],
+                // 设备id与配方id
+                'equip': this.generateRecipeForm['SelectEquip'],
+                'product_batching': this.product_batching
+              }
+            }
+          }).then(response => {
+            this.$message({
+              message: this.stage_product_batch_no + '配方步序添加成功',
+              type: 'success'
+            })
+            this.$router.push({ name: 'RecipeList' })
           })
-          this.$router.push({ name: 'RecipeList' })
         })
         // try {
         //   // console.log('------------------d--------')
@@ -1975,6 +2035,14 @@ export default {
         this.ch_time = data.process_data.ch_time
         this.dj_time = data.process_data.dj_time
         this.ld_time = data.process_data.ld_time
+        this.speedObj = {
+          mix1_min_speed: data.process_data['mix1_min_speed'],
+          mix1_max_speed: data.process_data['mix1_max_speed'],
+          mix2_min_speed: data.process_data['mix2_min_speed'],
+          mix2_max_speed: data.process_data['mix2_max_speed'],
+          mix2_over_temp: data.process_data['mix2_over_temp'],
+          mix2_max_time: data.process_data['mix2_max_time'],
+        }
 
         if (data.process_detail_data && data.process_detail_data.length) {
           this.RecipeMaterialList = data.process_detail_data

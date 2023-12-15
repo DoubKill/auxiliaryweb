@@ -94,6 +94,27 @@
             <el-form-item v-if="category__category_name==='GK255'" label="是否启用">
               <el-checkbox v-model="use_flag" :disabled="true" />
             </el-form-item>
+
+            <div v-if="equip_no==='Z04'">
+              <el-form-item label="上密炼最低转速">
+                <el-input v-model="speedObj.mix1_min_speed" :step="1" step-strictly :min="0" controls-position="right" size="mini" style="width: 70px" :disabled="true" />
+              </el-form-item>
+              <el-form-item label="上密炼最高转速">
+                <el-input v-model="speedObj.mix1_max_speed" :step="1" step-strictly :min="0" controls-position="right" size="mini" style="width: 70px" :disabled="true" />
+              </el-form-item>
+              <el-form-item label="下密炼最低转速">
+                <el-input v-model="speedObj.mix2_min_speed" :step="1" step-strictly :min="0" controls-position="right" size="mini" style="width: 70px" :disabled="true" />
+              </el-form-item>
+              <el-form-item label="下密炼最高转速">
+                <el-input v-model="speedObj.mix2_max_speed" :step="1" step-strictly :min="0" controls-position="right" size="mini" style="width: 70px" :disabled="true" />
+              </el-form-item>
+              <el-form-item label="下密炼超温排胶温度">
+                <el-input v-model="speedObj.mix2_over_temp" :step="1" step-strictly :min="0" controls-position="right" size="mini" style="width: 70px" :disabled="true" />
+              </el-form-item>
+              <el-form-item label="下密炼超时排胶时间" prop="mix2_max_time">
+                <el-input v-model="speedObj.mix2_max_time" :step="1" step-strictly :min="0" controls-position="right" size="mini" style="width: 70px" :disabled="true" />
+              </el-form-item>
+            </div>
           </div>
         </el-col>
         <el-col :span="0">
@@ -250,7 +271,8 @@ export default {
       oil_tableData: [],
       process_step_tableData: [],
       oil_tableData1: [],
-      process_step_tableData2: []
+      process_step_tableData2: [],
+      speedObj: {},
     }
   },
   created() {
@@ -339,6 +361,14 @@ export default {
         this.dj_time = recipe_listData['processes']['dj_time']
         this.ld_time = recipe_listData['processes']['ld_time']
         this.use_flag = recipe_listData['processes']['use_flag']
+        this.speedObj = {
+          mix1_min_speed: recipe_listData['processes']['mix1_min_speed'],
+          mix1_max_speed: recipe_listData['processes']['mix1_max_speed'],
+          mix2_min_speed: recipe_listData['processes']['mix2_min_speed'],
+          mix2_max_speed: recipe_listData['processes']['mix2_max_speed'],
+          mix2_over_temp: recipe_listData['processes']['mix2_over_temp'],
+          mix2_max_time: recipe_listData['processes']['mix2_max_time'],
+        }
         for (var i = 0; i < recipe_listData['process_details'].length; ++i) {
           this.process_step_tableData.push({
             sn: recipe_listData['process_details'][i]['sn'],
