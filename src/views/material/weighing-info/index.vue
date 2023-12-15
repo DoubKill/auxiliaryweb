@@ -3,12 +3,7 @@
     <el-form style="margin-left: 10px" :inline="true">
       <el-form-item label="机台">
         <el-select v-model="equip" placeholder="请选择" @change="equipChange" @visible-change="equipVisibleChange">
-          <el-option
-            v-for="item in equipOptions"
-            :key="item.equip_no"
-            :label="item.equip_no"
-            :value="item.equip_no"
-          />
+          <el-option v-for="item in equipOptions" :key="item.equip_no" :label="item.equip_no" :value="item.equip_no" />
         </el-select>
       </el-form-item>
       <el-form-item style="float: right">
@@ -61,7 +56,7 @@
       </el-table-column>
     </el-table>
     <el-table :data="tableBinOilData" border style="width: 75%">
-      <el-table-column :label="equip === 'Z07'?'油料称1':'油料称'">
+      <el-table-column :label="['Z07','Z04'].includes(equip)?'油料称1':'油料称'">
         <el-table-column prop="tank_name" label="油料罐" />
         <el-table-column prop="material_name1" label="物料名称">
           <template slot-scope="scope">{{ scope.row.material_name1 }}</template>
@@ -88,7 +83,7 @@
         </el-table-column>
       </el-table-column>
     </el-table>
-    <el-table v-if="equip === 'Z07'" :data="tableBinOilData1" border style="width: 75%">
+    <el-table v-if="['Z07','Z04'].includes(equip)" :data="tableBinOilData1" border style="width: 75%">
       <el-table-column label="油料称2">
         <el-table-column prop="tank_name" label="油料罐" />
         <el-table-column prop="material_name1" label="物料名称">
@@ -171,8 +166,8 @@ export default {
           params: { equip_no: this.equip }
         })
         this.tableBinCbData = cbData.results
-      // eslint-disable-next-line no-empty
-      } catch (e) {}
+        // eslint-disable-next-line no-empty
+      } catch (e) { }
     },
     async getOilList() {
       try {
@@ -181,14 +176,14 @@ export default {
         const oilData = await weighOil('get', {
           params: { equip_no: this.equip }
         })
-        if (this.equip === 'Z07') {
+        if (['Z07','Z04'].includes(this.equip)) {
           this.tableBinOilData1 = oilData.results.filter(d => d.line_no === 2)
           this.tableBinOilData = oilData.results.filter(d => d.line_no === 1)
           return
         }
         this.tableBinOilData = oilData.results
-      // eslint-disable-next-line no-empty
-      } catch (e) {}
+        // eslint-disable-next-line no-empty
+      } catch (e) { }
     },
     async putCbList() {
       try {
@@ -209,8 +204,8 @@ export default {
           center: true
         })
         this.putOilList()
-      // eslint-disable-next-line no-empty
-      } catch (e) {}
+        // eslint-disable-next-line no-empty
+      } catch (e) { }
     },
     async putOilList() {
       try {
@@ -230,15 +225,15 @@ export default {
           type: 'success',
           center: true
         })
-      // eslint-disable-next-line no-empty
-      } catch (e) {}
+        // eslint-disable-next-line no-empty
+      } catch (e) { }
     },
     async getEquipList() {
       try {
         const equipData = await equip('get')
         this.equipOptions = equipData.results
-      // eslint-disable-next-line no-empty
-      } catch (e) {}
+        // eslint-disable-next-line no-empty
+      } catch (e) { }
     },
     equipVisibleChange(bool) {
       if (bool) {
