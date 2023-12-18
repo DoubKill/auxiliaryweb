@@ -368,8 +368,8 @@
             <!-- <el-table-column prop="auto_flag" label="自动与否" /> -->
             <el-table-column width="250" align="center" label="油脂名称">
               <template slot-scope="scope">
-                <el-select v-model="scope.row._index" style="width: 220px" class="setOption" @change="materialChange($event,scope.$index,tankOils,oil_tableData1)">
-                  <el-option v-for="(item,index) in tankOils" :key="index" :label="item.label" :value="index">
+                <el-select v-model="scope.row._index" style="width: 220px" class="setOption" @change="materialChange($event,scope.$index,tankOils1,oil_tableData1)">
+                  <el-option v-for="(item,index) in tankOils1" :key="index" :label="item.label" :value="index">
                     <span>{{ item.tank_name }}</span>&nbsp;
                     <span>{{ item.material_name }}</span>
                     <!-- <span v-if="item.provenance" style="display:block;margin-top: -10px;">{{ item.provenance }}</span> -->
@@ -1236,11 +1236,23 @@ export default {
             })
           })
           tank_materials(this.SelectEquipOptions[i].equip_no, 2).then(response => {
-            this.tankOils = response.results
+            if (['Z07', 'Z04'].includes(this.equip_no)) {
+              this.tankOils1 = response.results.filter(d => d.line_no === 2)
+              this.tankOils = response.results.filter(d => d.line_no === 1 || !d.line_no)
+            } else {
+              this.tankOils = response.results
+            }
             this.tankOils = this.tankOils.map(ret => {
               return {
                 ...ret,
                 label: `${ret.tank_name}  ${ret.material_name}`
+              }
+            })
+            this.tankOils1 = this.tankOils1.map((ret, index) => {
+              return {
+                ...ret,
+                label: `${ret.tank_name}  ${ret.material_name}`,
+                _index: index
               }
             })
           })
