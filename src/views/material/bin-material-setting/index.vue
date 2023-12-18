@@ -80,7 +80,7 @@
       </el-table-column>
     </el-table>
     <el-table :data="tableBinOilData" border style="width: 80%">
-      <el-table-column :label="equip === 'Z07'?'油料称1':'油料称'">
+      <el-table-column :label="['Z07','Z04'].includes(equip)?'油料称1':'油料称'">
         <el-table-column prop="tank_name" width="150%" label="油料罐" />
         <el-table-column prop="material_no" label="物料名称">
           <template slot-scope="scope">
@@ -132,7 +132,7 @@
         </el-table-column>
       </el-table-column>
     </el-table>
-    <el-table v-if="equip === 'Z07'" :data="tableBinOilData1" border style="width: 80%">
+    <el-table v-if="['Z07','Z04'].includes(equip)" :data="tableBinOilData1" border style="width: 80%">
       <el-table-column label="油料称2">
         <el-table-column prop="tank_name" width="150%" label="油料罐" />
         <el-table-column prop="material_no" label="物料名称">
@@ -273,7 +273,7 @@ export default {
         const oilData = await weighOil('get', {
           params: { equip_no: this.equip }
         })
-        if (this.equip === 'Z07') {
+        if (['Z07','Z04'].includes(this.equip)) {
           this.tableBinOilData1 = oilData.results.filter(d => d.line_no === 2)
           this.tableBinOilData = oilData.results.filter(d => d.line_no === 1)
           return
