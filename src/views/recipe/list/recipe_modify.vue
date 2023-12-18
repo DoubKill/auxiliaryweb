@@ -287,8 +287,8 @@
               <el-button size="mini" @click="insertOneOil">插入一行</el-button>
             </el-form-item>
           </el-form>
-          <span v-if="equip_no==='Z07'" class="font_custom">油料称量2</span>
-          <el-table v-if="equip_no==='Z07'" highlight-current-row :data="oil_tableData1" border style="width: 100%">
+          <span v-if="['Z07','Z04'].includes(equip_no)" class="font_custom">油料称量2</span>
+          <el-table v-if="['Z07','Z04'].includes(equip_no)" highlight-current-row :data="oil_tableData1" border style="width: 100%">
             <el-table-column align="center" width="40" prop="sn" label="序号" />
             <el-table-column align="center" prop="action_name" label="动作">投料</el-table-column>
             <!-- <el-table-column prop="auto_flag" label="自动与否" /> -->
@@ -334,7 +334,7 @@
             <!-- <el-table-column align="center" width="90%" :precision="2" :step="0.1" :min="0.00" prop="actual_weight" label="设定值(kg)" /> -->
             <!-- <el-table-column align="center" width="90%" :precision="2" :step="0.1" :min="0" prop="standard_error" label="误差值(kg)" /> -->
           </el-table>
-          <el-form v-if="equip_no==='Z07'">
+          <el-form v-if="['Z07','Z04'].includes(equip_no)">
             <el-form-item style="text-align: center">
               <div>序号<el-input-number v-model="oilSnForInsert1" :min="1" style="margin-right: 6px;margin-left: 6px;" size="mini" :controls="false" />
                 <el-button size="mini" :disabled="!insertOilEnbale1()" @click="insertBeforeSnOneOil1">前插入一行</el-button>
@@ -758,7 +758,7 @@ export default {
       this.tankOils1 = []
       this.tankOils = []
       const response = await tank_materials(this.equip_no, 2)
-      if (this.equip_no === 'Z07') {
+      if (['Z07','Z04'].includes(this.equip_no)) {
         this.tankOils1 = response.results.filter(d => d.line_no === 2)
         this.tankOils = response.results.filter(d => d.line_no === 1 || !d.line_no)
       } else {
@@ -1027,7 +1027,7 @@ export default {
               _index: carbonItem._index
             })
           } else if (recipe_listData['batching_details'][j]['type'] === 3) {
-            if (this.equip_no === 'Z07' && recipe_listData['batching_details'][j]['line_no'] === 2) {
+            if (['Z07','Z04'].includes(this.equip_no) && recipe_listData['batching_details'][j]['line_no'] === 2) {
               let oilItem = this.tankOils1.find(item => {
                 return (item.id === recipe_listData['batching_details'][j].material) &&
                   (Number(item.tank_no) === Number(recipe_listData['batching_details'][j].tank_no))
@@ -1062,19 +1062,19 @@ export default {
                 provenance: recipe_listData['batching_details'][j].provenance || '',
                 _index: this.tankOils.length
               }
-              if (this.equip_no === 'Z07' && (recipe_listData['batching_details'][j]['line_no'] === 1 || !recipe_listData['batching_details'][j]['line_no'])) {
+              if (['Z07','Z04'].includes(this.equip_no) && (recipe_listData['batching_details'][j]['line_no'] === 1 || !recipe_listData['batching_details'][j]['line_no'])) {
                 this.tankOils.push(oilItem)
-              } else if (this.equip_no !== 'Z07') {
+              } else if (!['Z07','Z04'].includes(this.equip_no)) {
                 this.tankOils.push(oilItem)
               }
             }
-            if (this.equip_no === 'Z07' && (recipe_listData['batching_details'][j]['line_no'] === 1 || !recipe_listData['batching_details'][j]['line_no'])) {
+            if (['Z07','Z04'].includes(this.equip_no) && (recipe_listData['batching_details'][j]['line_no'] === 1 || !recipe_listData['batching_details'][j]['line_no'])) {
               this.oil_tableData.push({
                 action_name: '投料',
                 _index: oilItem._index,
                 ...recipe_listData['batching_details'][j]
               })
-            } else if (this.equip_no !== 'Z07') {
+            } else if (!['Z07','Z04'].includes(this.equip_no)) {
               this.oil_tableData.push({
                 action_name: '投料',
                 _index: oilItem._index,

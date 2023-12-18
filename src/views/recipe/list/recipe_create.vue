@@ -306,7 +306,7 @@
               <el-button size="mini" @click="insertOnecarbon">插入一行</el-button>
             </el-form-item>
           </el-form>
-          <span class="font_custom">{{ equip_no==='Z07'?'油料称量1':'油料称量' }}</span>
+          <span class="font_custom">{{ ['Z07','Z04'].includes(equip_no)?'油料称量1':'油料称量' }}</span>
           <el-table highlight-current-row :data="oil_tableData" border style="width: 100%">
             <el-table-column align="center" width="40" prop="sn" label="序号" />
             <el-table-column align="center" prop="action_name" label="动作">投料</el-table-column>
@@ -361,8 +361,8 @@
               <el-button size="mini" @click="insertOneOil">插入一行</el-button>
             </el-form-item>
           </el-form>
-          <span v-if="equip_no==='Z07'" class="font_custom">油料称量2</span>
-          <el-table v-if="equip_no==='Z07'" highlight-current-row :data="oil_tableData1" border style="width: 100%">
+          <span v-if="['Z07','Z04'].includes(equip_no)" class="font_custom">油料称量2</span>
+          <el-table v-if="['Z07','Z04'].includes(equip_no)" highlight-current-row :data="oil_tableData1" border style="width: 100%">
             <el-table-column align="center" width="40" prop="sn" label="序号" />
             <el-table-column align="center" prop="action_name" label="动作">投料</el-table-column>
             <!-- <el-table-column prop="auto_flag" label="自动与否" /> -->
@@ -408,7 +408,7 @@
             <!-- <el-table-column align="center" width="90%" :precision="2" :step="0.1" :min="0.00" prop="actual_weight" label="设定值(kg)" /> -->
             <!-- <el-table-column align="center" width="90%" :precision="2" :step="0.1" :min="0" prop="standard_error" label="误差值(kg)" /> -->
           </el-table>
-          <el-form v-if="equip_no==='Z07'">
+          <el-form v-if="['Z07','Z04'].includes(equip_no)">
             <el-form-item style="text-align: center">
               <div>序号<el-input-number v-model="oilSnForInsert1" :min="1" style="margin-right: 6px;margin-left: 6px;" size="mini" :controls="false" />
                 <el-button size="mini" :disabled="!insertOilEnbale1()" @click="insertBeforeSnOneOil1">前插入一行</el-button>

@@ -172,8 +172,8 @@
             <el-table-column align="center" width="90%" prop="standard_error" label="误差值(kg)" />
 
           </el-table>
-          <span v-if="equip_no==='Z07'" class="font_custom">油料称量2</span>
-          <el-table v-if="equip_no==='Z07'" highlight-current-row :data="oil_tableData1" border style="width: 100%">
+          <span v-if="['Z07','Z04'].includes(equip_no)" class="font_custom">油料称量2</span>
+          <el-table v-if="['Z07','Z04'].includes(equip_no)" highlight-current-row :data="oil_tableData1" border style="width: 100%">
             <el-table-column align="center" width="50%" prop="sn" label="序号" />
             <el-table-column align="center" width="60%" prop="action_name" label="动作">投料</el-table-column>
             <!-- <el-table-column prop="auto_flag" label="自动与否" /> -->
@@ -402,7 +402,7 @@ export default {
         }
         this.process_step_tableData2 = this.process_step_tableData2.sort(this.compareSn)
 
-        if (this.equip_no === 'Z07') {
+        if (['Z07','Z04'].includes(this.equip_no)) {
           this.oil_tableData1 = this.oil_tableData.filter(d => d.line_no === 2)
           this.oil_tableData = this.oil_tableData.filter(d => d.line_no === 1 || !d.line_no)
           return
