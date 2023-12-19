@@ -513,7 +513,7 @@
           <el-form>
             <el-form-item style="text-align: center">
               <div>序号<el-input-number v-model="recipeStepSnForInsert2" :min="1" style="margin-right: 6px;margin-left: 6px;" size="mini" :controls="false" />
-                <el-button size="mini" :disabled="!insertRecipeStepEnbale()" @click="insert_before_sn_recipe_step2">前插入一行</el-button>
+                <el-button size="mini" :disabled="!insertRecipeStepEnbale2()" @click="insert_before_sn_recipe_step2">前插入一行</el-button>
               </div>
               <el-button size="mini" @click="insert_recipe_step2">插入一行</el-button>
             </el-form-item>

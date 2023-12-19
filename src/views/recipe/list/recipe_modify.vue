@@ -407,7 +407,7 @@
           <el-form>
             <el-form-item style="text-align: center">
               <div>序号<el-input-number v-model="recipeStepSnForInsert" :min="1" style="margin-right: 6px;margin-left: 6px;" size="mini" :controls="false" />
-                <el-button size="mini" :disabled="!insertRecipeStepEnbale2()" @click="insert_before_sn_recipe_step">前插入一行</el-button>
+                <el-button size="mini" :disabled="!insertRecipeStepEnbale()" @click="insert_before_sn_recipe_step">前插入一行</el-button>
               </div>
               <el-button size="mini" @click="insert_recipe_step">插入一行</el-button>
             </el-form-item>
@@ -477,7 +477,7 @@
           <el-form>
             <el-form-item style="text-align: center">
               <div>序号<el-input-number v-model="recipeStepSnForInsert2" :min="1" style="margin-right: 6px;margin-left: 6px;" size="mini" :controls="false" />
-                <el-button size="mini" :disabled="!insertRecipeStepEnbale()" @click="insert_before_sn_recipe_step2">前插入一行</el-button>
+                <el-button size="mini" :disabled="!insertRecipeStepEnbale2()" @click="insert_before_sn_recipe_step2">前插入一行</el-button>
               </div>
               <el-button size="mini" @click="insert_recipe_step2">插入一行</el-button>
             </el-form-item>
@@ -758,7 +758,7 @@ export default {
       this.tankOils1 = []
       this.tankOils = []
       const response = await tank_materials(this.equip_no, 2)
-      if (['Z07','Z04'].includes(this.equip_no)) {
+      if (['Z07', 'Z04'].includes(this.equip_no)) {
         this.tankOils1 = response.results.filter(d => d.line_no === 2)
         this.tankOils = response.results.filter(d => d.line_no === 1 || !d.line_no)
       } else {
@@ -985,7 +985,9 @@ export default {
         const recipe_listData = await recipe_list('get', id, {
           params: {}
         })
-        this.recipe_material_list2(recipe_listData)
+        if (recipe_listData['process_details2']) {
+          this.recipe_material_list2(recipe_listData)
+        }
 
         this.old_batching_details = recipe_listData.batching_details
         // console.log(recipe_listData, 'recipe_listData')
@@ -1027,7 +1029,7 @@ export default {
               _index: carbonItem._index
             })
           } else if (recipe_listData['batching_details'][j]['type'] === 3) {
-            if (['Z07','Z04'].includes(this.equip_no) && recipe_listData['batching_details'][j]['line_no'] === 2) {
+            if (['Z07', 'Z04'].includes(this.equip_no) && recipe_listData['batching_details'][j]['line_no'] === 2) {
               let oilItem = this.tankOils1.find(item => {
                 return (item.id === recipe_listData['batching_details'][j].material) &&
                   (Number(item.tank_no) === Number(recipe_listData['batching_details'][j].tank_no))
@@ -1062,19 +1064,19 @@ export default {
                 provenance: recipe_listData['batching_details'][j].provenance || '',
                 _index: this.tankOils.length
               }
-              if (['Z07','Z04'].includes(this.equip_no) && (recipe_listData['batching_details'][j]['line_no'] === 1 || !recipe_listData['batching_details'][j]['line_no'])) {
+              if (['Z07', 'Z04'].includes(this.equip_no) && (recipe_listData['batching_details'][j]['line_no'] === 1 || !recipe_listData['batching_details'][j]['line_no'])) {
                 this.tankOils.push(oilItem)
-              } else if (!['Z07','Z04'].includes(this.equip_no)) {
+              } else if (!['Z07', 'Z04'].includes(this.equip_no)) {
                 this.tankOils.push(oilItem)
               }
             }
-            if (['Z07','Z04'].includes(this.equip_no) && (recipe_listData['batching_details'][j]['line_no'] === 1 || !recipe_listData['batching_details'][j]['line_no'])) {
+            if (['Z07', 'Z04'].includes(this.equip_no) && (recipe_listData['batching_details'][j]['line_no'] === 1 || !recipe_listData['batching_details'][j]['line_no'])) {
               this.oil_tableData.push({
                 action_name: '投料',
                 _index: oilItem._index,
                 ...recipe_listData['batching_details'][j]
               })
-            } else if (!['Z07','Z04'].includes(this.equip_no)) {
+            } else if (!['Z07', 'Z04'].includes(this.equip_no)) {
               this.oil_tableData.push({
                 action_name: '投料',
                 _index: oilItem._index,
@@ -1142,6 +1144,8 @@ export default {
           })
         }
         this.RecipeMaterialList = this.RecipeMaterialList.sort(this.compareSn)
+
+        console.log(this.RecipeMaterialList, 7777);
 
         if (!recipe_listData.processes) {
           recipe_listData.processes = { batching_error: 0 }
